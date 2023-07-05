@@ -13,7 +13,7 @@ PlayerSettings:
   useOnDemandResources: 0
   accelerometerFrequency: 60
   companyName: DefaultCompany
-  productName: PicoFourDViewer
+  productName: FourDViewerWeb
   defaultCursor: {fileID: 0}
   cursorHotspot: {x: 0, y: 0}
   m_SplashScreenBackgroundColor: {r: 0.13725491, g: 0.12156863, b: 0.1254902, a: 1}
@@ -164,8 +164,6 @@ PlayerSettings:
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
-  - {fileID: 11400000, guid: d0905c149da490f438ad4bb66c31a78a, type: 2}
-  - {fileID: -1047114674596315154, guid: 167231f3a99e18b45a71bb516c10d8e7, type: 2}
   metroInputSource: 0
   wsaTransparentSwapchain: 0
   m_HolographicPauseOnTrackingLoss: 1
@@ -186,6 +184,7 @@ PlayerSettings:
   androidMaxAspectRatio: 2.1
   applicationIdentifier:
     Android: com.DefaultCompany.PicoFourDViewer
+    Standalone: com.DefaultCompany.FourDViewerWeb
   buildNumber:
     Standalone: 0
     iPhone: 0

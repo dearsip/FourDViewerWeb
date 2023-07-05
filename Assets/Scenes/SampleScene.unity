@@ -169,7 +169,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: adfeebbffea85444eac06f59ce678d56, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  head: {fileID: 89894808}
+  head: {fileID: 1463436305}
   text: {fileID: 1644450021}
 --- !u!114 &83978588
 MonoBehaviour:
@@ -346,11 +346,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 54a613ba6e982e84db04156af08d6a89, type: 3}
---- !u!4 &89894808 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 4414771795277364, guid: 54a613ba6e982e84db04156af08d6a89, type: 3}
-  m_PrefabInstance: {fileID: 89894807}
-  m_PrefabAsset: {fileID: 0}
 --- !u!4 &89894809 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4446684710817404, guid: 54a613ba6e982e84db04156af08d6a89, type: 3}
@@ -405,15 +400,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7951c64acb0fa62458bf30a60089fe2d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_RootRaycaster: {fileID: 0}
-  m_IgnoreReversedGraphics: 0
-  m_CheckFor2DOcclusion: 0
-  m_CheckFor3DOcclusion: 0
-  m_BlockingMask:
-    m_Bits: 4294967295
-  m_RaycastTriggerInteraction: 1
-  m_Canvas: {fileID: 0}
-  m_HasWarnedEventCameraNull: 0
 --- !u!114 &229857417
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1654,15 +1640,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7951c64acb0fa62458bf30a60089fe2d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_RootRaycaster: {fileID: 0}
-  m_IgnoreReversedGraphics: 0
-  m_CheckFor2DOcclusion: 0
-  m_CheckFor3DOcclusion: 0
-  m_BlockingMask:
-    m_Bits: 4294967295
-  m_RaycastTriggerInteraction: 1
-  m_Canvas: {fileID: 0}
-  m_HasWarnedEventCameraNull: 0
 --- !u!224 &1255542771 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 7242501031146117197, guid: 9cb2164b37395894aa143a9e156f34dd, type: 3}
@@ -2842,7 +2819,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 017c5e3933235514c9520e1dace2a4b2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_ActionAssets: []
 --- !u!114 &2081566550
 MonoBehaviour:
   m_ObjectHideFlags: 0
