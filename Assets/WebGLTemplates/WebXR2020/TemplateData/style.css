@@ -1,6 +1,6 @@
 body { padding: 0; margin: 0 }
 #unity-container { position: absolute }
-#unity-container { left: 50%; top: 50%; transform: translate(-50%, -50%) }
+#unity-container { left: 50%; top: max(50%, 300px); transform: translate(-50%, -50%) }
 #unity-canvas { background: {{{ BACKGROUND_COLOR }}} }
 #unity-loading-bar { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); display: none }
 #unity-logo { width: 154px; height: 130px; background: url('unity-logo-{{{ SPLASH_SCREEN_STYLE.toLowerCase() }}}.png') no-repeat center }
