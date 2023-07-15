@@ -59,9 +59,7 @@ public class Core : MonoBehaviour
 
     private Vector3 reg0, reg1;
     private double[] reg2, reg3, reg4, reg5, reg6;
-    // public Player player;
     public Camera fixedCamera;
-    // public SteamVR_Action_Boolean headsetOnHead = SteamVR_Input.GetBooleanAction("HeadsetOnHead");
     private double[] eyeVector;
     private double[] cursor;
     private double[][] cursorAxis;
@@ -274,10 +272,7 @@ public class Core : MonoBehaviour
             // //Debug.Log(fps);
         // }
 
-        if (Input.GetKeyDown(KeyCode.Escape)) {
-            if (menuPanel.gameObject.activeSelf == false) openMenu();
-            else menuPanel.doCancel();
-        }
+        if (Input.GetKeyDown(KeyCode.Escape)) ToggleMenu();
 
         engine.ApplyMesh();
         if (!menuPanel.isActiveAndEnabled) calcInput();
@@ -285,6 +280,12 @@ public class Core : MonoBehaviour
         menuCommand = null;
         control();
         engine.renderAbsolute(eyeVector, opt.oo, delta);
+    }
+
+    public void ToggleMenu()
+    {
+        if (menuPanel.gameObject.activeSelf == false) openMenu();
+        else menuPanel.doCancel();
     }
 
     private int swipeDir = 0;

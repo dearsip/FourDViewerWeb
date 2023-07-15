@@ -110,24 +110,6 @@ public class Menu : MonoBehaviour
     public void Activate(OptionsAll oa)
     {
         isActivating = true;
-        // SteamVR_Actions._default.Activate(left);
-        // SteamVR_Actions._default.Activate(right);
-        // gameObject.SetActive(true);
-        // rightLaser.SetActive(true);
-        //rightHand.useRaycastHover = true;
-
-        if (Input.GetKeyDown(KeyCode.Escape)) {
-            GetComponent<Canvas>().renderMode = RenderMode.ScreenSpaceOverlay;
-        }
-        else {
-            GetComponent<Canvas>().renderMode = RenderMode.WorldSpace;
-            GetComponent<RectTransform>().sizeDelta = new Vector2(970,600);
-            transform.localPosition = defaultPosition;
-            transform.localRotation = defaultRotation;
-            transform.localScale = defaultScale;
-            parent.LookAt(head);
-            parent.LookAt(new Vector3(parent.forward.x, 0, parent.forward.z) + parent.position);
-        }
 
         put(dimCurrent, oa.omCurrent.dimMap);
         put(dimNext, dimSlider, oa.opt.om4.dimMap);
