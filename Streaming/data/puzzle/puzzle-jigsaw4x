@@ -1,0 +1,233 @@
+// house
+[[0.6 2.2] [0.1 0.9] [0.1 1.6]] rect shapetexture
+magenta texturecolor
+
+//roof
+[[0.4 2.4] [-0.1 1.8]] rect [1.2 0.8] y [0.9 1.4] cone shapetexture
+red texturecolor union
+
+// door
+[[0.9 1.3] [0.1 0.7] [0.4 0.8]] rect shapetexture
+brown texturecolor union
+
+// window
+[[1.6 1.9] [0.9 1.2]] rect dup y [0.4 0.7] prism shapetexture
+exch shapetexture y 0.55 lift union
+[[0.4 0.7] [0.9 1.2]] rect shapetexture x 1.75 lift union
+[[1.6 1.9] [0.4 0.7]] rect shapetexture z 1.05 lift union
+[
+[1.6 0.55 1.05]
+[1.9 0.55 1.05]
+[1.75 0.4 1.05]
+[1.75 0.7 1.05]
+[1.75 0.55 0.9]
+[1.75 0.55 1.2]
+][
+0 1 edge
+2 3 edge
+4 5 edge
+]
+texture union // remarkably, no duplicate vertices
+gray texturecolor union
+
+// tree 1
+[-0.2 1] 0.141421 4 altpoly y [0.1 0.7] prism shapetexture
+brown texturecolor union
+[-0.2 1] 0.565685 4 altpoly [-0.2 1] y [0.7 1.8] cone shapetexture
+green texturecolor union
+
+// tree 2
+[-0.3 -0.3] 0.141421 5 polygon y [0.1 0.7] prism shapetexture
+brown texturecolor union
+[-0.3 -0.3] 0.565685 5 polygon [-0.3 -0.3] y [0.7 1.8] cone shapetexture
+green texturecolor union
+
+// shrub
+[1.1 -0.5] 0.1 6 altpoly y [0.1 0.3] prism shapetexture
+brown texturecolor union
+[1.1 -0.5] 0.4 6 altpoly [1.1 -0.5] y [0.6 0.9 1.3] frustum shapetexture
+copy x+ y+ 180 [1.1 0.6 -0.5] altrot union merge
+green texturecolor union
+
+// ground
+[
+[-0.5 0.4 -1]
+[-0.5 0.4 2]
+[0.5 0.4 -1]
+[0.5 0.4 2]
+[1.5 0.4 -1]
+[1.5 0.4 0.1]
+[1.5 0.4 1.6]
+[1.5 0.4 2]
+[2.5 0.4 -1]
+[2.5 0.4 2]
+[-1 0.4 -0.5]
+[0.852564 0.4 -0.5]
+[1.347436 0.4 -0.5]
+[3 0.4 -0.5]
+[-1 0.4 0.5]
+[0.6 0.4 0.5]
+[2.2 0.4 0.5]
+[3 0.4 0.5]
+[-1 0.4 1.5]
+[0.6 0.4 1.5]
+[2.2 0.4 1.5]
+[3 0.4 1.5]
+][
+0 1 edge
+2 3 edge
+4 5 edge
+6 7 edge
+8 9 edge
+10 11 edge
+12 13 edge
+14 15 edge
+16 17 edge
+18 19 edge
+20 21 edge
+]
+texture
+green texturecolor union
+
+// sun
+[-1 -0.414214 0 0.414214 1] meshringframe4
+y project
+[0.25 0.25 0.25] scale [2.6 1.6 -0.1] translate
+yellow texturecolor union
+
+// rays
+[
+[2.2 1.5 -0.2]
+[1.7 1.4 -0.3]
+[2.2 1.5 0.001]
+[1.7 1.4 0.1]
+[2.2 1.7 -0.2]
+[1.5 1.9 -0.3]
+[2.2 1.7 0.001]
+[1.5 1.9 0.1]
+[2.5 1.2 -0.2]
+[2.4 0.7 -0.3]
+[2.5 1.2 0.001]
+[2.4 0.7 0.1]
+[2.7 1.2 -0.2]
+[2.9 0.5 -0.3]
+[2.7 1.2 0.001]
+[2.9 0.5 0.1]
+[2.5 1.5 0.3]
+[2.4 1.4 1.3]
+[2.5 1.7 0.3]
+[2.4 1.9 1.3]
+[2.7 1.5 0.3]
+[2.9 1.4 1.3]
+[2.7 1.7 0.3]
+[2.9 1.9 1.3]
+[2.3 1.3 -0.1]
+[2.1 1.2 -0.1]
+[2.3 1.6 0.2]
+[1.7 1.6 0.8]
+[2.6 1.3 0.2]
+[2.6 0.8 0.8]
+[2.3 1.3 0.2]
+[2.1 1.2 0.4]
+][
+0 1 edge
+2 3 edge
+4 5 edge
+6 7 edge
+8 9 edge
+10 11 edge
+12 13 edge
+14 15 edge
+16 17 edge
+18 19 edge
+20 21 edge
+22 23 edge
+24 25 edge
+26 27 edge
+28 29 edge
+30 31 edge
+]
+texture
+yellow texturecolor union
+
+// sky 1
+[
+[-0.9 1.9 1.9]
+[-0.3 1.9 1.9]
+[-0.590909 1.1 1.9]
+[-0.9 1.1 1.9]
+[-0.9 1.9 -0.394952]
+[-0.3 1.9 -0.2]
+[-0.590909 1.1 0.055423]
+[-0.9 1.1 -0.045007]
+][
+0 1 edge
+1 2 edge
+2 3 edge
+3 0 edge
+4 5 edge
+5 6 edge
+6 7 edge
+7 4 edge
+0 4 edge
+1 5 edge
+2 6 edge
+3 7 edge
+]
+texture
+cyan texturecolor union
+
+// sky 2
+[
+[-0.1 1.9]
+[1.4 1.9]
+[1.4 1.7]
+[0.44 1.1]
+[0.190909 1.1]
+]
+genpoly z [-0.2 1.9] prism shapetexture
+cyan texturecolor union
+
+// sky3
+[
+[1.4 1.9 -0.9]
+[1.4 1.9 -0.4]
+[1.4 1.1 -0.4]
+[1.4 1.1 -0.9]
+[-0.563271 1.9 -0.9]
+[-0.2 1.9 -0.4]
+[0.211385 1.1 -0.4]
+[-0.151886 1.1 -0.9]
+][
+0 1 edge
+1 2 edge
+2 3 edge
+3 0 edge
+4 5 edge
+5 6 edge
+6 7 edge
+7 4 edge
+0 4 edge
+1 5 edge
+2 6 edge
+3 7 edge
+]
+texture
+cyan texturecolor union
+
+// sky 4
+[
+[1.6 1.9]
+[2.9 1.9]
+[2.9 1.1]
+[2.32 1.1]
+[1.6 1.4]
+]
+genpoly z [1.4 1.9] prism shapetexture
+cyan texturecolor union
+
+w 0 lift
+"picture4" def
+
+noblock4 // so file doesn't error
+

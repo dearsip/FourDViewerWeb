@@ -1,0 +1,6 @@
+"uni4/snub-24cell" include
+
+[0.5 3.5 0.5 -5.5] [X+ Y+ Z+ W+] viewinfo
+
+snub-24cell [0 3 0 0] translate
+

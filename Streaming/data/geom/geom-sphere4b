@@ -1,0 +1,45 @@
+"library" include
+"library3" include
+
+diag4 y+ z- 90 [0.5 0.5 0.5 0.5] altrot [-2 0 -1 0] translate cyan shapecolor "side4" def
+diag4 cyan shapecolor "diag4" def
+
+block4 [0 5 0 0] translate
+
+block4 [-2 3 0 0] translate
+diag4 [-2 4 0 0] translate
+side4 [0 3 0 0] translate
+
+block4 [2 3 0 0] translate
+diag4 x+ z+ 180 [0.5 0 0.5 0.5] altrot [2 4 0 0] translate
+side4 x+ z+ 180 [0.5 0 0.5 0.5] altrot [0 3 0 0] translate
+
+block4 [0 3 -2 0] translate
+diag4 x+ z+ 90 [0.5 0 0.5 0.5] altrot [0 4 -2 0] translate
+side4 x+ z+ 90 [0.5 0 0.5 0.5] altrot [0 3 0 0] translate
+
+block4 [0 3 2 0] translate
+diag4 x+ z- 90 [0.5 0 0.5 0.5] altrot [0 4 2 0] translate
+side4 x+ z- 90 [0.5 0 0.5 0.5] altrot [0 3 0 0] translate
+
+block4 [0 1 0 0] translate
+diag4 [-2 1 0 0] translate y+ x+ 180 [0.5 2 0.5 0.5] altrot
+diag4 x+ z+ 180 [0.5 0 0.5 0.5] altrot [2 1 0 0] translate y+ x+ 180 [0.5 2 0.5 0.5] altrot
+diag4 x+ z+ 90 [0.5 0 0.5 0.5] altrot [0 1 -2 0] translate y+ x+ 180 [0.5 2 0.5 0.5] altrot
+diag4 x+ z- 90 [0.5 0 0.5 0.5] altrot [0 1 2 0] translate y+ x+ 180 [0.5 2 0.5 0.5] altrot
+
+ceil4 yellow shapecolor [1 4 1 0] translate "up" def
+ceil4 yellow shapecolor y+ z+ 90 [0 0 0 0] altrot [1 3 1 0] translate "dn" def
+
+up
+up x+ z+  90 [0.5 0 0.5 0] altrot
+up x+ z+ 180 [0.5 0 0.5 0] altrot
+up x+ z+ 270 [0.5 0 0.5 0] altrot
+
+dn
+dn x+ z+  90 [0.5 0 0.5 0] altrot
+dn x+ z+ 180 [0.5 0 0.5 0] altrot
+dn x+ z+ 270 [0.5 0 0.5 0] altrot
+
+block4 [0 3 0 -4] translate red shapecolor
+

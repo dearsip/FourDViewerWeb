@@ -1,0 +1,18 @@
+"libtrain" include
+
+4 2 0.2 0.15 0 5 orange red true 0.01 newtrack
+[-3 0 0 0] x+ z- "usdlsislssissslsssossoslso" track
+[1 0 -2 2] x- w- "lissso" track
+[1 0 -2 2] x- w- "lsissso" track
+[1 0 -2 2] x- w- "lssissso" track
+[1 0 -2 2] x- w- "lsssisssr" track
+
+1 1 platforms
+
+[
+block4 magenta shapecolor car
+block4 car
+block4 red shapecolor car
+]
+0.1 [0 1 0 0] x- x+ 0.5 TM_ROTATE train
+

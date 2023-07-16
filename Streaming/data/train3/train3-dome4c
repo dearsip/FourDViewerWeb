@@ -1,0 +1,8 @@
+
+[-1 1 0 0] [0 1 1 1] %110010011111 0 true roundshape
+y [0.45 0.55] prism
+[0.5 0.5 0.5 0.5] aligncenter
+#00A000 shapecolor
+
+[0.5 2.5 0.5 0.5] [X+ W+ Z+ Y-] viewinfo
+

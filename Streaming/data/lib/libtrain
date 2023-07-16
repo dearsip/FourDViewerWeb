@@ -1,0 +1,57 @@
+"library" include
+"library2" include
+// don't worry, multiple includes of the same file are ignored
+
+// have to use "1 lencar" for engine, fasthead, fasttail
+
+2 0.5 0 trainpoly z [0 1] prism               magenta shapecolor 1 yellow facecolor "engine3" def
+2 0.5 0 trainpoly z [0 1] prism w [0 1] prism magenta shapecolor 1 yellow facecolor "engine4" def
+
+block3 red shapecolor "caboose3" def
+block4 red shapecolor "caboose4" def
+
+2.5 1 0 trainpoly z [0 1] prism               cyan shapecolor "fasthead3" def
+2.5 1 0 trainpoly z [0 1] prism w [0 1] prism cyan shapecolor "fasthead4" def
+
+2.5 0 1 trainpoly z [0 1] prism               cyan shapecolor "fasttail3" def
+2.5 0 1 trainpoly z [0 1] prism w [0 1] prism cyan shapecolor "fasttail4" def
+
+green "carcolor" def
+
+block3 carcolor shapecolor "boxcar3" def
+block4 carcolor shapecolor "boxcar4" def
+
+block3 [1 0.2 1]   scale carcolor shapecolor "flatcar3" def
+block4 [1 0.2 1 1] scale carcolor shapecolor "flatcar4" def
+
+[0.5 0.5] 0.541196 8 altpoly x [0 1] prism carcolor shapecolor "tankcar3" def
+cubocta                      x [0 1] prism carcolor shapecolor "tankcar4" def
+
+block4 0 gray facecolor 6 yellow facecolor 7 magenta facecolor "helixcar" def
+helixcar [1 0.2 1 1] scale "helixflatcar" def
+
+[0 0] 0.517638 12 altpoly         [0 0]   y [0 1] cone [0.2 0.3 0.2]     scale "tree3" def
+dodeca [-0.5 -0.5 -0.5] translate [0 0 0] y [0 1] cone [0.2 0.3 0.2 0.2] scale "tree4" def
+
+[[0.25 0.75] [0.5 0.75]] rect shapetexture z 0 lift
+copy [1 0 0] translate union "w3" def
+
+[[0.25 0.75] [0.5 0.75] [0.25 0.75]] rect shapetexture z 0 lift
+copy [1 0 0 0] translate union "w4z" def
+
+w4z w+ z+ 90 [0 0 0 0] altrot "w4w" def
+
+block3 [2 1 1] scale
+4 w3 PROJ_NORMAL null facetexture
+5 w3 PROJ_NORMAL null facetexture
+"windowcar3" def
+
+block4 [2 1 1 1] scale
+4 w4z PROJ_NORMAL null facetexture
+5 w4z PROJ_NORMAL null facetexture
+6 w4w PROJ_NORMAL null facetexture
+7 w4w PROJ_NORMAL null facetexture
+"windowcar4" def
+
+windowcar4 0 gray facecolor 6 yellow facecolor 7 magenta facecolor "hwcar" def
+

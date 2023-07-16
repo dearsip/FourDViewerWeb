@@ -1,0 +1,11 @@
+"uni3/snub-dodecahedron" include
+
+[0.5 1.5 0.5 -1.5] [X+ Y+ Z+ W+] viewinfo
+
+snub-dodecahedron
+[-0.5 -0.5 -0.5] translate
+[0.077 dup dup] scale
+[0.5 1.5 0.5] translate
+w [0.268 0.732] prism
+[0.5 1.5 0.5 0.5] aligncenter
+

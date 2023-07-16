@@ -1,0 +1,33 @@
+"libhouse" include
+"sky4" include
+
+wall4x-
+wall4x+
+wall4z-
+wall4z+
+door4w-
+wall4w+
+skylight4
+
+[
+wall4x-
+wall4x+
+wall4z-
+wall4z+
+wall4w-
+wall4w+
+skylight4
+]
+glue [0 3 0 0] translate
+
+[
+wall4x-
+wall4x+
+wall4z-
+wall4z+
+wall4w-
+wall4w+
+ceiling4
+]
+glue [0 6 0 0] translate
+

@@ -1,0 +1,32 @@
+"library" include
+"library4" include
+
+ihexadeca
+8 red facecolor
+9 red facecolor
+10 red facecolor
+11 red facecolor
+12 red facecolor
+13 red facecolor
+14 red facecolor
+15 red facecolor
+"piece1" def
+
+rpenta
+1 red facecolor
+2 red facecolor
+3 red facecolor
+4 red facecolor
+"piece2" def
+
+piece1
+
+piece2
+piece2 x- z- 180 rotate
+piece2 y+ x+ 90 rotate x- z- 90 rotate
+piece2 y+ x+ 90 rotate x- z- 270 rotate
+piece2 w+ x+ 90 rotate x- z- 90 rotate
+piece2 w+ x+ 90 rotate x- z- 270 rotate
+piece2 w+ x+ 90 rotate y+ x+ 90 rotate
+piece2 w+ x+ 90 rotate y+ x+ 90 rotate x- z- 180 rotate
+

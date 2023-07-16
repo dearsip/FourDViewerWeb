@@ -1,0 +1,106 @@
+"library6" include
+
+[0.5 3.5 0.5 -3.5] [X+ Y+ Z+ W+] viewinfo
+
+the120cell [0 3 0 0] translate
+
+gray shapecolor
+
+56 yellow facecolor // south mid latitude
+59 yellow facecolor
+62 yellow facecolor
+63 yellow facecolor
+68 yellow facecolor
+69 yellow facecolor
+73 yellow facecolor
+74 yellow facecolor
+79 yellow facecolor
+80 yellow facecolor
+92 yellow facecolor
+93 yellow facecolor
+98 yellow facecolor
+99 yellow facecolor
+103 yellow facecolor
+104 yellow facecolor
+109 yellow facecolor
+110 yellow facecolor
+113 yellow facecolor
+116 yellow facecolor
+
+0 orange facecolor // north mid latitude
+3 orange facecolor
+6 orange facecolor
+7 orange facecolor
+12 orange facecolor
+13 orange facecolor
+17 orange facecolor
+18 orange facecolor
+20 orange facecolor
+21 orange facecolor
+31 orange facecolor
+32 orange facecolor
+34 orange facecolor
+35 orange facecolor
+39 orange facecolor
+40 orange facecolor
+45 orange facecolor
+46 orange facecolor
+49 orange facecolor
+52 orange facecolor
+
+115 cyan facecolor // south low latitude
+57 cyan facecolor
+114 cyan facecolor
+58 cyan facecolor
+111 cyan facecolor
+61 cyan facecolor
+102 cyan facecolor
+70 cyan facecolor
+91 cyan facecolor
+81 cyan facecolor
+90 cyan facecolor
+82 cyan facecolor
+
+1 magenta facecolor // north low latitude
+51 magenta facecolor
+2 magenta facecolor
+50 magenta facecolor
+5 magenta facecolor
+47 magenta facecolor
+14 magenta facecolor
+38 magenta facecolor
+22 magenta facecolor
+30 magenta facecolor
+23 magenta facecolor
+29 magenta facecolor
+
+107 red facecolor // south arctic
+65 red facecolor
+106 red facecolor
+66 red facecolor
+100 red facecolor
+72 red facecolor
+97 red facecolor
+33 red facecolor
+89 red facecolor
+83 red facecolor
+88 red facecolor
+84 red facecolor
+
+9 green facecolor // north arctic
+43 green facecolor
+10 green facecolor
+42 green facecolor
+16 green facecolor
+36 green facecolor
+19 green facecolor
+75 green facecolor
+24 green facecolor
+28 green facecolor
+25 green facecolor
+27 green facecolor
+
+87 white facecolor // south
+
+26 white facecolor // north
+

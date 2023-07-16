@@ -1,0 +1,6 @@
+"uni4/rectified-5cell" include
+
+[0.5 1.5 0.5 -2.5] [X+ Y+ Z+ W+] viewinfo
+
+rectified-5cell [0 1 0 0] translate
+

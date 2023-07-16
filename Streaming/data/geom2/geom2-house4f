@@ -1,0 +1,21 @@
+"libhouse" include
+"libtrain" include
+"sky4" include
+
+room4t x- w- 90 p4 altrot x+ z+ 90 p4 altrot
+room4c x- w- 90 p4 altrot [0 0 0 5] translate cyan shapecolor
+room4c [5 0 0 5] translate yellow shapecolor
+room4c x- w+ 90 p4 altrot x- z+ 90 p4 altrot [5 0 0 0] translate magenta shapecolor
+room4c x- w+ 90 p4 altrot x- z- 90 p4 altrot [5 0 5 0] translate #800080 shapecolor
+room4c [5 0 5 5] translate #808000 shapecolor
+room4c x- w- 90 p4 altrot [0 0 5 5] translate #008080 shapecolor
+room4c x- w+ 90 p4 altrot x- z- 90 p4 altrot [0 0 5 0] translate #008000 shapecolor
+
+4 2 0.2 0.15 0 5 orange red true 0.01 newtrack
+[0 0 0 -5] w+ z- "ss sssss ssrss ssrss ssoss ssoss ssrss ssrss ssoss sso" track
+
+[
+boxcar4 car
+]
+0.1 [0 0 0 -4] w- w+ 0.5 TM_ROTATE train
+

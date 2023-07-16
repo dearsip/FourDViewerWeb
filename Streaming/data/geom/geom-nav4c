@@ -1,0 +1,78 @@
+"libnav" include
+
+nav4 "marker" def
+ 2 "p" def
+-2 "n" def
+
+marker cx+ shapecolor [p 0 0 0] translate
+y+ x- 90 rotate
+0 cy- facecolor
+1 cy+ facecolor
+2 cz- facecolor
+3 cz+ facecolor
+4 cf- facecolor
+5 cf+ facecolor
+
+marker cx- shapecolor [n 0 0 0] translate
+y+ x+ 90 rotate
+0 cy+ facecolor
+1 cy- facecolor
+2 cz- facecolor
+3 cz+ facecolor
+4 cf- facecolor
+5 cf+ facecolor
+
+marker cy+ shapecolor [0 p 0 0] translate
+y+ x- 180 rotate
+0 cx+ facecolor
+1 cx- facecolor
+2 cz- facecolor
+3 cz+ facecolor
+4 cf- facecolor
+5 cf+ facecolor
+
+marker cy- shapecolor [0 n 0 0] translate
+// no rotate
+0 cx- facecolor
+1 cx+ facecolor
+2 cz- facecolor
+3 cz+ facecolor
+4 cf- facecolor
+5 cf+ facecolor
+
+marker cz+ shapecolor [0 0 p 0] translate
+y+ z- 90 rotate
+0 cx- facecolor
+1 cx+ facecolor
+2 cy- facecolor
+3 cy+ facecolor
+4 cf- facecolor
+5 cf+ facecolor
+
+marker cz- shapecolor [0 0 n 0] translate
+y+ z+ 90 rotate
+0 cx- facecolor
+1 cx+ facecolor
+2 cy+ facecolor
+3 cy- facecolor
+4 cf- facecolor
+5 cf+ facecolor
+
+marker cf+ shapecolor [0 0 0 p] translate
+y+ w- 90 rotate
+0 cx- facecolor
+1 cx+ facecolor
+2 cz- facecolor
+3 cz+ facecolor
+4 cy- facecolor
+5 cy+ facecolor
+
+marker cf- shapecolor [0 0 0 n] translate
+y+ w+ 90 rotate
+0 cx- facecolor
+1 cx+ facecolor
+2 cz- facecolor
+3 cz+ facecolor
+4 cy+ facecolor
+5 cy- facecolor
+

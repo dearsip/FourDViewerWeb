@@ -1,0 +1,88 @@
+"library" include
+"library3" include
+
+//center level
+block4	[	0	7	0	3	]	translate	green	shapecolor
+block4	[	0	7	3	0	]	translate	yellow	shapecolor
+block4	[	3	7	0	0	]	translate	red	shapecolor
+block4	[	1.73	7	1.73	1.73	]	translate	orange	shapecolor
+block4	[	0	7	0	-3	]	translate	green	shapecolor
+block4	[	0	7	-3	0	]	translate	yellow	shapecolor
+block4	[	-3	7	0	0	]	translate	red	shapecolor
+block4	[	-1.73	7	1.73	1.73	]	translate	orange	shapecolor
+block4	[	1.73	7	-1.73	1.73	]	translate	orange	shapecolor
+block4	[	1.73	7	1.73	-1.73	]	translate	orange	shapecolor
+block4	[	1.73	7	-1.73	-1.73	]	translate	orange	shapecolor
+block4	[	-1.73	7	-1.73	-1.73	]	translate	orange	shapecolor
+block4	[	-1.73	7	1.73	-1.73	]	translate	orange	shapecolor
+block4	[	-1.73	7	-1.73	1.73	]	translate	orange	shapecolor
+
+//one level below center
+block4	[	2.83	6	0	0	]	translate	red	shapecolor
+block4	[	0	6	2.83	0	]	translate	yellow	shapecolor
+block4	[	0	6	0	2.83	]	translate	green	shapecolor
+block4	[	1.63	6	1.63	1.63	]	translate	magenta	shapecolor
+block4	[	-2.83	6	0	0	]	translate	red	shapecolor
+block4	[	0	6	-2.83	0	]	translate	yellow	shapecolor
+block4	[	0	6	0	-2.83	]	translate	green	shapecolor
+block4	[	-1.63	6	1.63	1.63	]	translate	magenta	shapecolor
+block4	[	1.63	6	-1.63	1.63	]	translate	magenta	shapecolor
+block4	[	1.63	6	1.63	-1.63	]	translate	magenta	shapecolor
+block4	[	1.63	6	-1.63	-1.63	]	translate	magenta	shapecolor
+block4	[	-1.63	6	-1.63	-1.63	]	translate	magenta	shapecolor
+block4	[	-1.63	6	1.63	-1.63	]	translate	magenta	shapecolor
+block4	[	-1.63	6	-1.63	1.63	]	translate	magenta	shapecolor
+
+//two levels below center
+block4	[	2.24	5	0	0	]	translate	red	shapecolor
+block4	[	-2.24	5	0	0	]	translate	red	shapecolor
+block4	[	0	5	-2.24	0	]	translate	yellow	shapecolor
+block4	[	0	5	2.24	0	]	translate	yellow	shapecolor
+block4	[	0	5	0	2.24	]	translate	green	shapecolor
+block4	[	0	5	0	-2.24	]	translate	green	shapecolor
+block4	[	-1.29	5	1.29	1.29	]	translate	cyan shapecolor
+block4	[	1.29	5	-1.29	1.29	]	translate	cyan shapecolor
+block4	[	1.29	5	1.29	-1.29	]	translate	cyan shapecolor
+block4	[	1.29	5	-1.29	-1.29	]	translate	cyan shapecolor
+block4	[	-1.29	5	-1.29	-1.29	]	translate	cyan shapecolor
+block4	[	-1.29	5	1.29	-1.29	]	translate	cyan shapecolor
+block4	[	-1.29	5	-1.29	1.29	]	translate	cyan shapecolor
+block4	[	1.29	5	1.29	1.29	]	translate	cyan shapecolor
+
+//three levels below center
+block4 [0	4	0	0] translate white shapecolor
+
+//one level above center
+block4	[	2.83	8	0	0	]	translate	red	shapecolor
+block4	[	0	8	2.83	0	]	translate	yellow shapecolor
+block4	[	0	8	0	2.83	]	translate	green	shapecolor
+block4	[	1.63	8	1.63	1.63	]	translate	blue	shapecolor
+block4	[	-2.83	8	0	0	]	translate	red	shapecolor
+block4	[	0	8	-2.83	0	]	translate	yellow	shapecolor
+block4	[	0	8	0	-2.83	]	translate	green	shapecolor
+block4	[	-1.63	8	1.63	1.63	]	translate	blue shapecolor
+block4	[	1.63	8	-1.63	1.63	]	translate	blue shapecolor
+block4	[	1.63	8	1.63	-1.63	]	translate	blue shapecolor
+block4	[	1.63	8	-1.63	-1.63	]	translate	blue shapecolor
+block4	[	-1.63	8	-1.63	-1.63	]	translate	blue shapecolor
+block4	[	-1.63	8	1.63	-1.63	]	translate	blue shapecolor
+block4	[	-1.63	8	-1.63	1.63	]	translate	blue shapecolor
+
+//two levels above center
+block4	[	2.24	9	0	0	]	translate	red	shapecolor
+block4	[	-2.24	9	0	0	]	translate	red	shapecolor
+block4	[	0	9	-2.24	0	]	translate	yellow	shapecolor
+block4	[	0	9	2.24	0	]	translate	yellow	shapecolor
+block4	[	0	9	0	2.24	]	translate	green	shapecolor
+block4	[	0	9	0	-2.24	]	translate	green	shapecolor
+block4	[	-1.29	9	1.29	1.29	]	translate	gray shapecolor
+block4	[	1.29	9	-1.29	1.29	]	translate	gray shapecolor
+block4	[	1.29	9	1.29	-1.29	]	translate	gray shapecolor
+block4	[	1.29	9	-1.29	-1.29	]	translate	gray shapecolor
+block4	[	-1.29	9	-1.29	-1.29	]	translate	gray shapecolor
+block4	[	-1.29	9	1.29	-1.29	]	translate	gray shapecolor
+block4	[	-1.29	9	-1.29	1.29	]	translate	gray shapecolor
+block4	[	1.29	9	1.29	1.29	]	translate	gray shapecolor
+
+//three levels above center
+block4 [0	10	0	0] translate white shapecolor

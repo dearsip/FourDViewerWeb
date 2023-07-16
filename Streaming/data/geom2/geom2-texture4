@@ -1,0 +1,9 @@
+"library" include
+"library2" include
+
+block4
+6 red facecolor
+6
+cubocta [0.8 0.8 0.8] scale [0.1 0.1 0.1] translate shapetexture w 0 lift
+PROJ_NONE null facetexture
+

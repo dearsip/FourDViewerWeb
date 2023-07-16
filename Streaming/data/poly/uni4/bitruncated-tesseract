@@ -1,0 +1,6 @@
+"uni4/bitruncated-tesseract" include
+
+[0.5 3.5 0.5 -5.5] [X+ Y+ Z+ W+] viewinfo
+
+bitruncated-tesseract [0 3 0 0] translate
+

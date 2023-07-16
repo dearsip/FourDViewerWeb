@@ -1,0 +1,11 @@
+"uni3/cuboctahedron" include
+
+[0.5 1.5 0.5 -1.5] [X+ Y+ Z+ W+] viewinfo
+
+cuboctahedron
+[-0.5 -0.5 -0.5] translate
+[0.5 dup dup] scale
+[0.5 1.5 0.5] translate
+w [0 1] prism
+[0.5 1.5 0.5 0.5] aligncenter
+

@@ -1,0 +1,5 @@
+"library2" include
+
+dodeca [0.2 0.2 0.2 0.2] scale [0.4 0.4 0.4 0] translate y [0 0.3] prism brown shapecolor
+dodeca [0.5 0.5 0.5] y [0.3 1.8] cone
+

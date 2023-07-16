@@ -1,0 +1,11 @@
+"uni3/icosidodecahedron" include
+
+[0.5 1.5 0.5 -1.5] [X+ Y+ Z+ W+] viewinfo
+
+icosidodecahedron
+[-0.5 -0.5 -0.5] translate
+[0.618 dup dup] scale
+[0.5 1.5 0.5] translate
+w [0.191 0.809] prism
+[0.5 1.5 0.5 0.5] aligncenter
+

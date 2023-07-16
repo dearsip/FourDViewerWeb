@@ -1,0 +1,5 @@
+"library" include
+
+block4
+block4 [0 0 0 2] translate red shapecolor
+

@@ -1,0 +1,6 @@
+"uni4/omnitruncated-tesseract" include
+
+[0.5 5.5 0.5 -10.5] [X+ Y+ Z+ W+] viewinfo
+
+omnitruncated-tesseract [0 5 0 0] translate
+

@@ -1,0 +1,8 @@
+
+[0.5 1.5 0.5 -2.5] [X+ Y+ Z+ W+] viewinfo
+
+[0.5 1.5] 1 5 z [0 1] altpoly-antiprism
+x+ y- 90 rotate
+[0.5 1.5 0.5] aligncenter
+z [0 1] prism
+

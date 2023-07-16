@@ -1,0 +1,42 @@
+// library---------------------------------
+
+[[0 1] [0 1] [0 1] [0 1]] rect "block4" def
+
+// sky4------------------------------------
+
+16 0 meshring4 "mesh" def
+
+mesh brown 0 heightconst null horizon
+mesh brown 12 0.4 heightpower null horizon
+
+mesh
+[magenta #800080 null null gray white cyan #008080] colorblend
+[0 1.2 1.2 1.56 1.56 2.09 2.09 3]
+yellow
+[0 0.333 0.667 1]
+5 index sky
+
+mesh yellow 3 sun
+
+// ----------------------------------------
+
+nomat
+
+blue 3 true 0 1 grid4
+
+blue 15 true -2 5 grid4
+
+[0.5 2.5 0.5 0.5] [X+ Y+ Z+ W+] viewinfo
+
+[0 2 0 12.5] finishinfo
+
+FOOT footinfo
+
+block4 [2 0.1 2 2] scale [-0.5 2 -0.5 -0.5] translate white shapecolor "floor4" def
+
+floor4
+floor4 [0 0 0 2.5] translate
+floor4 [1.5 0 0 5] translate
+floor4 [0 0 0 7.5] translate
+floor4 [0 0 1.5 10] translate
+floor4 [0 0 0 12.5] translate

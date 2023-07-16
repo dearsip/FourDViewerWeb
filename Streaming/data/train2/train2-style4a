@@ -1,0 +1,19 @@
+"libtrain" include
+
+4 2 0.2 0.15 0 5 orange red true 0.01 newtrack
+[0 0 0 -2] x+ z- "slulsssldlss" track
+[0 0 0 -2] x+ z- "sluslsssls" track
+
+PS_SQUARE platformstyle
+1 1 platforms
+
+[-1.3 1 0.5 2.3] pylon
+[2.3 1 0.5 2.3] pylon
+
+[
+block4 magenta shapecolor car
+block4 car
+block4 red shapecolor car
+]
+0.1 [0 0 0 -2] x- x+ 0.5 TM_ROTATE train
+

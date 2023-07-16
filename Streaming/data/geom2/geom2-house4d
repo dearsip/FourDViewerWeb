@@ -1,0 +1,28 @@
+"libhouse" include
+"libnav" include
+"sky4" include
+
+room4h w- x- 90 p4 altrot [10 0 0 0] translate cx+ shapecolor
+room4h w- x+ 90 p4 altrot [-10 0 0 0] translate cx- shapecolor
+room4h w- z- 90 p4 altrot [0 0 10 0] translate cz+ shapecolor
+room4h w- z+ 90 p4 altrot [0 0 -10 0] translate cz- shapecolor
+room4h [0 0 0 10] translate cf+ shapecolor
+room4s x- w- 90 p4 altrot [0 0 0 -10] translate cf- shapecolor
+
+block4 [0 0 0 -12] translate cf- shapecolor
+
+corridor4 [5 0 0 0] translate
+corridor4 [-5 0 0 0] translate
+corridor4 x- z- 90 p4 altrot [0 0 5 0] translate
+corridor4 x- z- 90 p4 altrot [0 0 -5 0] translate
+corridor4 x- w- 90 p4 altrot [0 0 0 5] translate
+corridor4 x- w- 90 p4 altrot [0 0 0 -5] translate
+
+door4x-
+door4x+
+door4z-
+door4z+
+door4w-
+door4w+
+ceiling4
+

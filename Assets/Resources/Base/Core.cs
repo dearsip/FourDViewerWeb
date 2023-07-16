@@ -881,7 +881,7 @@ public class Core : MonoBehaviour
     private bool opened;
     IEnumerator ShowLoadDialogCoroutine()
     {
-        yield return FileBrowser.WaitForLoadDialog(FileBrowser.PickMode.Files, false, opened ? null : UnityEngine.Application.persistentDataPath, "Load File", "Load");
+        yield return FileBrowser.WaitForLoadDialog(FileBrowser.PickMode.Files, false, opened ? null : UnityEngine.Application.streamingAssetsPath, "Load File", "Load");
         opened = true;
 
         Debug.Log("LoadFile " + (FileBrowser.Success ? "successful: " + Path.GetFileName(FileBrowser.Result[0]) : "failed"));
@@ -987,7 +987,7 @@ public class Core : MonoBehaviour
         // read file
 
         Context c = DefaultContext.create();
-        c.libDirs.Add(UnityEngine.Application.persistentDataPath + Path.DirectorySeparatorChar + "data" + Path.DirectorySeparatorChar + "lib");
+        c.libDirs.Add(UnityEngine.Application.streamingAssetsPath + Path.DirectorySeparatorChar + "data" + Path.DirectorySeparatorChar + "lib");
         Language.include(c, file);
 
         // build the model

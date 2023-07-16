@@ -1,0 +1,54 @@
+"library5" include
+
+[0.5 1.5 0.5 -2.5] [X+ Y+ Z+ W+] viewinfo
+
+p5piece [0 1 0 0] translate
+0 red facecolor
+2 red facecolor
+4 red facecolor
+6 red facecolor
+"piece" def
+
+piece
+
+1 4 r mul div "pk" def
+pk neg "nk" def
+
+piece [0.5 1.5 0.5 0.5]
+[
+[0.75 -0.25 -0.25 pk]
+[-0.25 0.75 -0.25 pk]
+[-0.25 -0.25 0.75 pk]
+[pk pk pk -0.25]
+]
+place
+
+piece [0.5 1.5 0.5 0.5]
+[
+[0.75 -0.25 0.25 nk]
+[-0.25 0.75 0.25 nk]
+[0.25 0.25 0.75 pk]
+[nk nk pk -0.25]
+]
+place
+
+piece [0.5 1.5 0.5 0.5]
+[
+[0.75 0.25 -0.25 nk]
+[0.25 0.75 0.25 pk]
+[-0.25 0.25 0.75 nk]
+[nk pk nk -0.25]
+]
+place
+
+piece [0.5 1.5 0.5 0.5]
+[
+[0.75 0.25 0.25 pk]
+[0.25 0.75 -0.25 nk]
+[0.25 -0.25 0.75 nk]
+[pk nk nk -0.25]
+]
+place
+
+// calculated using five-dimensional rotations!
+

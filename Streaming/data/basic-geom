@@ -1,0 +1,13 @@
+"library" include
+
+block3 red shapecolor
+     3 cyan facecolor
+     4 cyan facecolor
+z [0 1] prism
+
+[0.5 0.5] 0.5 7 polygon y [0 1] prism [0 1 0] translate
+z [0 1] prism
+
+block3 [-2 0 0] translate magenta shapecolor
+z [0 1] prism
+

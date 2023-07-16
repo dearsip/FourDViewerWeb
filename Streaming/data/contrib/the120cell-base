@@ -1,0 +1,6 @@
+"library6" include
+
+[0.5 3.5 0.5 -3.5] [X+ Y+ Z+ W+] viewinfo
+
+the120cell [0 3 0 0] translate
+

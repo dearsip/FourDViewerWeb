@@ -1,0 +1,17 @@
+"libtrain" include
+
+4 2 0.2 0.15 0 5 orange red true 0.01 newtrack
+[-1 1 1 0] x+ z- "sisisisi" track
+[-1 1 1 0] x+ z- "iiiisisisiioi" track
+[-1 1 1 0] x+ z- "siilllilslslloool" track
+
+PS_ROUND platformstyle
+1 1 platforms
+
+[
+helixcar car
+helixcar car
+helixcar car
+]
+0.1 [0 1 1 0] x- x+ 1 TM_ROTATE train
+

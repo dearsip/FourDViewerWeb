@@ -1,0 +1,9 @@
+"library" include
+
+block4 [5 1 1 5] scale [-2 2 0 -2] translate
+
+block4 [1 5 2 1] scale [0 0 1 0] translate
+block4 [1 5 2 1] scale [0 0 -2 0] translate
+block4 [1 2 1 1] scale [0 0 0 0] translate
+block4 [1 2 1 1] scale [0 3 0 0] translate
+

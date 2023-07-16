@@ -1,0 +1,4 @@
+// no library
+
+[0.5 0.5] 0.5 5 polygon y [0 1] prism [0.5 0.5 0.5] y [1 2] cone 7 red facecolor
+

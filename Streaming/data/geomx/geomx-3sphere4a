@@ -1,0 +1,132 @@
+"library" include
+"library3" include
+
+// first get all the pieces in standard positions
+// that fit into the sphere.
+// need to rotate diag4 so it extends from 0 to 2.
+
+// best location for viewing, before lifting up
+/*
+block4 [0 2 0 0] translate
+diag4 x- y+ 90 [1 1 0 0] altrot [1 1 0 0] translate cyan shapecolor
+ceil4 [1 1 1 0] translate yellow shapecolor
+extra4 [1 1 1 1] translate magenta shapecolor
+*/
+
+block4 [0 5 0 0] translate "b" def
+diag4 x- y+ 90 [1 1 0 0] altrot [1 4 0 0] translate cyan shapecolor "d" def
+ceil4 [1 4 1 0] translate yellow shapecolor "c" def
+extra4 [1 4 1 1] translate magenta shapecolor "e" def
+
+[0.5 3.5 0.5 0.5] "p" def // sphere center point
+
+// eight blocks at the compass points
+
+b
+b y+ x+ 180 p altrot
+b y+ x+ 90 p altrot
+b y+ x- 90 p altrot
+b y+ z+ 90 p altrot
+b y+ z- 90 p altrot
+b y+ w+ 90 p altrot
+b y+ w- 90 p altrot
+
+// six diagonals from each of the eight (shared)
+
+// y+ diagonals
+d
+d x+ z+ 180 p altrot
+d x+ z+ 90 p altrot
+d x+ z- 90 p altrot
+d x+ w+ 90 p altrot
+d x+ w- 90 p altrot
+
+// y- diagonals
+d y+ z+ 180 p altrot "d2" def
+d2
+d2 x+ z+ 180 p altrot
+d2 x+ z+ 90 p altrot
+d2 x+ z- 90 p altrot
+d2 x+ w+ 90 p altrot
+d2 x+ w- 90 p altrot
+
+// y=0 z+ diagonals
+d y+ z+ 90 p altrot "d3" def
+d3
+d3 x+ w+ 180 p altrot
+d3 x+ w+ 90 p altrot
+d3 x+ w- 90 p altrot
+
+// y=0 z- diagonals
+d y+ z- 90 p altrot "d4" def
+d4
+d4 x+ w+ 180 p altrot
+d4 x+ w+ 90 p altrot
+d4 x+ w- 90 p altrot
+
+// y=0 z=0 diagonals
+d y+ w+ 90 p altrot "d5" def
+d5
+d5 x+ w+ 90 p altrot
+d5 x+ w+ 180 p altrot
+d5 x+ w+ 270 p altrot
+
+// thirty-two ceiling tiles
+
+// w=0 y+
+c
+c x+ z+ 90 p altrot
+c x+ z+ 180 p altrot
+c x+ z+ 270 p altrot
+
+// w=0 y-
+c x+ y- 90 p altrot "c2" def
+c2
+c2 x+ z+ 90 p altrot
+c2 x+ z+ 180 p altrot
+c2 x+ z+ 270 p altrot
+
+// y=0 w+
+c y+ w+ 90 p altrot "c3" def
+c3
+c3 x+ z+ 90 p altrot
+c3 x+ z+ 180 p altrot
+c3 x+ z+ 270 p altrot
+
+// y=0 w-
+c y+ w+ 90 p altrot x+ w- 90 p altrot "c4" def
+c4
+c4 x+ z+ 90 p altrot
+c4 x+ z+ 180 p altrot
+c4 x+ z+ 270 p altrot
+
+// x=0 z+
+c x+ w+ 90 p altrot "c4" def
+c4
+c4 y+ w+ 90 p altrot
+c4 y+ w+ 180 p altrot
+c4 y+ w+ 270 p altrot
+
+// x=0 z-
+c x+ w+ 90 p altrot y+ z- 90 p altrot "c5" def
+c5
+c5 y+ w+ 90 p altrot
+c5 y+ w+ 180 p altrot
+c5 y+ w+ 270 p altrot
+
+// z=0 x+
+c z+ w+ 90 p altrot "c6" def
+c6
+c6 y+ w+ 90 p altrot
+c6 y+ w+ 180 p altrot
+c6 y+ w+ 270 p altrot
+
+// z=0 x-
+c z+ w+ 90 p altrot y+ x- 90 p altrot "c7" def
+c7
+c7 y+ w+ 90 p altrot
+c7 y+ w+ 180 p altrot
+c7 y+ w+ 270 p altrot
+
+block4 [0 3 0 -4] translate red shapecolor
+

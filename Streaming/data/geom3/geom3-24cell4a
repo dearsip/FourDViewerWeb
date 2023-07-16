@@ -1,0 +1,6 @@
+"library5" include
+
+[0.5 1.5 0.5 -1.5] [X+ Y+ Z+ W+] viewinfo
+
+r24cell [0 1 0 0] translate
+

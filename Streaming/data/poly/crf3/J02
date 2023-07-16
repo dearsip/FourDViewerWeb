@@ -1,0 +1,7 @@
+"crf3/J02" include
+
+[0.5 2.5 0.5 -3.5] [X+ Y+ Z+ W+] viewinfo
+
+J02 [0 2 0] translate
+z [0 1] prism
+

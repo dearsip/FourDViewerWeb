@@ -1,0 +1,6 @@
+"uni4/truncated-24cell" include
+
+[0.5 4.5 0.5 -8.5] [X+ Y+ Z+ W+] viewinfo
+
+truncated-24cell [0 4 0 0] translate
+

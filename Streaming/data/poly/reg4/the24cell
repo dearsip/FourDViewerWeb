@@ -1,0 +1,6 @@
+"reg4/the24cell" include
+
+[0.5 2.5 0.5 -3.5] [X+ Y+ Z+ W+] viewinfo
+
+the24cell [0 2 0 0] translate
+

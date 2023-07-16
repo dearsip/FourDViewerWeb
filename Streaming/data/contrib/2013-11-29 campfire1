@@ -1,0 +1,121 @@
+"library" include
+"library3" include
+
+block4	[	0	7	0	0] translate white shapecolor //apex
+
+//cornerstones; red ones on user's initial ana & kata axis
+block4	[	4	0	0	0] translate yellow shapecolor
+block4	[	-4	0	0	0] translate yellow shapecolor
+block4	[	0	0	4	0] translate red shapecolor
+block4	[	0	0	-4	0] translate red shapecolor
+block4	[	0	0	0	4] translate yellow shapecolor
+block4	[	0	0	0	-4] translate yellow shapecolor
+
+//supplemental cornerstones
+block4	[	2.83	0	0	2.83] translate blue shapecolor
+block4	[	-2.83	0	0	2.83] translate blue shapecolor
+block4	[	2.83	0	2.83	0] translate blue shapecolor
+block4	[	-2.83	0	-2.83	0] translate blue shapecolor
+block4	[	2.83	0	0	2.83] translate blue shapecolor
+block4	[	2.83	0	0	-2.83] translate blue shapecolor
+
+//below apex
+block4	[	.7	6	.7	.7	]	translate red shapecolor
+block4	[	.7	6	.7	-.7	]	translate green shapecolor
+block4	[	.7	6	-.7	.7	]	translate blue shapecolor
+block4	[	.7	6	-.5	-.5	]	translate yellow shapecolor
+block4	[	-.7	6	.7	.7	]	translate orange shapecolor
+block4	[	-.7	6	.7	-.7	]	translate yellow shapecolor
+block4	[	-.7	6	-.7	.7	]	translate magenta shapecolor
+block4	[	-.7	6	-.7	-.7	]	translate #800080 shapecolor
+
+//first level above cornerstones
+block4	[	3.5	1	0	0] translate yellow shapecolor
+block4	[	-3.5	1	0	0] translate yellow shapecolor
+block4	[	0	1	3.5	0] translate yellow shapecolor
+block4	[	0	1	-3.5	0] translate yellow shapecolor
+block4	[	0	1	0	3.5] translate yellow shapecolor
+block4	[	0	1	0	-3.5] translate yellow shapecolor
+block4	[	3.5	2	0	0] translate yellow shapecolor
+block4	[	-3.5	2	0	0] translate yellow shapecolor
+block4	[	0	2	3.5	0] translate yellow shapecolor
+block4	[	0	2	-3.5	0] translate yellow shapecolor
+block4	[	0	2	0	3.5] translate yellow shapecolor
+block4	[	0	2	0	-3.5] translate yellow shapecolor
+
+block4	[	2.33	1	0	2.33] translate yellow shapecolor
+block4	[	-2.33	1	0	2.33] translate orange shapecolor
+block4	[	2.33	1	2.33	0] translate yellow shapecolor
+block4	[	-2.33	1	-2.33	0] translate yellow shapecolor
+block4	[	2.33	1	0	2.33] translate yellow shapecolor
+block4	[	2.33	1	0	-2.33] translate yellow shapecolor
+
+block4	[	2.33	2	0	2.33] translate blue shapecolor
+block4	[	-2.33	2	0	2.33] translate yellow shapecolor
+block4	[	2.33	2	2.33	0] translate orange shapecolor
+block4	[	-2.33	2	-2.33	0] translate yellow shapecolor
+block4	[	2.33	2	0	2.33] translate yellow shapecolor
+block4	[	2.33	2	0	-2.33] translate orange shapecolor
+
+
+//second level above cornerstones
+block4	[	3.25	3	0	0] translate orange shapecolor
+block4	[	-3.25	3	0	0] translate orange shapecolor
+block4	[	0	3	3.25	0] translate orange shapecolor
+block4	[	0	3	-3.25	0] translate orange shapecolor
+block4	[	0	3	0	3.25] translate orange shapecolor
+block4	[	0	3	0	-3.25] translate orange shapecolor
+
+block4	[	2	3	0	2] translate yellow shapecolor
+block4	[	-2	3	0	2] translate orange shapecolor
+block4	[	2	3	2	0] translate orange shapecolor
+block4	[	-2	3	-2	0] translate yellow shapecolor
+block4	[	2	3	0	2] translate yellow shapecolor
+block4	[	2	3	0	-2] translate yellow shapecolor
+
+//third level above cornerstones
+block4	[	3	4	0	0] translate yellow shapecolor
+block4	[	-3	4	0	0] translate orange shapecolor
+block4	[	0	4	3	0] translate yellow shapecolor
+block4	[	0	4	-3	0] translate orange shapecolor
+block4	[	0	4	0	3] translate yellow shapecolor
+block4	[	0	4	0	-3] translate orange shapecolor
+
+block4	[	1.75	4	0	1.75] translate yellow shapecolor
+block4	[	-1.75	4	0	1.75] translate yellow shapecolor
+block4	[	1.75	4	1.75	0] translate yellow shapecolor
+block4	[	-1.75	4	-1.75	0] translate orange shapecolor
+block4	[	1.75	4	0	1.75] translate yellow shapecolor
+block4	[	1.75	4	0	-1.75] translate yellow shapecolor
+
+//fourth level above cornerstones
+block4	[	2.5	5	0	0] translate orange shapecolor
+block4	[	-2.5	5	0	0] translate yellow shapecolor
+block4	[	0	5	2.5	0] translate orange shapecolor
+block4	[	0	5	-2.5	0] translate yellow shapecolor
+block4	[	0	5	0	2.5] translate orange shapecolor
+block4	[	0	5	0	-2.5] translate yellow shapecolor
+
+block4	[	1.25	5	0	1.25] translate yellow shapecolor
+block4	[	-1.25	5	0	1.25] translate yellow shapecolor
+block4	[	1.25	5	1.25	0] translate red shapecolor
+block4	[	-1.25	5	-1.25	0] translate yellow shapecolor
+block4	[	1.25	5	0	1.25] translate orange shapecolor
+block4	[	1.25	5	0	-1.25] translate yellow shapecolor
+
+//fifth level above cornerstones
+block4	[	2	6	0	0] translate yellow shapecolor
+block4	[	-2 	6	0	0] translate orange shapecolor
+block4	[	0	6	2	0] translate yellow shapecolor
+block4	[	0	6	-2	0] translate orange shapecolor
+block4	[	0	6	0	2] translate yellow shapecolor
+block4	[	0	6	0	-2] translate orange shapecolor
+
+  //white connectors
+block4	[	2	6	0	0] translate white shapecolor
+block4	[	-2 6	0	0] translate white shapecolor
+block4	[	0	6	2	0] translate white shapecolor
+block4	[	0	6	-2	0] translate white shapecolor
+block4	[	0	6	0	2] translate white shapecolor
+block4	[	0	6	0	-2] translate white shapecolor
+

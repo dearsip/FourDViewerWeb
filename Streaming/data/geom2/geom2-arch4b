@@ -1,0 +1,32 @@
+"library" include
+"library2" include
+"library3" include
+
+block4 "b" def
+half4 cyan shapecolor "d" def
+wedge4 yellow shapecolor "c" def
+
+diag4 cyan shapecolor "diag4" def
+ceil4 yellow shapecolor "ceil4" def
+
+b [0 1 0 0] translate
+block4 [0 2 0 0] translate
+
+[
+b [1 0 0 0] translate
+d [1 1 0 0] translate
+c [1 1 1 0] translate
+d [1 0 1 0] translate y+ z+ 90 rotate
+block4 [-2 0 0 0] translate
+diag4 [-2 1 0 0] translate
+ceil4 x+ z+ 180 rotate [-1 1 -1 0] translate
+diag4 y+ z- 90 [0.5 0.5 0.5 0.5] altrot [-2 0 -1 0] translate
+]
+glue
+copy
+x+ z+ 90 [0.5 0.5 0.5 0.5] altrot
+copy
+x+ z+ 90 [0.5 0.5 0.5 0.5] altrot
+copy
+x+ z+ 90 [0.5 0.5 0.5 0.5] altrot
+

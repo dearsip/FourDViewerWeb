@@ -1,0 +1,6 @@
+"library" include
+"library2" include
+
+block4
+cap4 y- w+ 90 rotate [0 0 0 -1] translate
+

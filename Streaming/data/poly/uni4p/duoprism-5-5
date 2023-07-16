@@ -1,0 +1,12 @@
+
+[0.5 1.5 0.5 -1.5] [X+ Y+ Z+ W+] viewinfo
+
+[0.5 0.5] 0.707 5 altpoly
+[0.5 0.5] 0.707 5 altpoly
+product
+[0.5 0.5 0.5 0.5] aligncenter
+x+ y- 90 rotate
+z+ w- 90 rotate
+x+ z+ 90 rotate
+[0 1 0 0] translate
+

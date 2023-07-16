@@ -1,0 +1,10 @@
+"library5" include
+
+[0.5 1.5 0.5 -2.5] [X+ Y+ Z+ W+] viewinfo
+
+p5piece [0 1 0 0] translate
+0 red facecolor
+2 red facecolor
+4 red facecolor
+6 red facecolor
+

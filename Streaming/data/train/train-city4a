@@ -1,0 +1,57 @@
+"libtrain" include
+
+4 2 0.2 0.15 0 5 orange red true 0.01 newtrack
+
+// wy planes
+[-1 0 0 -2] x+ w+ "sslslssslslsl" track
+[1 0 0 -2] x- w+ "sslslssslslsl" track
+[0 0 -1 -2] z+ w+ "sslslssslslsl" track
+[0 0 1 -2] z- w+ "sslslssslslsl" track
+
+[-1 0 0 0] x+ w+ "sslslssslslsl" track
+[1 0 0 0] x- w+ "sslslssslslsl" track
+[0 0 -1 0] z+ w+ "sslslssslslsl" track
+[0 0 1 0] z- w+ "sslslssslslsl" track
+
+[-1 0 0 2] x+ w+ "sslslssslslsl" track
+[1 0 0 2] x- w+ "sslslssslslsl" track
+[0 0 -1 2] z+ w+ "sslslssslslsl" track
+[0 0 1 2] z- w+ "sslslssslslsl" track
+
+// xy planes
+[-2 0 -1 0] z+ x+ "sslslssslslsl" track
+[-2 0 1 0] z- x+ "sslslssslslsl" track
+[-2 0 0 -1] w+ x+ "sslslssslslsl" track
+[-2 0 0 1] w- x+ "sslslssslslsl" track
+
+[0 0 -1 0] z+ x+ "sslslssslslsl" track
+[0 0 1 0] z- x+ "sslslssslslsl" track
+[0 0 0 -1] w+ x+ "sslslssslslsl" track
+[0 0 0 1] w- x+ "sslslssslslsl" track
+
+[2 0 -1 0] z+ x+ "sslslssslslsl" track
+[2 0 1 0] z- x+ "sslslssslslsl" track
+[2 0 0 -1] w+ x+ "sslslssslslsl" track
+[2 0 0 1] w- x+ "sslslssslslsl" track
+
+// zy planes
+[0 0 -2 -1] w+ z+ "sslslssslslsl" track
+[0 0 -2 1] w- z+ "sslslssslslsl" track
+[-1 0 -2 0] x+ z+ "sslslssslslsl" track
+[1 0 -2 0] x- z+ "sslslssslslsl" track
+
+[0 0 0 -1] w+ z+ "sslslssslslsl" track
+[0 0 0 1] w- z+ "sslslssslslsl" track
+[-1 0 0 0] x+ z+ "sslslssslslsl" track
+[1 0 0 0] x- z+ "sslslssslslsl" track
+
+[0 0 2 -1] w+ z+ "sslslssslslsl" track
+[0 0 2 1] w- z+ "sslslssslslsl" track
+[-1 0 2 0] x+ z+ "sslslssslslsl" track
+[1 0 2 0] x- z+ "sslslssslslsl" track
+
+[
+boxcar4 car
+]
+0.1 [0 0 0 -2] x- x+ 0.5 TM_ROTATE train
+

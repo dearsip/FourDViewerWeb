@@ -1,0 +1,6 @@
+"uni4/runcitruncated-tesseract" include
+
+[0.5 4.5 0.5 -7.5] [X+ Y+ Z+ W+] viewinfo
+
+runcitruncated-tesseract [0 4 0 0] translate
+

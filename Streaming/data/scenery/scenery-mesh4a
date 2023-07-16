@@ -1,0 +1,20 @@
+"library" include
+
+16 0 meshring4 "mesh" def
+
+mesh brown 0 heightconst null horizon
+mesh brown 12 0.4 heightpower null horizon
+
+mesh
+[magenta #800080 null null gray white cyan #008080] colorblend
+[0 1.2 1.2 1.56 1.56 2.09 2.09 3]
+yellow
+[0 0.333 0.667 1]
+5 index sky
+
+mesh yellow 3 sun
+
+blue mat4
+
+block4
+
