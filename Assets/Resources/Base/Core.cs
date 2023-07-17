@@ -50,6 +50,12 @@ public class Core : MonoBehaviour
     private Quaternion rotLeft, lastRotLeft, fromRotLeft, rotRight, lastRotRight, fromRotRight, dlRotLeft, dfRotLeft, dlRotRight, dfRotRight, relarot;
     private bool leftTrigger, rightTrigger, lastLeftTrigger, lastRightTrigger, leftTriggerPressed, rightTriggerPressed,
         leftMove, rightMove, leftGrip, rightGrip, lastLeftGrip, lastRightGrip;
+    private int maxTouchCount = 4;
+    private bool leftTouchButton, rightTouchButton;
+    private enum TouchType { MoveForward, MoveLateral, Turn, Spin, LeftTouchButton, RightTouchButton, CameraRotate, None }
+    private TouchType[] touchType;
+    private bool[] touchEnded;
+    private Vector2[] fromTouchPos, lastTouchPos, touchPos;
     public Menu menuPanel;
     public Canvas menuCanvas;
 
@@ -165,6 +171,13 @@ public class Core : MonoBehaviour
         reg5 = new double[3];
         reg6 = new double[4];
 
+        touchType = new TouchType[maxTouchCount];
+        for (int i = 0; i < maxTouchCount; i++) touchType[i] = TouchType.None;
+        touchEnded = new bool[maxTouchCount];
+        fromTouchPos = new Vector2[maxTouchCount];
+        lastTouchPos = new Vector2[maxTouchCount];
+        touchPos = new Vector2[maxTouchCount];
+
         FileBrowser.HideDialog();
         StartCoroutine(FileItem.Build());
     }
@@ -262,6 +275,7 @@ public class Core : MonoBehaviour
     void Update()
     {
         if (!menuCanvas.enabled) calcInputFrame();
+        TouchInputFrame();
         // frameCount++;
         now = Time.realtimeSinceStartup;
         delta = Mathf.Clamp(now-last, 0.0001f, 0.5f);
@@ -329,7 +343,30 @@ public class Core : MonoBehaviour
             command = removeShape;
     }
 
+    private void TouchInputFrame()
+    {
+        for (int j = 0; j < Mathf.Min(maxTouchCount, Input.touchCount); j++)
+        {
+            Touch touch = Input.GetTouch(j);
+            int i = touch.fingerId;
+            if (i >= maxTouchCount) continue;
+            if (touch.phase == TouchPhase.Began)
+            {
+                fromTouchPos[i] = lastTouchPos[i] = touch.position / new Vector2(Screen.width, Screen.height);
+                if (fromTouchPos[i].x < 0.3125f) touchType[i] = rightTouchButton ? TouchType.MoveLateral : TouchType.MoveForward;
+                else if (fromTouchPos[i].x < 0.4375f && fromTouchPos[i].y < 0.125f) { touchType[i] = TouchType.LeftTouchButton; leftTouchButton = true; }
+                else if (fromTouchPos[i].x > 0.6875f) touchType[i] = leftTouchButton ? TouchType.Spin : TouchType.Turn;
+                else if (fromTouchPos[i].x > 0.5625f && fromTouchPos[i].y < 0.125f) { touchType[i] = TouchType.RightTouchButton; rightTouchButton = true; }
+                else touchType[i] = TouchType.CameraRotate;
+            }
+            else if (touch.phase == TouchPhase.Moved) touchPos[i] = touch.position / new Vector2(Screen.width, Screen.height);
+            else if (touch.phase == TouchPhase.Ended) touchEnded[i] = true;
+        }
+    }
 
+    float touchMoveSpeed = 4f;
+    float touchRotateSpeed = 4f;
+    float lerpc = 4f;
     private void calcInput()
     {
         relarot = Quaternion.Inverse(transform.rotation);
@@ -356,15 +393,43 @@ public class Core : MonoBehaviour
         for (int i = 0; i < 3; i++) eyeVector[i] = reg1[i];
         Vec.normalize(eyeVector, eyeVector);
 
-        //reg1 = (pose.GetLocalPosition(right) - transform.position) / 0.3f * 1.2f / (float)opt.ov4.scale;
-        //for (int i = 0; i < 3; i++) cursor[i] = reg1[i];
-        //reg1 = pose.GetLocalRotation(right)*Vector3.right;
-        //for (int i = 0; i < 3; i++) cursorAxis[0][i] = reg1[i];
-        //reg1 = pose.GetLocalRotation(right)*Vector3.up;
-        //for (int i = 0; i < 3; i++) cursorAxis[1][i] = reg1[i];
-        //reg1 = pose.GetLocalRotation(right)*Vector3.forward;
-        //for (int i = 0; i < 3; i++) cursorAxis[2][i] = reg1[i];
+        for (int i = 0; i < maxTouchCount; i++)
+        {
+            Vector3 v = new Vector3();
+            switch (touchType[i])
+            {
+                case TouchType.MoveForward:
+                    v.x = (touchPos[i].x - lastTouchPos[i].x) * Screen.width / Screen.height;
+                    v.y = touchPos[i].y - lastTouchPos[i].y;
+                    dlPosLeft += Quaternion.Euler(ClampedLerp(fromTouchPos[i].y), 0, 0) * v * touchMoveSpeed;
+                    v.x = (touchPos[i].x - fromTouchPos[i].x) * Screen.width / Screen.height;
+                    v.y = touchPos[i].y - fromTouchPos[i].y;
+                    dfPosLeft += Quaternion.Euler(ClampedLerp(fromTouchPos[i].y), 0, 0) * v * touchMoveSpeed;
+                    break;
+                case TouchType.MoveLateral:
+                    dlRotLeft = Quaternion.Euler(0, (touchPos[i].y - lastTouchPos[i].y) * touchRotateSpeed, 0) * dlRotLeft;
+                    dfRotLeft = Quaternion.Euler(0, (touchPos[i].y - fromTouchPos[i].y) * touchRotateSpeed, 0) * dlRotLeft;
+                    break;
+                case TouchType.Turn:
+                    break;
+                case TouchType.Spin:
+                    break;
+                case TouchType.LeftTouchButton:
+                    if (touchEnded[i]) leftTouchButton = false;
+                    break;
+                case TouchType.RightTouchButton:
+                    if (touchEnded[i]) rightTouchButton = false;
+                    break;
+                case TouchType.CameraRotate:
+                    if (touchEnded[i]) { touchEnded[i] = false; touchType[i] = TouchType.None; }
+                    break;
+            }
+            lastTouchPos[i] = touchPos[i];
+            if (touchEnded[i]) { touchEnded[i] = false; touchType[i] = TouchType.None; }
+        }
     }
+
+    private float ClampedLerp(float y) { return 90 * Mathf.Clamp01(((y - 0.5f) * lerpc + 1) * 0.5f); }
 
     private double tAlign = 0.5; // threshold for align mode
     private double tAlignSpin = 0.8;
