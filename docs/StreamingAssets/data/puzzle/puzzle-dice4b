@@ -1,0 +1,5 @@
+"library4" include
+
+die4 [-1 0 0 0] translate magenta shapecolor
+die4 [ 1 0 0 0] translate red shapecolor
+

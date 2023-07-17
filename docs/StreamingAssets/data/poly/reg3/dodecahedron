@@ -1,0 +1,7 @@
+"reg3/dodecahedron" include
+
+[0.5 2.5 0.5 -3.5] [X+ Y+ Z+ W+] viewinfo
+
+dodecahedron [0 2 0] translate
+z [0 1] prism
+

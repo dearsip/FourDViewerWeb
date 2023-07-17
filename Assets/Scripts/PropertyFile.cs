@@ -2,45 +2,64 @@
 using UnityEngine;
 using System.IO;
 using System.Collections.Generic;
+using System.Collections;
+using UnityEngine.Networking;
 
 public class PropertyFile
 {
     public delegate void Loader(IStore store);
     public delegate void Saver(IStore store);
-    private static bool testProperties(string file) //throws IOException 
+    public static bool isMaze;
+    private static IEnumerator testProperties(string file) //throws IOException 
     {
-        try {
-            using (StreamReader sr = new StreamReader(file))
-            {
-                return sr.Read() == '#';
-            }
-        }
-        catch (Exception)
+        string text;
+#if UNITY_EDITOR
+        yield return text = File.ReadAllText(file);
+#else
+        using (UnityWebRequest www = UnityWebRequest.Get(file))
         {
-          return false;
+            yield return www.SendWebRequest();
+            if (www.result == UnityWebRequest.Result.Success) text = www.downloadHandler.text;
+            else { Debug.Log(www.error); yield break; }
         }
+#endif
+        isMaze = text[0] == '#';
     }
 
     // https://stackoverflow.com/questions/485659/can-net-load-and-parse-a-properties-file-equivalent-to-java-properties-class
     // modified for maze properties
-    private static void loadProperties(string file, Dictionary<string, string> dict){
+    private static IEnumerator loadProperties(string file, Dictionary<string, string> dict){
         if (file == "default.properties") loadDefault(dict);
-        else foreach (string line in System.IO.File.ReadAllLines(file))
+        else
+        {
+            string text;
+#if UNITY_EDITOR
+            yield return text = File.ReadAllText(file);
+#else
+            using (UnityWebRequest www = UnityWebRequest.Get(file))
+            {
+                yield return www.SendWebRequest();
+                if (www.result == UnityWebRequest.Result.Success) text = www.downloadHandler.text;
+                else { Debug.Log(www.error); yield break; }
+            }
+#endif
+            foreach (string line in text.Split(new string[] { "\r\n" }, StringSplitOptions.None))
         // string str = "";
         // switch (file) {
             // case "default.properties":
                 // str = default_; break;
         // }
         // foreach (string line in str.Split(new string[] { "\r\n" }, StringSplitOptions.None))
-        {
-            if ((!String.IsNullOrEmpty(line)) &&
-                (!line.StartsWith("#")) &&
-                (line.Contains("=")))
             {
-                int index = line.IndexOf('=');
-                string key = line.Substring(0, index).Trim();
-                string value = line.Substring(index + 1).Trim();
-                dict.Add(key, value);
+                if ((!String.IsNullOrEmpty(line)) &&
+                    (!line.StartsWith("#")) &&
+                    (line.Contains("=")))
+                {
+                    int index = line.IndexOf('=');
+                    string key = line.Substring(0, index).Trim();
+                    string value = line.Substring(index + 1).Trim();
+                    dict.Add(key, value);
+                }
             }
         }
     }
@@ -74,26 +93,30 @@ public class PropertyFile
         }
     }
 
-    public static bool test(string file) {
-        return testProperties(file);
+    public static IEnumerator test(string file) {
+        yield return testProperties(file);
     }
 
-    public static void load(string file, Loader storable) {
+    public static IEnumerator load(string file, Loader storable) {
         Dictionary<string, string> p = new Dictionary<string, string>();
-        try
-        {
-            loadProperties(file, p);
-        }
-        catch (Exception e)
-        {
-            Debug.Log(e);
-        }
+        yield return loadProperties(file, p);
         try {
             PropertyStore store = new PropertyStore(p);
             storable(store);
         } catch (Exception e) {
             Debug.Log(e);
             //throw App.getException("PropertyFile.e2",new Object[] { file.getName(), e.getMessage() });
+        }
+    }
+
+    public static void loadDefault(Loader storable) {
+        Dictionary<string, string> p = new Dictionary<string, string>();
+        loadDefault(p);
+        try {
+            PropertyStore store = new PropertyStore(p);
+            storable(store);
+        } catch (Exception e) {
+            Debug.Log(e);
         }
     }
 

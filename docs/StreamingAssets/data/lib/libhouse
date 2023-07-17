@@ -1,0 +1,275 @@
+"library" include
+
+// --- 3D components ----------------------
+
+[0.5 0.5 0.5] "p3" def // rotation center
+
+// have to glue even single pieces so that room arrays
+// will be same types of objects
+
+[
+block3 [1 2 3] scale [0.5 0.5 1.5] aligncenter [-2 0 -1] translate
+]
+glue "wall3x-" def
+
+[
+block3 [1 2 3] scale [0.5 0.5 1.5] aligncenter [2 0 -1] translate
+]
+glue "wall3x+" def
+
+[
+block3 [5 2 1] scale [2.5 0.5 0.5] aligncenter [-2 0 -2] translate
+]
+glue "wall3z-" def
+
+[
+block3 [5 2 1] scale [2.5 0.5 0.5] aligncenter [-2 0 2] translate
+]
+glue "wall3z+" def
+
+[
+block3 [1 2 1] scale [0.5 0.5 0.5] aligncenter [-2 0 -1] translate
+block3 [1 1 1] scale [-2 1 0] translate
+block3 [1 2 1] scale [0.5 0.5 0.5] aligncenter [-2 0 1] translate
+]
+glue "door3x-" def
+
+[
+block3 [1 2 1] scale [0.5 0.5 0.5] aligncenter [2 0 -1] translate
+block3 [1 1 1] scale [2 1 0] translate
+block3 [1 2 1] scale [0.5 0.5 0.5] aligncenter [2 0 1] translate
+]
+glue "door3x+" def
+
+[
+block3 [2 2 1] scale [0.5 0.5 0.5] aligncenter [-2 0 -2] translate
+block3 [1 1 1] scale [0 1 -2] translate
+block3 [2 2 1] scale [0.5 0.5 0.5] aligncenter [1 0 -2] translate
+]
+glue "door3z-" def
+
+[
+block3 [2 2 1] scale [0.5 0.5 0.5] aligncenter [-2 0 2] translate
+block3 [1 1 1] scale [0 1 2] translate
+block3 [2 2 1] scale [0.5 0.5 0.5] aligncenter [1 0 2] translate
+]
+glue "door3z+" def
+
+[
+block3 [5 1 5] scale [-2 2 -2] translate
+]
+glue "ceiling3" def
+
+[
+block3 [5 1 2] scale [2.5 0.5 0.5] aligncenter [-2 2 -2] translate
+block3 [2 1 1] scale [0.5 0.5 0.5] aligncenter [-2 2 0] translate
+block3 [2 1 1] scale [0.5 0.5 0.5] aligncenter [1 2 0] translate
+block3 [5 1 2] scale [2.5 0.5 0.5] aligncenter [-2 2 1] translate
+]
+glue "skylight3" def
+
+// --- 3D rooms ---------------------------
+
+[
+wall3x-
+wall3x+
+door3z-
+wall3z+
+ceiling3
+]
+glue "room3h" def // hut (z-)
+
+[
+door3x-
+door3x+
+wall3z-
+wall3z+
+ceiling3
+]
+glue "room3s" def // straight through (x- x+)
+
+[
+door3x-
+wall3x+
+door3z-
+wall3z+
+ceiling3
+]
+glue "room3c" def // curve through (z- x-)
+
+[
+door3x-
+door3x+
+door3z-
+wall3z+
+ceiling3
+]
+glue "room3t" def // T junction (z- x- x+)
+
+[
+block3 [5 1 1] scale [-2 0 -1] translate
+block3 [5 1 1] scale [-2 0 1] translate
+block3 [5 1 3] scale [-2 1 -1] translate
+]
+glue "corridor3" def // (x- x+)
+
+// --- 4D components ----------------------
+
+[0.5 0.5 0.5 0.5] "p4" def // rotation center
+
+[
+block4 [1 2 3 3] scale [0.5 0.5 1.5 1.5] aligncenter [-2 0 -1 -1] translate
+]
+glue "wall4x-" def
+
+[
+block4 [1 2 3 3] scale [0.5 0.5 1.5 1.5] aligncenter [2 0 -1 -1] translate
+]
+glue "wall4x+" def
+
+[
+block4 [5 2 1 3] scale [2.5 0.5 0.5 1.5] aligncenter [-2 0 -2 -1] translate
+]
+glue "wall4z-" def
+
+[
+block4 [5 2 1 3] scale [2.5 0.5 0.5 1.5] aligncenter [-2 0 2 -1] translate
+]
+glue "wall4z+" def
+
+[
+block4 [5 2 5 1] scale [2.5 0.5 2.5 0.5] aligncenter [-2 0 -2 -2] translate
+]
+glue "wall4w-" def
+
+[
+block4 [5 2 5 1] scale [2.5 0.5 2.5 0.5] aligncenter [-2 0 -2 2] translate
+]
+glue "wall4w+" def
+
+[
+block4 [1 2 1 3] scale [0.5 0.5 0.5 1.5] aligncenter [-2 0 -1 -1] translate
+block4 [1 2 1 1] scale [0.5 0.5 0.5 0.5] aligncenter [-2 0 0 -1] translate
+block4 [1 1 1 1] scale [-2 1 0 0] translate
+block4 [1 2 1 1] scale [0.5 0.5 0.5 0.5] aligncenter [-2 0 0 1] translate
+block4 [1 2 1 3] scale [0.5 0.5 0.5 1.5] aligncenter [-2 0 1 -1] translate
+]
+glue "door4x-" def
+
+[
+block4 [1 2 1 3] scale [0.5 0.5 0.5 1.5] aligncenter [2 0 -1 -1] translate
+block4 [1 2 1 1] scale [0.5 0.5 0.5 0.5] aligncenter [2 0 0 -1] translate
+block4 [1 1 1 1] scale [2 1 0 0] translate
+block4 [1 2 1 1] scale [0.5 0.5 0.5 0.5] aligncenter [2 0 0 1] translate
+block4 [1 2 1 3] scale [0.5 0.5 0.5 1.5] aligncenter [2 0 1 -1] translate
+]
+glue "door4x+" def
+
+[
+block4 [2 2 1 3] scale [0.5 0.5 0.5 1.5] aligncenter [-2 0 -2 -1] translate
+block4 [1 2 1 1] scale [0.5 0.5 0.5 0.5] aligncenter [0 0 -2 -1] translate
+block4 [1 1 1 1] scale [0 1 -2 0] translate
+block4 [1 2 1 1] scale [0.5 0.5 0.5 0.5] aligncenter [0 0 -2 1] translate
+block4 [2 2 1 3] scale [0.5 0.5 0.5 1.5] aligncenter [1 0 -2 -1] translate
+]
+glue "door4z-" def
+
+[
+block4 [2 2 1 3] scale [0.5 0.5 0.5 1.5] aligncenter [-2 0 2 -1] translate
+block4 [1 2 1 1] scale [0.5 0.5 0.5 0.5] aligncenter [0 0 2 -1] translate
+block4 [1 1 1 1] scale [0 1 2 0] translate
+block4 [1 2 1 1] scale [0.5 0.5 0.5 0.5] aligncenter [0 0 2 1] translate
+block4 [2 2 1 3] scale [0.5 0.5 0.5 1.5] aligncenter [1 0 2 -1] translate
+]
+glue "door4z+" def
+
+[
+block4 [5 2 2 1] scale [2.5 0.5 0.5 0.5] aligncenter [-2 0 -2 -2] translate
+block4 [2 2 1 1] scale [0.5 0.5 0.5 0.5] aligncenter [-2 0 0 -2] translate
+block4 [1 1 1 1] scale [0 1 0 -2] translate
+block4 [2 2 1 1] scale [0.5 0.5 0.5 0.5] aligncenter [1 0 0 -2] translate
+block4 [5 2 2 1] scale [2.5 0.5 0.5 0.5] aligncenter [-2 0 1 -2] translate
+]
+glue "door4w-" def
+
+[
+block4 [5 2 2 1] scale [2.5 0.5 0.5 0.5] aligncenter [-2 0 -2 2] translate
+block4 [2 2 1 1] scale [0.5 0.5 0.5 0.5] aligncenter [-2 0 0 2] translate
+block4 [1 1 1 1] scale [0 1 0 2] translate
+block4 [2 2 1 1] scale [0.5 0.5 0.5 0.5] aligncenter [1 0 0 2] translate
+block4 [5 2 2 1] scale [2.5 0.5 0.5 0.5] aligncenter [-2 0 1 2] translate
+]
+glue "door4w+" def
+
+[
+block4 [5 1 5 5] scale [-2 2 -2 -2] translate
+]
+glue "ceiling4" def
+
+[
+block4 [5 1 5 2] scale [2.5 0.5 2.5 0.5] aligncenter [-2 2 -2 -2] translate
+block4 [5 1 2 1] scale [2.5 0.5 0.5 0.5] aligncenter [-2 2 -2 0] translate
+block4 [2 1 1 1] scale [0.5 0.5 0.5 0.5] aligncenter [-2 2 0 0] translate
+block4 [2 1 1 1] scale [0.5 0.5 0.5 0.5] aligncenter [1 2 0 0] translate
+block4 [5 1 2 1] scale [2.5 0.5 0.5 0.5] aligncenter [-2 2 1 0] translate
+block4 [5 1 5 2] scale [2.5 0.5 2.5 0.5] aligncenter [-2 2 -2 1] translate
+]
+glue "skylight4" def
+
+// --- 4D rooms ---------------------------
+
+[
+wall4x-
+wall4x+
+wall4z-
+wall4z+
+door4w-
+wall4w+
+ceiling4
+]
+glue "room4h" def // hut (w-)
+
+[
+door4x-
+door4x+
+wall4z-
+wall4z+
+wall4w-
+wall4w+
+ceiling4
+]
+glue "room4s" def // straight through (x- x+)
+
+[
+door4x-
+wall4x+
+wall4z-
+wall4z+
+door4w-
+wall4w+
+ceiling4
+]
+glue "room4c" def // curve through (w- x-)
+
+[
+door4x-
+door4x+
+wall4z-
+wall4z+
+door4w-
+wall4w+
+ceiling4
+]
+glue "room4t" def // T junction (w- x- x+)
+
+[
+block4 [5 1 1 1] scale [-2 0 -1 0] translate
+block4 [5 1 1 1] scale [-2 0 1 0] translate
+block4 [5 1 3 1] scale [-2 0 -1 -1] translate
+block4 [5 1 3 1] scale [-2 0 -1 1] translate
+block4 [5 1 3 3] scale [-2 1 -1 -1] translate
+]
+glue "corridor4" def // (x- x+)
+
+// ----------------------------------------
+

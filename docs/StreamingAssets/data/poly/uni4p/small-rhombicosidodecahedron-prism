@@ -1,0 +1,11 @@
+"uni3/small-rhombicosidodecahedron" include
+
+[0.5 1.5 0.5 -1.5] [X+ Y+ Z+ W+] viewinfo
+
+small-rhombicosidodecahedron
+[-0.5 -0.5 -0.5] translate
+[0.362 dup dup] scale
+[0.5 1.5 0.5] translate
+w [0.276 0.724] prism
+[0.5 1.5 0.5 0.5] aligncenter
+

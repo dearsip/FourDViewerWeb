@@ -1,0 +1,65 @@
+"library" include
+
+block4 [-0.5 -0.5 -0.5 -0.5] translate [0.9 0.9 0.9 0.1] scale [0.5 0.5 0.5 0.5] translate 7 red facecolor "piece" def
+// double translate to avoid FP error
+
+piece [-2 0 -2 0] translate
+piece [-1 0 -2 0] translate
+piece [ 0 0 -2 0] translate
+piece [ 1 0 -2 0] translate
+piece [ 2 0 -2 0] translate
+
+piece [-2 0 -1 0] translate
+piece [-1 0 -1 0] translate
+piece [ 0 0 -1 0] translate
+piece [ 1 0 -1 0] translate
+piece [ 2 0 -1 0] translate
+
+piece [-2 0  0 0] translate
+piece [-1 0  0 0] translate
+piece [ 0 0  0 0] translate
+piece [ 1 0  0 0] translate
+piece [ 2 0  0 0] translate
+
+piece [-2 0  1 0] translate
+piece [-1 0  1 0] translate
+piece [ 0 0  1 0] translate
+piece [ 1 0  1 0] translate
+piece [ 2 0  1 0] translate
+
+piece [-2 0  2 0] translate
+piece [-1 0  2 0] translate
+piece [ 0 0  2 0] translate
+piece [ 1 0  2 0] translate
+piece [ 2 0  2 0] translate
+
+piece [-2 1 -2 0] translate
+piece [-1 1 -2 0] translate
+piece [ 0 1 -2 0] translate
+piece [ 1 1 -2 0] translate
+piece [ 2 1 -2 0] translate
+
+piece [-2 1 -1 0] translate
+piece [-1 1 -1 0] translate
+piece [ 0 1 -1 0] translate
+piece [ 1 1 -1 0] translate
+piece [ 2 1 -1 0] translate
+
+piece [-2 1  0 0] translate
+piece [-1 1  0 0] translate
+piece [ 0 1  0 0] translate
+piece [ 1 1  0 0] translate
+piece [ 2 1  0 0] translate
+
+piece [-2 1  1 0] translate
+piece [-1 1  1 0] translate
+piece [ 0 1  1 0] translate
+piece [ 1 1  1 0] translate
+piece [ 2 1  1 0] translate
+
+piece [-2 1  2 0] translate
+piece [-1 1  2 0] translate
+piece [ 0 1  2 0] translate
+piece [ 1 1  2 0] translate
+piece [ 2 1  2 0] translate
+

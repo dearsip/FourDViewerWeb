@@ -1,0 +1,19 @@
+"libtrain" include
+
+4 2 0.2 0.15 0 5 orange red true 0.01 newtrack
+[-1 0 1 0] x+ z- "sisisisi" track
+[-1 0 1 0] x+ z- "siisoosoosi" track
+[-1 0 1 0] x+ z- "isoosoosi" track
+[-1 0 1 0] x+ z- "siliisiisiisiil" track
+[0 0 0 0] x+ z- "l" track
+[0 0 0 0] x+ z- "r" track
+[0 0 -1 0] x+ z- "ol" track
+[0 0 -1 0] x+ z- "or" track
+
+[
+helixcar car
+helixcar car
+helixcar car
+]
+0.1 [0 0 1 0] x- x+ 1 TM_ROTATE train
+

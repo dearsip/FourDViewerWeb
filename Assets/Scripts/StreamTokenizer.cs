@@ -36,7 +36,8 @@ public class StreamTokenizer : IEnumerable<int>
 {
 
     /* Only one of these will be non-null */
-    private StreamReader reader = null;
+    private string reader = null;
+    private int count = 0;
 
     private List<char> buf = new List<char>();
 
@@ -164,7 +165,7 @@ public class StreamTokenizer : IEnumerable<int>
      *
      * @param r  a Reader object providing the input stream.
      */
-    public StreamTokenizer(StreamReader r) : this()
+    public StreamTokenizer(string r) : this()
     {
         if (r == null)
         {
@@ -440,7 +441,7 @@ public class StreamTokenizer : IEnumerable<int>
     {
         if (reader != null)
         {
-            return reader.Read();
+            try { return reader[count++]; } catch (IndexOutOfRangeException) { return -1; }
         }
         else
         {

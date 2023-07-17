@@ -1,0 +1,380 @@
+"libnav" include
+
+block4 [-1 0 -1 -1] translate
+0 cx- facecolor
+2 cy- facecolor
+4 cz- facecolor
+6 cf- facecolor
+
+block4 [-1 0 -1  0] translate
+0 cx- facecolor
+2 cy- facecolor
+4 cz- facecolor
+
+block4 [-1 0 -1  1] translate
+0 cx- facecolor
+2 cy- facecolor
+4 cz- facecolor
+7 cf+ facecolor
+
+block4 [-1 0  0 -1] translate
+0 cx- facecolor
+2 cy- facecolor
+6 cf- facecolor
+
+block4 [-1 0  0  0] translate
+0 cx- facecolor
+2 cy- facecolor
+
+block4 [-1 0  0  1] translate
+0 cx- facecolor
+2 cy- facecolor
+7 cf+ facecolor
+
+block4 [-1 0  1 -1] translate
+0 cx- facecolor
+2 cy- facecolor
+5 cz+ facecolor
+6 cf- facecolor
+
+block4 [-1 0  1  0] translate
+0 cx- facecolor
+2 cy- facecolor
+5 cz+ facecolor
+
+block4 [-1 0  1  1] translate
+0 cx- facecolor
+2 cy- facecolor
+5 cz+ facecolor
+7 cf+ facecolor
+
+block4 [ 0 0 -1 -1] translate
+2 cy- facecolor
+4 cz- facecolor
+6 cf- facecolor
+
+block4 [ 0 0 -1  0] translate
+2 cy- facecolor
+4 cz- facecolor
+
+block4 [ 0 0 -1  1] translate
+2 cy- facecolor
+4 cz- facecolor
+7 cf+ facecolor
+
+block4 [ 0 0  0 -1] translate
+2 cy- facecolor
+6 cf- facecolor
+
+block4 [ 0 0  0  0] translate
+2 cy- facecolor
+
+block4 [ 0 0  0  1] translate
+2 cy- facecolor
+7 cf+ facecolor
+
+block4 [ 0 0  1 -1] translate
+2 cy- facecolor
+5 cz+ facecolor
+6 cf- facecolor
+
+block4 [ 0 0  1  0] translate
+2 cy- facecolor
+5 cz+ facecolor
+
+block4 [ 0 0  1  1] translate
+2 cy- facecolor
+5 cz+ facecolor
+7 cf+ facecolor
+
+block4 [ 1 0 -1 -1] translate
+1 cx+ facecolor
+2 cy- facecolor
+4 cz- facecolor
+6 cf- facecolor
+
+block4 [ 1 0 -1  0] translate
+1 cx+ facecolor
+2 cy- facecolor
+4 cz- facecolor
+
+block4 [ 1 0 -1  1] translate
+1 cx+ facecolor
+2 cy- facecolor
+4 cz- facecolor
+7 cf+ facecolor
+
+block4 [ 1 0  0 -1] translate
+1 cx+ facecolor
+2 cy- facecolor
+6 cf- facecolor
+
+block4 [ 1 0  0  0] translate
+1 cx+ facecolor
+2 cy- facecolor
+
+block4 [ 1 0  0  1] translate
+1 cx+ facecolor
+2 cy- facecolor
+7 cf+ facecolor
+
+block4 [ 1 0  1 -1] translate
+1 cx+ facecolor
+2 cy- facecolor
+5 cz+ facecolor
+6 cf- facecolor
+
+block4 [ 1 0  1  0] translate
+1 cx+ facecolor
+2 cy- facecolor
+5 cz+ facecolor
+
+block4 [ 1 0  1  1] translate
+1 cx+ facecolor
+2 cy- facecolor
+5 cz+ facecolor
+7 cf+ facecolor
+
+block4 [-1 1 -1 -1] translate
+0 cx- facecolor
+4 cz- facecolor
+6 cf- facecolor
+
+block4 [-1 1 -1  0] translate
+0 cx- facecolor
+4 cz- facecolor
+
+block4 [-1 1 -1  1] translate
+0 cx- facecolor
+4 cz- facecolor
+7 cf+ facecolor
+
+block4 [-1 1  0 -1] translate
+0 cx- facecolor
+6 cf- facecolor
+
+block4 [-1 1  0  0] translate
+0 cx- facecolor
+
+block4 [-1 1  0  1] translate
+0 cx- facecolor
+7 cf+ facecolor
+
+block4 [-1 1  1 -1] translate
+0 cx- facecolor
+5 cz+ facecolor
+6 cf- facecolor
+
+block4 [-1 1  1  0] translate
+0 cx- facecolor
+5 cz+ facecolor
+
+block4 [-1 1  1  1] translate
+0 cx- facecolor
+5 cz+ facecolor
+7 cf+ facecolor
+
+block4 [ 0 1 -1 -1] translate
+4 cz- facecolor
+6 cf- facecolor
+
+block4 [ 0 1 -1  0] translate
+4 cz- facecolor
+
+block4 [ 0 1 -1  1] translate
+4 cz- facecolor
+7 cf+ facecolor
+
+block4 [ 0 1  0 -1] translate
+6 cf- facecolor
+
+block4 [ 0 1  0  0] translate
+
+block4 [ 0 1  0  1] translate
+7 cf+ facecolor
+
+block4 [ 0 1  1 -1] translate
+5 cz+ facecolor
+6 cf- facecolor
+
+block4 [ 0 1  1  0] translate
+5 cz+ facecolor
+
+block4 [ 0 1  1  1] translate
+5 cz+ facecolor
+7 cf+ facecolor
+
+block4 [ 1 1 -1 -1] translate
+1 cx+ facecolor
+4 cz- facecolor
+6 cf- facecolor
+
+block4 [ 1 1 -1  0] translate
+1 cx+ facecolor
+4 cz- facecolor
+
+block4 [ 1 1 -1  1] translate
+1 cx+ facecolor
+4 cz- facecolor
+7 cf+ facecolor
+
+block4 [ 1 1  0 -1] translate
+1 cx+ facecolor
+6 cf- facecolor
+
+block4 [ 1 1  0  0] translate
+1 cx+ facecolor
+
+block4 [ 1 1  0  1] translate
+1 cx+ facecolor
+7 cf+ facecolor
+
+block4 [ 1 1  1 -1] translate
+1 cx+ facecolor
+5 cz+ facecolor
+6 cf- facecolor
+
+block4 [ 1 1  1  0] translate
+1 cx+ facecolor
+5 cz+ facecolor
+
+block4 [ 1 1  1  1] translate
+1 cx+ facecolor
+5 cz+ facecolor
+7 cf+ facecolor
+
+block4 [-1 2 -1 -1] translate
+0 cx- facecolor
+3 cy+ facecolor
+4 cz- facecolor
+6 cf- facecolor
+
+block4 [-1 2 -1  0] translate
+0 cx- facecolor
+3 cy+ facecolor
+4 cz- facecolor
+
+block4 [-1 2 -1  1] translate
+0 cx- facecolor
+3 cy+ facecolor
+4 cz- facecolor
+7 cf+ facecolor
+
+block4 [-1 2  0 -1] translate
+0 cx- facecolor
+3 cy+ facecolor
+6 cf- facecolor
+
+block4 [-1 2  0  0] translate
+0 cx- facecolor
+3 cy+ facecolor
+
+block4 [-1 2  0  1] translate
+0 cx- facecolor
+3 cy+ facecolor
+7 cf+ facecolor
+
+block4 [-1 2  1 -1] translate
+0 cx- facecolor
+3 cy+ facecolor
+5 cz+ facecolor
+6 cf- facecolor
+
+block4 [-1 2  1  0] translate
+0 cx- facecolor
+3 cy+ facecolor
+5 cz+ facecolor
+
+block4 [-1 2  1  1] translate
+0 cx- facecolor
+3 cy+ facecolor
+5 cz+ facecolor
+7 cf+ facecolor
+
+block4 [ 0 2 -1 -1] translate
+3 cy+ facecolor
+4 cz- facecolor
+6 cf- facecolor
+
+block4 [ 0 2 -1  0] translate
+3 cy+ facecolor
+4 cz- facecolor
+
+block4 [ 0 2 -1  1] translate
+3 cy+ facecolor
+4 cz- facecolor
+7 cf+ facecolor
+
+block4 [ 0 2  0 -1] translate
+3 cy+ facecolor
+6 cf- facecolor
+
+block4 [ 0 2  0  0] translate
+3 cy+ facecolor
+
+block4 [ 0 2  0  1] translate
+3 cy+ facecolor
+7 cf+ facecolor
+
+block4 [ 0 2  1 -1] translate
+3 cy+ facecolor
+5 cz+ facecolor
+6 cf- facecolor
+
+block4 [ 0 2  1  0] translate
+3 cy+ facecolor
+5 cz+ facecolor
+
+block4 [ 0 2  1  1] translate
+3 cy+ facecolor
+5 cz+ facecolor
+7 cf+ facecolor
+
+block4 [ 1 2 -1 -1] translate
+1 cx+ facecolor
+3 cy+ facecolor
+4 cz- facecolor
+6 cf- facecolor
+
+block4 [ 1 2 -1  0] translate
+1 cx+ facecolor
+3 cy+ facecolor
+4 cz- facecolor
+
+block4 [ 1 2 -1  1] translate
+1 cx+ facecolor
+3 cy+ facecolor
+4 cz- facecolor
+7 cf+ facecolor
+
+block4 [ 1 2  0 -1] translate
+1 cx+ facecolor
+3 cy+ facecolor
+6 cf- facecolor
+
+block4 [ 1 2  0  0] translate
+1 cx+ facecolor
+3 cy+ facecolor
+
+block4 [ 1 2  0  1] translate
+1 cx+ facecolor
+3 cy+ facecolor
+7 cf+ facecolor
+
+block4 [ 1 2  1 -1] translate
+1 cx+ facecolor
+3 cy+ facecolor
+5 cz+ facecolor
+6 cf- facecolor
+
+block4 [ 1 2  1  0] translate
+1 cx+ facecolor
+3 cy+ facecolor
+5 cz+ facecolor
+
+block4 [ 1 2  1  1] translate
+1 cx+ facecolor
+3 cy+ facecolor
+5 cz+ facecolor
+7 cf+ facecolor
+

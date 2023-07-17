@@ -193,7 +193,8 @@ public class Command
         public void exec(Context c) //throws Exception
         {
             String filename = (String)c.stack.Pop();
-            Language.include(c, filename);
+            // Language.include(c, filename);
+            Language.includeFile = filename;
         }
     }
 

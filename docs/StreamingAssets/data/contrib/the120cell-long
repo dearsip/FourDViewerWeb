@@ -1,0 +1,72 @@
+"library6" include
+
+[0.5 3.5 0.5 -3.5] [X+ Y+ Z+ W+] viewinfo
+
+the120cell [0 3 0 0] translate
+
+gray shapecolor
+
+9 red facecolor
+1 red facecolor
+115 red facecolor
+107 red facecolor
+//
+43 red facecolor
+51 red facecolor
+57 red facecolor
+65 red facecolor
+
+10 cyan facecolor
+2 cyan facecolor
+114 cyan facecolor
+106 cyan facecolor
+//
+42 cyan facecolor
+50 cyan facecolor
+58 cyan facecolor
+66 cyan facecolor
+
+16 orange facecolor
+5 orange facecolor
+111 orange facecolor
+100 orange facecolor
+//
+36 orange facecolor
+47 orange facecolor
+61 orange facecolor
+72 orange facecolor
+
+19 yellow facecolor
+14 yellow facecolor
+102 yellow facecolor
+97 yellow facecolor
+//
+75 yellow facecolor
+38 yellow facecolor
+70 yellow facecolor
+33 yellow facecolor
+
+24 magenta facecolor
+22 magenta facecolor
+91 magenta facecolor
+89 magenta facecolor
+//
+28 magenta facecolor
+30 magenta facecolor
+81 magenta facecolor
+83 magenta facecolor
+
+25 green facecolor
+23 green facecolor
+90 green facecolor
+88 green facecolor
+//
+27 green facecolor
+29 green facecolor
+82 green facecolor
+84 green facecolor
+
+87 white facecolor // south
+
+26 white facecolor // north
+

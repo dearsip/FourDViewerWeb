@@ -1,0 +1,5 @@
+"library" include
+
+block4
+block4 [0.5 0.5 0.5 0.5] scale [0.25 0 0.25 2.25] translate red shapecolor
+

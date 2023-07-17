@@ -1,0 +1,14 @@
+"libtrain" include
+
+4 2 0.2 0.15 0 5 orange red true 0.01 newtrack
+[1 0 0 0] w+ z- "lslslsls" track
+
+[
+fasthead4 1 lencar
+windowcar4 1 lencar
+windowcar4 1 lencar
+windowcar4 1 lencar
+fasttail4 1 lencar
+]
+0.1 [0 0 0 -1] x- x+ 0.5 TM_ROTATE train
+

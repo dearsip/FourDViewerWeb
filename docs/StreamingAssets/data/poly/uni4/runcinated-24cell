@@ -1,0 +1,6 @@
+"uni4/runcinated-24cell" include
+
+[0.5 3.5 0.5 -6.5] [X+ Y+ Z+ W+] viewinfo
+
+runcinated-24cell [0 3 0 0] translate
+

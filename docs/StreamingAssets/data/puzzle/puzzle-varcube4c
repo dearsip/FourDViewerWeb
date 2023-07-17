@@ -1,0 +1,69 @@
+"library" include
+"library4" include
+"libnav" include
+
+ihexadeca
+8 cx- facecolor
+9 cx+ facecolor
+10 cy- facecolor
+11 cy+ facecolor
+12 cz- facecolor
+13 cz+ facecolor
+14 cf- facecolor
+15 cf+ facecolor
+
+rpenta
+1 cx- facecolor
+2 cy- facecolor
+3 cz- facecolor
+4 cf- facecolor
+
+rpenta
+1 cx+ facecolor
+2 cy- facecolor
+3 cz+ facecolor
+4 cf- facecolor
+x- z- 180 rotate
+
+rpenta
+1 cy+ facecolor
+2 cz- facecolor
+3 cx+ facecolor
+4 cf- facecolor
+y+ x+ 90 rotate x- z- 90 rotate
+
+rpenta
+1 cy+ facecolor
+2 cz+ facecolor
+3 cx- facecolor
+4 cf- facecolor
+y+ x+ 90 rotate x- z- 270 rotate
+
+rpenta
+1 cf+ facecolor
+2 cy- facecolor
+3 cx+ facecolor
+4 cz- facecolor
+w+ x+ 90 rotate x- z- 90 rotate
+
+rpenta
+1 cf+ facecolor
+2 cy- facecolor
+3 cx- facecolor
+4 cz+ facecolor
+w+ x+ 90 rotate x- z- 270 rotate
+
+rpenta
+1 cf+ facecolor
+2 cx- facecolor
+3 cz- facecolor
+4 cy+ facecolor
+w+ x+ 90 rotate y+ x+ 90 rotate
+
+rpenta
+1 cf+ facecolor
+2 cx+ facecolor
+3 cz+ facecolor
+4 cy+ facecolor
+w+ x+ 90 rotate y+ x+ 90 rotate x- z- 180 rotate
+

@@ -1,0 +1,12 @@
+"libhouse" include
+"sky4" include
+
+room4t x- w- 90 p4 altrot x+ z+ 90 p4 altrot
+room4c x- w- 90 p4 altrot [0 0 0 5] translate cyan shapecolor
+room4c [5 0 0 5] translate yellow shapecolor
+room4c x- w+ 90 p4 altrot x- z+ 90 p4 altrot [5 0 0 0] translate magenta shapecolor
+room4c x- w+ 90 p4 altrot x- z- 90 p4 altrot [5 0 5 0] translate #800080 shapecolor
+room4c [5 0 5 5] translate #808000 shapecolor
+room4c x- w- 90 p4 altrot [0 0 5 5] translate #008080 shapecolor
+room4c x- w+ 90 p4 altrot x- z- 90 p4 altrot [0 0 5 0] translate #008000 shapecolor
+

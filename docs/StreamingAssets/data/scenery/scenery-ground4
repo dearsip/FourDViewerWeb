@@ -1,0 +1,8 @@
+"library" include
+"sky4" include
+
+block4
+
+[-1 -0.4142 0 0.4142 1] meshringframe4 brown 1.5 ground
+[-1 -0.4142 0 0.4142 1] meshringframe4 brown 2.5 ground
+

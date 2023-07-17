@@ -1,0 +1,11 @@
+"library3" include
+
+[0.5 1.5 0.5 -1.5] [X+ Y+ Z+ W+] viewinfo
+
+the24cell // [0 1 0 0] translate
+
+1.4142 "r2" def
+[-0.5 -0.5 -0.5 -0.5] translate
+[r2 r2 r2 r2] scale
+[0.5 1.5 0.5 0.5] translate
+

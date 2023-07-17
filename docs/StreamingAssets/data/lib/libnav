@@ -1,0 +1,32 @@
+"library" include
+// don't worry, multiple includes of the same file are ignored
+
+// no way to get exact integer coordinates with polygon operator,
+// so let's just define block2 by hand
+
+// [[0 1] [0 1]] rect would work, but I don't want to mess up
+// the existing face numbers in other files
+
+[
+[0 0]
+[0 1]
+[1 1]
+[1 0]
+]
+genpoly "block2" def
+
+block2 [0.5 0.5]     y [0 1 2] frustum "nav3" def
+block3 [0.5 0.5 0.5] y [0 1 2] frustum "nav4" def
+
+// color table
+// use xyf in 3D, xyzf in 4D ; f for forward ; dark for negative colors
+
+magenta "cx+" def // magenta
+#800080 "cx-" def // dark magenta
+yellow  "cy+" def // sun
+brown   "cy-" def // earth ; also brown is a kind of dark yellow
+gray    "cz+" def // dark white is gray ; reverse this pair because of LR IO analogy
+white   "cz-" def // white
+cyan    "cf+" def // cyan
+#008080 "cf-" def // dark cyan
+

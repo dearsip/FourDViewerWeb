@@ -1,0 +1,29 @@
+"libtrain" include
+
+4 2 0.2 0.15 0 5 orange red false 0.01 newtrack
+[0 2 0 -1] x+ z- "slslssslslss" track
+
+0.1 platformwidth
+1 2 platforms
+
+[0.5 2 0.5 -0.5] pylon
+[-0.95 2 0.5 -0.5] pylon
+[1.95 2 0.5 -0.5] pylon
+
+[0.5 2 0.5 1.5] pylon
+[-0.95 2 0.5 1.5] pylon
+[1.95 2 0.5 1.5] pylon
+
+[-1.5 2 0.5 0.05] pylon
+[-1.5 2 0.5 0.95] pylon
+
+[2.5 2 0.5 0.05] pylon
+[2.5 2 0.5 0.95] pylon
+
+[
+block4 magenta shapecolor car
+block4 car
+block4 red shapecolor car
+]
+0.1 [0 2 0 -1] x- x+ 0.5 TM_ROTATE train
+

@@ -68,7 +68,7 @@ namespace SimpleFileBrowser
 			{
 				if( m_temporaryFilePath == null )
 				{
-					m_temporaryFilePath = Path.Combine( Application.temporaryCachePath, "tmpFile" );
+					m_temporaryFilePath = FileItem.Combine( Application.temporaryCachePath+'/', "tmpFile" );
 					Directory.CreateDirectory( Application.temporaryCachePath );
 				}
 
@@ -101,7 +101,8 @@ namespace SimpleFileBrowser
 			if( ShouldUseSAFForPath( path ) )
 				return AJC.CallStatic<bool>( "SAFEntryExists", Context, path, false );
 #endif
-			return File.Exists( path );
+			// return File.Exists( path );
+			return FileItem.Exists(path);
 		}
 
 		public static bool DirectoryExists( string path )
@@ -122,7 +123,8 @@ namespace SimpleFileBrowser
 				}
 			}
 #endif
-			return Directory.Exists( path );
+			// return Directory.Exists( path );
+			return FileItem.ExistsDirectory(path);
 		}
 
 		public static bool IsDirectory( string path )
@@ -239,14 +241,15 @@ namespace SimpleFileBrowser
 
 			try
 			{
-				FileSystemInfo[] items = new DirectoryInfo( path ).GetFileSystemInfos();
+				// FileSystemInfo[] items = new DirectoryInfo( path ).GetFileSystemInfos();
+				FileItem[] items = FileItem.Find(path).children.ToArray();
 				FileSystemEntry[] result = new FileSystemEntry[items.Length];
 				int index = 0;
 				for( int i = 0; i < items.Length; i++ )
 				{
 					try
 					{
-						result[index] = new FileSystemEntry( items[i], FileBrowser.GetExtensionFromFilename( items[i].Name, extractOnlyLastSuffixFromExtensions ) );
+						result[index] = new FileSystemEntry( items[i].path, items[i].name, FileBrowser.GetExtensionFromFilename( items[i].name, extractOnlyLastSuffixFromExtensions ), items[i].isDirectory );
 						index++;
 					}
 					catch( System.Exception e )
@@ -276,7 +279,7 @@ namespace SimpleFileBrowser
 				return AJC.CallStatic<string>( "CreateSAFEntry", Context, directoryPath, false, filename );
 #endif
 
-			string path = Path.Combine( directoryPath, filename );
+			string path = FileItem.Combine( directoryPath+'/', filename );
 			using( File.Create( path ) ) { }
 			return path;
 		}
@@ -288,7 +291,7 @@ namespace SimpleFileBrowser
 				return AJC.CallStatic<string>( "CreateSAFEntry", Context, directoryPath, true, folderName );
 #endif
 
-			string path = Path.Combine( directoryPath, folderName );
+			string path = FileItem.Combine( directoryPath+'/', folderName );
 			Directory.CreateDirectory( path );
 			return path;
 		}
@@ -433,11 +436,11 @@ namespace SimpleFileBrowser
 
 			FileInfo[] files = sourceDirectory.GetFiles();
 			for( int i = 0; i < files.Length; i++ )
-				files[i].CopyTo( Path.Combine( destinationPath, files[i].Name ), true );
+				files[i].CopyTo( FileItem.Combine( destinationPath+'/', files[i].Name ), true );
 
 			DirectoryInfo[] subDirectories = sourceDirectory.GetDirectories();
 			for( int i = 0; i < subDirectories.Length; i++ )
-				CopyDirectoryRecursively( subDirectories[i], Path.Combine( destinationPath, subDirectories[i].Name ) );
+				CopyDirectoryRecursively( subDirectories[i], FileItem.Combine( destinationPath+'/', subDirectories[i].Name ) );
 		}
 
 		public static void MoveFile( string sourcePath, string destinationPath )
@@ -470,7 +473,7 @@ namespace SimpleFileBrowser
 			if( ShouldUseSAFForPath( path ) )
 				return AJC.CallStatic<string>( "RenameSAFEntry", Context, path, newName );
 #endif
-			string newPath = Path.Combine( Path.GetDirectoryName( path ), newName );
+			string newPath = FileItem.Combine( Path.GetDirectoryName( path )+'/', newName );
 			File.Move( path, newPath );
 
 			return newPath;
@@ -482,7 +485,7 @@ namespace SimpleFileBrowser
 			if( ShouldUseSAFForPath( path ) )
 				return AJC.CallStatic<string>( "RenameSAFEntry", Context, path, newName );
 #endif
-			string newPath = Path.Combine( new DirectoryInfo( path ).Parent.FullName, newName );
+			string newPath = FileItem.Combine( new DirectoryInfo( path ).Parent.FullName+'/', newName );
 			Directory.Move( path, newPath );
 
 			return newPath;

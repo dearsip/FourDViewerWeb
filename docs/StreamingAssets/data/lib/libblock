@@ -1,0 +1,166 @@
+// avoid other libraries to keep the shape list short
+
+// ----------------------------------------
+
+[[0 1] [0 1] [0 1]] rect
+cyan shapecolor
+"block3-1x1" def
+
+[[0 1] [0 2] [0 1]] rect
+[0.5 1.5 0.5] aligncenter
+green shapecolor
+"block3-1x2" def
+
+[[0 1] [0 4] [0 1]] rect
+[0.5 1.5 0.5] aligncenter
+green shapecolor
+"block3-1x4" def
+
+[[0 2] [0 2] [0 1]] rect
+[1.5 1.5 0.5] aligncenter
+#008080 shapecolor
+"block3-2x2" def
+
+[[0 4] [0 2] [0 1]] rect
+[2.5 1.5 0.5] aligncenter
+red shapecolor
+"block3-2x4" def
+
+[
+[0 0]
+[2 2]
+[2 0]
+]
+genpoly z [0 1] prism
+[1.5 1.5 0.5] aligncenter
+orange shapecolor
+"ramp3-2x2" def
+
+[
+[0 0]
+[4 2]
+[4 0]
+]
+genpoly z [0 1] prism
+[2.5 1.5 0.5] aligncenter
+yellow shapecolor
+"ramp3-2x4" def
+
+[0.5 0.5] 0.541 8 altpoly y [0 2] prism
+[0.5 1.5 0.5] aligncenter
+#800080 shapecolor
+"pillar3-2" def
+
+[0.5 0.5] 0.541 8 altpoly y [0 4] prism
+[0.5 1.5 0.5] aligncenter
+yellow shapecolor
+"pillar3-4" def
+
+// ----------------------------------------
+
+[
+[0 0.5 0]
+[0 0.5 1]
+[0 0 0.5]
+[0 1 0.5]
+[0.5 0 0]
+[0.5 0 1]
+[0.5 1 0]
+[0.5 1 1]
+[1 0.5 0]
+[1 0.5 1]
+[1 0 0.5]
+[1 1 0.5]
+][
+0 2 edge
+0 3 edge
+1 2 edge
+1 3 edge
+0 4 edge
+0 6 edge
+1 5 edge
+1 7 edge
+2 4 edge
+2 5 edge
+3 6 edge
+3 7 edge
+8 4 edge
+8 6 edge
+9 5 edge
+9 7 edge
+10 4 edge
+10 5 edge
+11 6 edge
+11 7 edge
+8 10 edge
+8 11 edge
+9 10 edge
+9 11 edge
+][
+[0 1 2 3] [-1 0 0] face    // x=0
+[20 21 22 23] [1 0 0] face // x=1
+[8 9 16 17] [0 -1 0] face  // y=0
+[10 11 18 19] [0 1 0] face // y=1
+[4 5 12 13] [0 0 -1] face
+[6 7 14 15] [0 0 1] face
+[15 19 23] [1 1 1] face    // +++
+[3 7 11] [-1 1 1] face     // etc
+[14 17 22] [1 -1 1] face
+[13 18 21] [1 1 -1] face
+[12 16 20] [1 -1 -1] face
+[1 5 10] [-1 1 -1] face
+[2 6 9] [-1 -1 1] face
+[0 4 8] [-1 -1 -1] face
+]
+shape "tempcubocta" def
+
+// ----------------------------------------
+
+block3-1x1 w [0 1] prism
+cyan shapecolor
+"block4-1x1" def
+
+block3-1x2 w [0 1] prism
+[0.5 1.5 0.5 0.5] aligncenter
+green shapecolor
+"block4-1x2" def
+
+block3-1x4 w [0 1] prism
+[0.5 1.5 0.5 0.5] aligncenter
+green shapecolor
+"block4-1x4" def
+
+block3-2x2 w [0 1] prism
+[1.5 1.5 0.5 0.5] aligncenter
+#008080 shapecolor
+"block4-2x2" def
+
+block3-2x4 w [0 1] prism
+[2.5 1.5 0.5 0.5] aligncenter
+red shapecolor
+"block4-2x4" def
+
+ramp3-2x2 w [0 1] prism
+[1.5 1.5 0.5 0.5] aligncenter
+orange shapecolor
+"ramp4-2x2" def
+
+ramp3-2x4 w [0 1] prism
+[2.5 1.5 0.5 0.5] aligncenter
+yellow shapecolor
+"ramp4-2x4" def
+
+tempcubocta y [0 2] prism
+[0.5 1.5 0.5 0.5] aligncenter
+#800080 shapecolor
+"pillar4-2" def
+
+tempcubocta y [0 4] prism
+[0.5 1.5 0.5 0.5] aligncenter
+yellow shapecolor
+"pillar4-4" def
+
+null "tempcubocta" def
+
+// ----------------------------------------
+

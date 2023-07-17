@@ -51,6 +51,7 @@ public class Core : MonoBehaviour
     private bool leftTrigger, rightTrigger, lastLeftTrigger, lastRightTrigger, leftTriggerPressed, rightTriggerPressed,
         leftMove, rightMove, leftGrip, rightGrip, lastLeftGrip, lastRightGrip;
     public Menu menuPanel;
+    public Canvas menuCanvas;
 
     public Transform leftT, rightT;
     public Transform head;
@@ -165,6 +166,7 @@ public class Core : MonoBehaviour
         reg6 = new double[4];
 
         FileBrowser.HideDialog();
+        StartCoroutine(FileItem.Build());
     }
 
     private void LeftDown() {
@@ -196,7 +198,7 @@ public class Core : MonoBehaviour
 
     private void openMenu()
     {
-        menuPanel.gameObject.SetActive(true);
+        menuCanvas.enabled = true;
         menuPanel.Activate(oa);
     }
 
@@ -259,10 +261,10 @@ public class Core : MonoBehaviour
     // int frameCount = 0;
     void Update()
     {
-        if (!menuPanel.isActiveAndEnabled) calcInputFrame();
+        if (!menuCanvas.enabled) calcInputFrame();
         // frameCount++;
         now = Time.realtimeSinceStartup;
-        delta = Mathf.Clamp(now-last, 0.01f, 0.5f);
+        delta = Mathf.Clamp(now-last, 0.0001f, 0.5f);
         last = now;
         // dOneSec = now - lastOneSec;
         // if (dOneSec >= 1) {
@@ -275,7 +277,7 @@ public class Core : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Escape)) ToggleMenu();
 
         engine.ApplyMesh();
-        if (!menuPanel.isActiveAndEnabled) calcInput();
+        if (!menuCanvas.enabled) calcInput();
         menuCommand?.Invoke();
         menuCommand = null;
         control();
@@ -284,7 +286,7 @@ public class Core : MonoBehaviour
 
     public void ToggleMenu()
     {
-        if (menuPanel.gameObject.activeSelf == false) openMenu();
+        if (menuCanvas.enabled == false) openMenu();
         else menuPanel.doCancel();
     }
 
@@ -856,20 +858,20 @@ public class Core : MonoBehaviour
         // rightL.enabled = false;
         // SteamVR_Actions.control.Activate(left);
         // SteamVR_Actions.control.Activate(right);
-        menuPanel.gameObject.SetActive(false);
+        menuCanvas.enabled = false;
     }
 
     public void doQuit()
     {
         try {
-            PropertyFile.save(Path.Combine(UnityEngine.Application.persistentDataPath, fileCurrent),save);
+            PropertyFile.save(FileItem.Combine(Application.persistentDataPath, fileCurrent),save);
         } catch (Exception e) {
             Debug.LogException(e);
         }
 #if UNITY_EDITOR
         UnityEditor.EditorApplication.isPlaying = false;
 #elif UNITY_STANDALONE
-        UnityEngine.Application.Quit();
+        Application.Quit();
 #endif
     }
 
@@ -879,46 +881,43 @@ public class Core : MonoBehaviour
     }
 
     private bool opened;
+    private IStore store;
     IEnumerator ShowLoadDialogCoroutine()
     {
-        yield return FileBrowser.WaitForLoadDialog(FileBrowser.PickMode.Files, false, opened ? null : UnityEngine.Application.streamingAssetsPath, "Load File", "Load");
+        yield return FileBrowser.WaitForLoadDialog(FileBrowser.PickMode.Files, false, opened ? null : "", "Load File", "Load");
         opened = true;
 
         Debug.Log("LoadFile " + (FileBrowser.Success ? "successful: " + Path.GetFileName(FileBrowser.Result[0]) : "failed"));
 
         if (FileBrowser.Success) {
-            reloadFile = FileBrowser.Result[0];
+            reloadFile = FileItem.Combine(Application.streamingAssetsPath, FileBrowser.Result[0]);
             Debug.Log("Load: " + Path.GetFileName(reloadFile));
-            if (PropertyFile.test(reloadFile)) menuCommand = doLoadMaze;
-            else menuCommand = doLoadGeom;
+            yield return LoadCoroutine();
         }
     }
 
-    private void doLoadMaze()
+    IEnumerator LoadCoroutine()
     {
-        PropertyFile.load(reloadFile, loadMaze);
+        yield return PropertyFile.test(reloadFile);
+        if (PropertyFile.isMaze) yield return doLoadMaze();
+        else yield return doLoadGeom();
     }
 
-    private void doLoadGeom()
+    private IEnumerator doLoadMaze()
     {
-        try
-        {
-            loadGeom(reloadFile);
-        }
-        catch (Exception t)
-        {
-            string s = "";
-            if (t is LanguageException)
-            {
-                LanguageException e = (LanguageException)t;
-                //t = e.getCause();
-                s = Path.GetFileName(e.getFile()) + "\n" + e.getDetail();
-                Debug.LogException(new Exception(s));
-            }
-            else Debug.LogException(t);
-            //t.printStackTrace();
-            //JOptionPane.showMessageDialog(this, s + t.getClass().getName() + "\n" + t.getMessage(), App.getString("Maze.s25"), JOptionPane.ERROR_MESSAGE);
-        }
+        Debug.Log("Load: " + Path.GetFileName(reloadFile));
+        yield return PropertyFile.load(reloadFile, loadMazeCommand);
+    }
+
+    private IEnumerator doLoadGeom()
+    {
+        // read file
+
+        context = DefaultContext.create();
+        Debug.Log("Load: " + Path.GetFileName(reloadFile));
+        context.libDirs.Add("data" + Path.DirectorySeparatorChar + "lib");
+        yield return Language.include(context, reloadFile);
+        menuCommand = loadGeom;
     }
    private static readonly string VALUE_CHECK       = "Maze";
 
@@ -932,6 +931,8 @@ public class Core : MonoBehaviour
    private static readonly string KEY_OPTIONS_CONTROL = "oo";
    private static readonly string KEY_ALIGN_MODE    = "align";
 
+    public void loadMazeCommand(IStore store) { this.store = store; menuCommand = loadMaze; }
+    private void loadMaze() { loadMaze(store); store = null; }
     public void loadMaze(IStore store){
         try {
             if ( ! store.getString(KEY_CHECK).Equals(VALUE_CHECK) ) throw new Exception("getEmpty");//App.getEmptyException();
@@ -981,14 +982,31 @@ public class Core : MonoBehaviour
         engine.load(store,alignModeLoad);
     }
 
-    public void loadGeom(string file) //throws Exception
+    Context context;
+    private void loadGeom()
     {
-
-        // read file
-
-        Context c = DefaultContext.create();
-        c.libDirs.Add(UnityEngine.Application.streamingAssetsPath + Path.DirectorySeparatorChar + "data" + Path.DirectorySeparatorChar + "lib");
-        Language.include(c, file);
+        try
+        {
+            loadGeom(context);
+        }
+        catch (Exception t)
+        {
+            string s = "";
+            if (t is LanguageException)
+            {
+                LanguageException e = (LanguageException)t;
+                //t = e.getCause();
+                s = Path.GetFileName(e.getFile()) + "\n" + e.getDetail();
+                Debug.LogException(new Exception(s));
+            }
+            else Debug.LogException(t);
+            //t.printStackTrace();
+            //JOptionPane.showMessageDialog(this, s + t.getClass().getName() + "\n" + t.getMessage(), App.getString("Maze.s25"), JOptionPane.ERROR_MESSAGE);
+        }
+        finally { context = null; }
+    }
+    public void loadGeom(Context c) //throws Exception
+    {
 
         // build the model
         //Debug.Log("try");
@@ -1197,30 +1215,29 @@ public class Core : MonoBehaviour
         if (reloadFile == null) return;
 
         if (delta != 0) {
-            string[] f = Array.ConvertAll<FileInfo, string>(Directory.GetParent(reloadFile).GetFiles(), s => s.ToString());
-            Array.Sort(f);
+            string file = FileItem.Retrieve(reloadFile);
+            string[] f = Array.ConvertAll<FileItem, string>(FileItem.Find(FileItem.GetParent(file)).children.ToArray(), f => f.path);
+            // Array.Sort(f);
 
             // results of listFiles have same parent directory so names are sufficient
             // (and probably faster for sorting)
 
-            int i = Array.IndexOf(f,reloadFile);
+            int i = Array.IndexOf(f,file);
             if (i != -1) {
                 i += delta;
-                if (i >= 0 && i < f.Length) reloadFile = f[i];
+                if (i >= 0 && i < f.Length) file = f[i];
                 else return; // we're at the end, don't do a reload
             }
             // else not found, fall through and report that error
+            reloadFile = FileItem.Combine(Application.streamingAssetsPath, file);
         }
-        Debug.Log("Load: " + Path.GetFileName(reloadFile));
-
-        if (PropertyFile.test(reloadFile)) menuCommand = doLoadMaze;
-        else menuCommand = doLoadGeom;
+        StartCoroutine(LoadCoroutine());
     }
 
     private bool doInit() {
         try {
-            PropertyFile.load(nameDefault, delegate(IStore store) { loadDefault(store); });
-            if (File.Exists(Path.Combine(UnityEngine.Application.persistentDataPath, fileCurrent))) PropertyFile.load(Path.Combine(UnityEngine.Application.persistentDataPath, fileCurrent), load);
+            PropertyFile.loadDefault(delegate(IStore store) { loadDefault(store); });
+            if (File.Exists(FileItem.Combine(Application.persistentDataPath, fileCurrent))) PropertyFile.load(FileItem.Combine(Application.persistentDataPath, fileCurrent), load);
         } catch (Exception e) {
             Debug.LogException(e);
             return false;
@@ -1244,7 +1261,7 @@ public class Core : MonoBehaviour
     public void loadDefault(IStore store) {
         store.getObject(KEY_OPTIONS,optDefault);
 
-        if (File.Exists(Path.Combine(UnityEngine.Application.persistentDataPath, fileCurrent))) return;
+        if (File.Exists(FileItem.Combine(Application.persistentDataPath, fileCurrent))) return;
 
         store.getObject(KEY_OPTIONS,opt);
         dim = 4;

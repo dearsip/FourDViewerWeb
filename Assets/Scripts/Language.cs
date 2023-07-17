@@ -4,11 +4,9 @@
 using System;
 using UnityEngine;
 using System.IO;
-//import java.awt.Color;
-//import java.io.File;
-//import java.io.FileReader;
-//import java.io.StreamTokenizer;
-//import java.util.Iterator;
+using System.Collections;
+using UnityEngine.Networking;
+using SimpleFileBrowser;
 
 /**
  * The heart of the scene language interpreter.
@@ -17,69 +15,71 @@ using System.IO;
 public class Language
 {
 
-    public static void include(Context c, string filename) //throws Exception
+    public static IEnumerator include(Context c, string filename) //throws Exception
     {
-        if (include_(c, resolve(c, filename)))
+        if (c.included.Add(filename = resolve(c, filename)))
         {
+            yield return include_(c, filename);
             if (c.isTopLevel()) c.topLevelInclude.Add(filename);
         }
     }
 
-    public static bool include_(Context c, string file) //throws Exception
+    public static IEnumerator include_(Context c, string file) //throws Exception
     {
-
-        file = Path.GetFullPath(file);
-        if (!c.included.Add(file)) return false;
-
-        StreamReader fr = new StreamReader(file);
-        try
+        string text;
+#if UNITY_EDITOR
+        yield return text = File.ReadAllText(file);
+#else
+        using (UnityWebRequest www = UnityWebRequest.Get(file))
         {
-            StreamTokenizer st = createTokenizer(fr);
-
-            c.dirStack.Push(Path.GetDirectoryName(file));
-            try
-            {
-                doFile(c, st);
-            }
-            catch (Exception t)
-            {
-                throw (t is LanguageException) ? t : new LanguageException(t, file, st.ToString());
-            }
-            finally
-            {
-                c.dirStack.Pop();
-            }
-
+        yield return www.SendWebRequest();
+        if (www.result == UnityWebRequest.Result.Success) text = www.downloadHandler.text;
+        else { Debug.Log(www.error); yield break; }
         }
-        finally
-        {
-            fr.Close();
-        }
+#endif
+        StreamTokenizer st = createTokenizer(text);
 
-        return true;
+        c.dirStack.Push(FileItem.GetParent(file));
+        // try
+        // {
+            yield return doFile(c, st);
+        // }
+        // catch (Exception t)
+        // {
+            // throw (t is LanguageException) ? t : new LanguageException(t, file, st.ToString());
+        // }
+        // finally
+        // {
+            c.dirStack.Pop();
+        // }
+
     }
 
     public static string resolve(Context c, string filename) //throws Exception
     {
 
         string file = filename;
+#if UNITY_EDITOR
         if (Path.IsPathRooted(file)) return file;
+#else
+        if (file.Substring(0,4) == "http") return file;
+#endif
 
-        file = Path.Combine(c.dirStack.Peek(), filename);
+        file = FileItem.Combine(c.dirStack.Peek(), filename);
         if (File.Exists(file)) return file;
         
         foreach (string dir in c.libDirs)
         {
-            file = Path.Combine(dir, filename);
-            if (File.Exists(file)) return file;
+            file = FileItem.Combine(dir, filename);
+            if (FileItem.Exists(file)) return FileItem.Combine(Application.streamingAssetsPath, file);
         }
 
         throw new Exception("Unable to resolve filename '" + filename + "'.");
     }
 
-    public static StreamTokenizer createTokenizer(StreamReader fr)
+    public static StreamTokenizer createTokenizer(string text)
     {
-        StreamTokenizer st = new StreamTokenizer(fr);
+        StreamTokenizer st = new StreamTokenizer(text);
 
         // customize tokenizer
         st.WordChars('#', '#');
@@ -93,7 +93,8 @@ public class Language
         return st;
     }
 
-    public static void doFile(Context c, StreamTokenizer st) //throws Exception
+    public static string includeFile;
+    public static IEnumerator doFile(Context c, StreamTokenizer st) //throws Exception
     {
         while (true)
         {
@@ -116,6 +117,12 @@ public class Language
                     break;
                 case StreamTokenizer.TT_EOL:
                     throw new Exception("Unexpected token type.");
+            }
+            if (includeFile != null)
+            {
+                string file = includeFile;
+                includeFile = null;
+                yield return include(c, file);
             }
         }
     }

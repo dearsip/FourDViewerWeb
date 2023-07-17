@@ -1,0 +1,24 @@
+"library" include
+
+block4
+
+6
+[
+[0 0 0 0]
+[1 1 1 0]
+[0 0 1 0]
+[1 1 0 0]
+[0 1 0 0]
+[1 0 1 0]
+[0 1 1 0]
+[1 0 0 0]
+][
+0 1 edge
+2 3 edge
+4 5 edge
+6 7 edge
+]
+texture
+
+PROJ_NORMAL null facetexture
+

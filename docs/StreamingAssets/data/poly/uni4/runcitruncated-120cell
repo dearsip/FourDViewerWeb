@@ -1,0 +1,6 @@
+"uni4/runcitruncated-120cell" include
+
+[0.5 7.5 0.5 -14.5] [X+ Y+ Z+ W+] viewinfo
+
+runcitruncated-120cell [0 7 0 0] translate
+

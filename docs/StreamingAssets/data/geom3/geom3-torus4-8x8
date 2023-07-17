@@ -1,0 +1,10 @@
+
+[0.5 0.5] 0.5 8 altpoly
+[0.5 0.5] 0.5 8 altpoly
+product
+[0.5 0.5 0.5 0.5] aligncenter
+x+ y- 90 rotate
+z+ w- 90 rotate
+x+ z+ 90 rotate
+// spin flat faces x+ and z+ to y- and w-, then reorient xy to zy
+

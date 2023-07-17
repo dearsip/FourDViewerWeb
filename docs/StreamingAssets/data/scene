@@ -1,0 +1,44 @@
+"libtrain" include
+
+// a nice 3D tunnel but 4D analogue is hard
+/*
+half3 x+ z+ 180 [0 0 0.5] altrot [0.3 0.3 1] scale [-1.6 0 0] translate
+half3                            [0.3 0.3 1] scale [-1.4 0 0] translate
+block3 [0.2 0.1 1] scale [-1.6 0.2 0] translate
+*/
+
+// my first train set
+/*
+3 1 1 0.15 0 7 orange red true 0.01 newtrack
+[0 0 0] z+ w+ "sllslssrrsrs" track
+
+[
+block3 [1 0.5 1] scale red shapecolor car
+]
+1 [0 0 0] z+ z- 0.1 TM_SQUARE train
+
+block3 [-2 0 0] translate
+block3 [1 0 1] translate
+block3 [-1 0 -1] translate
+*/
+
+// a nice track
+/*
+4 2 0.2 0.15 0 5 orange red true 0.01 newtrack
+[0 0 1 0] x+ w- "lslslsls" track
+[0 0 1 0] w+ x+ "lslslsls" track
+[1 0 1 0] z- w- "lor" track
+*/
+
+// trying to figure out half4
+half4
+0 red facecolor
+1 yellow facecolor
+2 magenta facecolor
+3 gray facecolor
+4 cyan facecolor
+5 orange facecolor
+[0 1 0 0] translate
+/*
+*/
+

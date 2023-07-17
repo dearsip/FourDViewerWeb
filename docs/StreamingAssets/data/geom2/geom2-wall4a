@@ -1,0 +1,26 @@
+"library" include
+
+block4 [-1 0 -1 0] translate
+block4 [ 0 0 -1 0] translate
+block4 [ 1 0 -1 0] translate
+
+block4 [-1 0  0 0] translate
+block4 [ 0 0  0 0] translate
+block4 [ 1 0  0 0] translate
+
+block4 [-1 0  1 0] translate
+block4 [ 0 0  1 0] translate
+block4 [ 1 0  1 0] translate
+
+block4 [-1 1 -1 0] translate
+block4 [ 0 1 -1 0] translate
+block4 [ 1 1 -1 0] translate
+
+block4 [-1 1  0 0] translate
+block4 [ 0 1  0 0] translate
+block4 [ 1 1  0 0] translate
+
+block4 [-1 1  1 0] translate
+block4 [ 0 1  1 0] translate
+block4 [ 1 1  1 0] translate
+

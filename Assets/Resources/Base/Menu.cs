@@ -18,6 +18,7 @@ public class Menu : MonoBehaviour
     private Options optDefault;
     private OptionsAll oaResult;
     private bool isActivating;
+    public Canvas canvas;
 
     [SerializeField] WebXRController leftC;
     private bool leftMButton, rightMButton, lastLeftMButton, lastRightMButton;
@@ -56,7 +57,7 @@ public class Menu : MonoBehaviour
         defaultPosition = transform.localPosition;
         defaultRotation = transform.localRotation;
         defaultScale = transform.localScale;
-        gameObject.SetActive(false);
+        canvas.enabled = false;
     }
 
     // private void LeftActivate(SteamVR_Action_Boolean fromBoolean, SteamVR_Input_Sources fromSource)
@@ -87,7 +88,7 @@ public class Menu : MonoBehaviour
     // }
 
     private void CloseMenu() {
-        if (gameObject.activeSelf)
+        if (canvas.enabled)
         {
             doCancel();
         }

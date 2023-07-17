@@ -596,10 +596,11 @@ namespace SimpleFileBrowser
 #if !UNITY_EDITOR && UNITY_ANDROID
 					if( !FileBrowserHelpers.ShouldUseSAFForPath( value ) )
 #endif
-					value = GetPathWithoutTrailingDirectorySeparator( value );
+					// value = GetPathWithoutTrailingDirectorySeparator( value );
 				}
 
-				if( string.IsNullOrEmpty( value ) )
+				// if( string.IsNullOrEmpty( value ) )
+				if (value == null)
 				{
 					pathInputField.text = m_currentPath;
 					return;
@@ -635,14 +636,16 @@ namespace SimpleFileBrowser
 					if( FileBrowserHelpers.ShouldUseSAF )
 					{
 						string parentPath = FileBrowserHelpers.GetDirectoryName( m_currentPath );
-						upButton.interactable = !string.IsNullOrEmpty( parentPath ) && ( FileBrowserHelpers.ShouldUseSAFForPath( parentPath ) || FileBrowserHelpers.DirectoryExists( parentPath ) ); // DirectoryExists: Directory may not be accessible on Android 10+, this function checks that
+						// upButton.interactable = !string.IsNullOrEmpty( parentPath ) && ( FileBrowserHelpers.ShouldUseSAFForPath( parentPath ) || FileBrowserHelpers.DirectoryExists( parentPath ) ); // DirectoryExists: Directory may not be accessible on Android 10+, this function checks that
+						upButton.interactable = parentPath != null && ( FileBrowserHelpers.ShouldUseSAFForPath( parentPath ) || FileBrowserHelpers.DirectoryExists( parentPath ) ); // DirectoryExists: Directory may not be accessible on Android 10+, this function checks that
 					}
 					else
 #endif
 					{
 						try // When "C:/" or "C:" is typed instead of "C:\", an exception is thrown
 						{
-							upButton.interactable = Directory.GetParent( m_currentPath ) != null;
+							// upButton.interactable = FileItem.GetParent( m_currentPath ) != null;
+							upButton.interactable = !string.IsNullOrEmpty(m_currentPath);
 						}
 						catch
 						{
@@ -987,7 +990,8 @@ namespace SimpleFileBrowser
 			if( !focus )
 				PersistFileEntrySelection();
 			else
-				RefreshFiles( true );
+				// RefreshFiles( true );
+				RefreshFiles( false );
 		}
 		#endregion
 
@@ -1065,7 +1069,7 @@ namespace SimpleFileBrowser
 #if UNITY_STANDALONE_OSX
 				// Documents folder must be appended manually on Mac OS
 				if( quickLink.target == Environment.SpecialFolder.MyDocuments && !string.IsNullOrEmpty( quickLinkPath ) )
-					quickLinkPath = Path.Combine( quickLinkPath, "Documents" );
+					quickLinkPath = FileItem.Combine( quickLinkPath, "Documents" );
 #endif
 
 				AddQuickLink( quickLink.icon, quickLink.name, quickLinkPath );
@@ -1139,7 +1143,7 @@ namespace SimpleFileBrowser
 						//{
 						//	try
 						//	{
-						//		driveName = Directory.GetParent( drives[i] ).Name + "/" + driveName;
+						//		driveName = FileItem.GetParent( drives[i] ).Name + "/" + driveName;
 						//	}
 						//	catch
 						//	{
@@ -1328,9 +1332,9 @@ namespace SimpleFileBrowser
 			{
 				try // When "C:/" or "C:" is typed instead of "C:\", an exception is thrown
 				{
-					DirectoryInfo parentPath = Directory.GetParent( m_currentPath );
+					string parentPath = FileItem.GetParent( m_currentPath );
 					if( parentPath != null )
-						CurrentPath = parentPath.FullName;
+						CurrentPath = parentPath;
 				}
 				catch
 				{
@@ -1585,7 +1589,7 @@ namespace SimpleFileBrowser
 									else
 #endif
 									{
-										submittedFileEntryPaths.Add( Path.Combine( m_currentPath, filename ) );
+										submittedFileEntryPaths.Add( FileItem.Combine( m_currentPath, filename ) );
 
 										if( !submittedFolderPaths.Contains( m_currentPath ) )
 											submittedFolderPaths.Add( m_currentPath );
@@ -1667,7 +1671,8 @@ namespace SimpleFileBrowser
 
 			Hide();
 
-			if( !string.IsNullOrEmpty( m_currentPath ) )
+			// if( !string.IsNullOrEmpty( m_currentPath ) )
+			if( m_currentPath != null )
 				LastBrowsedFolder = m_currentPath;
 
 			OnCancel _onCancel = onCancel;
@@ -1847,7 +1852,7 @@ namespace SimpleFileBrowser
 					}
 					else
 #endif
-					CurrentPath = Path.Combine( m_currentPath, item.Name );
+					CurrentPath = FileItem.Combine( m_currentPath, item.Name );
 				}
 			}
 		}
@@ -2021,7 +2026,8 @@ namespace SimpleFileBrowser
 
 			if( pathChanged )
 			{
-				if( !string.IsNullOrEmpty( m_currentPath ) )
+				// if( !string.IsNullOrEmpty( m_currentPath ) )
+				if (m_currentPath != null)
 					allFileEntries = FileBrowserHelpers.GetEntriesInDirectory( m_currentPath, allExtensionsHaveSingleSuffix );
 				else
 					allFileEntries = null;
@@ -2746,13 +2752,15 @@ namespace SimpleFileBrowser
 
 		private string GetInitialPath( string initialPath )
 		{
-			if( !string.IsNullOrEmpty( initialPath ) && !FileBrowserHelpers.DirectoryExists( initialPath ) && FileBrowserHelpers.FileExists( initialPath ) )
+			// if( !string.IsNullOrEmpty( initialPath ) && !FileBrowserHelpers.DirectoryExists( initialPath ) && FileBrowserHelpers.FileExists( initialPath ) )
+			if( initialPath != null && !FileBrowserHelpers.DirectoryExists( initialPath ) && FileBrowserHelpers.FileExists( initialPath ) )
 			{
 				// Path points to a file, use its parent directory's path instead
 				initialPath = FileBrowserHelpers.GetDirectoryName( initialPath );
 			}
 
-			if( string.IsNullOrEmpty( initialPath ) || !FileBrowserHelpers.DirectoryExists( initialPath ) )
+			// if( string.IsNullOrEmpty( initialPath ) || !FileBrowserHelpers.DirectoryExists( initialPath ) )
+			if( initialPath == null || !FileBrowserHelpers.DirectoryExists( initialPath ) )
 			{
 				if( CurrentPath.Length > 0 )
 					initialPath = CurrentPath;
@@ -2813,7 +2821,7 @@ namespace SimpleFileBrowser
 			if( FileBrowserHelpers.ShouldUseSAFForPath( path ) )
 				return true;
 #endif
-			string tempFilePath = Path.Combine( path, "__fsWrite.tmp" );
+			string tempFilePath = FileItem.Combine( path, "__fsWrite.tmp" );
 			try
 			{
 				File.Create( tempFilePath ).Close();

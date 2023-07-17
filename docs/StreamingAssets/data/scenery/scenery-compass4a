@@ -1,0 +1,8 @@
+"library" include
+"sky4" include
+
+block4
+
+[magenta #800080 null null gray white cyan #008080] colorblend
+2.25 0.5 0.25 compass4
+

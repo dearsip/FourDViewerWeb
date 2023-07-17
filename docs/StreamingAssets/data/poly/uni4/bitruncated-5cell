@@ -1,0 +1,6 @@
+"uni4/bitruncated-5cell" include
+
+[0.5 2.5 0.5 -4.5] [X+ Y+ Z+ W+] viewinfo
+
+bitruncated-5cell [0 2 0 0] translate
+

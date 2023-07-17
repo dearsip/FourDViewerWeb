@@ -1,0 +1,49 @@
+"library" include
+"library2" include
+
+block4 "b" def
+half4 cyan shapecolor "d" def
+wedge4 yellow shapecolor "c" def
+rpenta magenta shapecolor "e" def
+
+b [0 3 0 0] translate
+b [0 1 0 0] translate
+
+b [0 2 0 1] translate
+b [0 2 0 -1] translate
+
+d [0 3 0 1] translate x+ w+ 90 rotate
+d [0 1 0 1] translate y+ x+ 90 rotate x+ w+ 90 rotate
+d [0 3 0 -1] translate x+ w- 90 rotate
+d [0 1 0 -1] translate y+ x+ 90 rotate x+ w- 90 rotate
+
+[
+b [1 2 0 0] translate
+d [1 3 0 0] translate
+c [1 3 1 0] translate
+d [1 2 1 0] translate y+ z+ 90 rotate
+d [1 1 0 0] translate y+ x+ 90 rotate
+c [1 1 1 0] translate y+ z+ 90 rotate
+
+d [1 2 0 1] translate y+ w+ 90 rotate
+c [1 3 0 1] translate z+ w+ 90 rotate
+e [1 3 1 1] translate
+c [1 2 1 1] translate y+ w+ 90 rotate
+c [1 1 0 1] translate y+ w+ 90 rotate z+ y- 90 rotate
+e [1 1 1 1] translate y+ w+ 90 rotate
+
+d [1 2 0 -1] translate y+ w- 90 rotate
+c [1 3 0 -1] translate z+ w- 90 rotate
+e [1 3 1 -1] translate w+ y+ 90 rotate
+c [1 2 1 -1] translate y+ w- 90 rotate
+c [1 1 0 -1] translate y+ w- 90 rotate z+ y- 90 rotate
+e [1 1 1 -1] translate w+ y+ 180 rotate
+]
+glue
+copy
+x+ z+ 90 [0.5 0.5 0.5 0.5] altrot
+copy
+x+ z+ 90 [0.5 0.5 0.5 0.5] altrot
+copy
+x+ z+ 90 [0.5 0.5 0.5 0.5] altrot
+
