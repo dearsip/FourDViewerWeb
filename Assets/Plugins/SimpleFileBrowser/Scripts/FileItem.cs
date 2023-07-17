@@ -46,7 +46,7 @@ namespace SimpleFileBrowser
 #endif
         root = CreateRoot();
         FileItem current = root;
-        foreach (string s in directory.Split(new string[] { "\r\n" }, StringSplitOptions.None))
+        foreach (string s in directory.Replace("\r\n","\n").Split(new[]{'\n','\r'}))
         {
           if (s == "/") { current = current.children.Last(); current.Directorize(); continue; }
           if (s == "..") { current = current.parent; continue; }

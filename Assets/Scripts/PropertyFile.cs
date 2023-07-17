@@ -43,7 +43,7 @@ public class PropertyFile
                 else { Debug.Log(www.error); yield break; }
             }
 #endif
-            foreach (string line in text.Split(new string[] { "\r\n" }, StringSplitOptions.None))
+            foreach (string line in text.Replace("\r\n","\n").Split(new[]{'\n','\r'}))
         // string str = "";
         // switch (file) {
             // case "default.properties":
@@ -65,7 +65,7 @@ public class PropertyFile
     }
 
     private static void loadDefault(Dictionary<string, string> dict) {
-        foreach (string line in default_.Split(new string[] { "\r\n" }, StringSplitOptions.None))
+        foreach (string line in default_.Replace("\r\n","\n").Split(new[]{'\n','\r'}))
         {
             if ((!String.IsNullOrEmpty(line)) &&
                 (!line.StartsWith("#")) &&
