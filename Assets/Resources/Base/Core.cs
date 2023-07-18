@@ -52,12 +52,15 @@ public class Core : MonoBehaviour
         leftMove, rightMove, leftGrip, rightGrip, lastLeftGrip, lastRightGrip;
     private int maxTouchCount = 4;
     private bool leftTouchButton, rightTouchButton;
+    public bool leftTouchToggleMode = false;
+    public bool rightTouchToggleMode = false;
+    public bool allowDiagonalMovement = true;
     private enum TouchType { MoveForward, MoveLateral, Turn, Spin, LeftTouchButton, RightTouchButton, CameraRotate, None }
     private TouchType[] touchType;
     private bool[] touchEnded;
     private Vector2[] fromTouchPos, lastTouchPos, touchPos;
     public Menu menuPanel;
-    public Canvas menuCanvas;
+    public Canvas menuCanvas, inputCanvas;
 
     public Transform leftT, rightT;
     public Transform head;
@@ -180,6 +183,8 @@ public class Core : MonoBehaviour
 
         FileBrowser.HideDialog();
         StartCoroutine(FileItem.Build());
+
+        LeftDown(); RightDown();
     }
 
     private void LeftDown() {
@@ -212,6 +217,7 @@ public class Core : MonoBehaviour
     private void openMenu()
     {
         menuCanvas.enabled = true;
+        inputCanvas.enabled = false;
         menuPanel.Activate(oa);
     }
 
@@ -308,9 +314,9 @@ public class Core : MonoBehaviour
     private float tSwipe = 0.3f;
     private float alignTime;
     private void calcInputFrame() {
-        if (leftC.GetButtonDown(WebXRController.ButtonTypes.ButtonA))
+        if (leftC.GetButtonDown(WebXRController.ButtonTypes.ButtonA) || leftC.GetButtonUp(WebXRController.ButtonTypes.ButtonA))
             LeftDown();
-        if (rightC.GetButtonDown(WebXRController.ButtonTypes.ButtonA))
+        if (rightC.GetButtonDown(WebXRController.ButtonTypes.ButtonA) || rightC.GetButtonUp(WebXRController.ButtonTypes.ButtonA))
             RightDown();
         if (leftC.GetButtonUp(WebXRController.ButtonTypes.ButtonB))
             openMenu();
@@ -352,20 +358,33 @@ public class Core : MonoBehaviour
             if (i >= maxTouchCount) continue;
             if (touch.phase == TouchPhase.Began)
             {
-                fromTouchPos[i] = lastTouchPos[i] = touch.position / new Vector2(Screen.width, Screen.height);
+                fromTouchPos[i] = lastTouchPos[i] = touchPos[i] = touch.position / new Vector2(Screen.width, Screen.height);
                 if (fromTouchPos[i].x < 0.3125f) touchType[i] = rightTouchButton ? TouchType.MoveLateral : TouchType.MoveForward;
-                else if (fromTouchPos[i].x < 0.4375f && fromTouchPos[i].y < 0.125f) { touchType[i] = TouchType.LeftTouchButton; leftTouchButton = true; }
+                else if (fromTouchPos[i].x < 0.40625f && fromTouchPos[i].y < 0.09375f) { touchType[i] = TouchType.LeftTouchButton; leftTouchButton = leftTouchToggleMode ? !leftTouchButton : true; }
                 else if (fromTouchPos[i].x > 0.6875f) touchType[i] = leftTouchButton ? TouchType.Spin : TouchType.Turn;
-                else if (fromTouchPos[i].x > 0.5625f && fromTouchPos[i].y < 0.125f) { touchType[i] = TouchType.RightTouchButton; rightTouchButton = true; }
+                else if (fromTouchPos[i].x > 0.59375f && fromTouchPos[i].y < 0.09375f) { touchType[i] = TouchType.RightTouchButton; rightTouchButton = rightTouchToggleMode ? !rightTouchButton : true; }
                 else touchType[i] = TouchType.CameraRotate;
+                Debug.Log("Touch " + i + " " + touchType[i] + " " + fromTouchPos[i]);
             }
             else if (touch.phase == TouchPhase.Moved) touchPos[i] = touch.position / new Vector2(Screen.width, Screen.height);
             else if (touch.phase == TouchPhase.Ended) touchEnded[i] = true;
         }
+        if (Input.GetMouseButtonDown(0))
+        {
+            fromTouchPos[3] = lastTouchPos[3] = touchPos[3] = Input.mousePosition / new Vector2(Screen.width, Screen.height);
+            if (fromTouchPos[3].x < 0.3125f) touchType[3] = rightTouchButton ? TouchType.MoveLateral : TouchType.MoveForward;
+            else if (fromTouchPos[3].x < 0.4375f && fromTouchPos[3].y < 0.125f) { touchType[3] = TouchType.LeftTouchButton; leftTouchButton = leftTouchToggleMode ? !leftTouchButton : true; }
+            else if (fromTouchPos[3].x > 0.6875f) touchType[3] = leftTouchButton ? TouchType.Spin : TouchType.Turn;
+            else if (fromTouchPos[3].x > 0.5625f && fromTouchPos[3].y < 0.125f) { touchType[3] = TouchType.RightTouchButton; rightTouchButton = rightTouchToggleMode ? !rightTouchButton : true; }
+            else touchType[3] = TouchType.CameraRotate;
+            Debug.Log("Touch " + 3 + " " + touchType[3] + " " + fromTouchPos[3]);
+        }
+        else if (Input.GetMouseButton(0)) touchPos[3] = Input.mousePosition / new Vector2(Screen.width, Screen.height);
+        else if (Input.GetMouseButtonUp(0)) touchEnded[3] = true;
     }
 
-    float touchMoveSpeed = 4f;
-    float touchRotateSpeed = 4f;
+    float touchMoveSpeed = 1f;
+    float touchRotateSpeed = 1f;
     float lerpc = 4f;
     private void calcInput()
     {
@@ -395,33 +414,61 @@ public class Core : MonoBehaviour
 
         for (int i = 0; i < maxTouchCount; i++)
         {
+            if (touchType[i] == TouchType.None) continue;
             Vector3 v = new Vector3();
             switch (touchType[i])
             {
                 case TouchType.MoveForward:
+                    leftMove = true;
                     v.x = (touchPos[i].x - lastTouchPos[i].x) * Screen.width / Screen.height;
                     v.y = touchPos[i].y - lastTouchPos[i].y;
-                    dlPosLeft += Quaternion.Euler(ClampedLerp(fromTouchPos[i].y), 0, 0) * v * touchMoveSpeed;
+                    v = Quaternion.Euler(90 * ClampedLerp(fromTouchPos[i].y), 0, 0) * v;
+                    dlRotLeft = Quaternion.Euler(0, 0, -2 * (float)(maxAng / limitLR) * v.y * touchRotateSpeed) * dlRotLeft;
+                    if (allowDiagonalMovement) { v.y = 0; dlPosLeft += v * touchMoveSpeed; }
                     v.x = (touchPos[i].x - fromTouchPos[i].x) * Screen.width / Screen.height;
                     v.y = touchPos[i].y - fromTouchPos[i].y;
-                    dfPosLeft += Quaternion.Euler(ClampedLerp(fromTouchPos[i].y), 0, 0) * v * touchMoveSpeed;
+                    v =  Quaternion.Euler(90 * ClampedLerp(fromTouchPos[i].y), 0, 0) * v;
+                    dfRotLeft = Quaternion.Euler(0, 0, -(float)(limitAngForward / limit) * v.y * touchRotateSpeed) * dfRotLeft;
+                    if (allowDiagonalMovement) { v.y = 0; dfPosLeft += v * touchMoveSpeed; }
                     break;
                 case TouchType.MoveLateral:
-                    dlRotLeft = Quaternion.Euler(0, (touchPos[i].y - lastTouchPos[i].y) * touchRotateSpeed, 0) * dlRotLeft;
-                    dfRotLeft = Quaternion.Euler(0, (touchPos[i].y - fromTouchPos[i].y) * touchRotateSpeed, 0) * dlRotLeft;
+                    leftMove = true;
+                    v.x = (touchPos[i].x - lastTouchPos[i].x) * Screen.width / Screen.height;
+                    v.y = touchPos[i].y - lastTouchPos[i].y;
+                    dlPosLeft += Quaternion.Euler(90 * ClampedLerp(fromTouchPos[i].y), 0, 0) * v * touchMoveSpeed * 0.4f;
+                    v.x = (touchPos[i].x - fromTouchPos[i].x) * Screen.width / Screen.height;
+                    v.y = touchPos[i].y - fromTouchPos[i].y;
+                    dfPosLeft += Quaternion.Euler(90 * ClampedLerp(fromTouchPos[i].y), 0, 0) * v * touchMoveSpeed * 0.4f;
                     break;
                 case TouchType.Turn:
+                    rightMove = true;
+                    v.x = (touchPos[i].x - lastTouchPos[i].x) * Screen.width / Screen.height;
+                    v.y = touchPos[i].y - lastTouchPos[i].y;
+                    dlPosRight += Quaternion.Euler(90 * ClampedLerp(fromTouchPos[i].y), 0, 0) * v * touchMoveSpeed;
+                    v.x = (touchPos[i].x - fromTouchPos[i].x) * Screen.width / Screen.height;
+                    v.y = touchPos[i].y - fromTouchPos[i].y;
+                    dfPosRight += Quaternion.Euler(90 * ClampedLerp(fromTouchPos[i].y), 0, 0) * v * touchMoveSpeed;
                     break;
                 case TouchType.Spin:
+                    rightMove = true;
+                    v.x = (touchPos[i].x - lastTouchPos[i].x) * Screen.width / Screen.height;
+                    v.y = touchPos[i].y - lastTouchPos[i].y;
+                    Debug.Log(dlRotRight);
+                    dlRotRight = Quaternion.AngleAxis(360 * v.magnitude * touchRotateSpeed, Quaternion.Euler(90 * ClampedLerp(fromTouchPos[i].y), 0, 90) * v) * dlRotRight;
+                    Debug.Log(dlRotRight);
+                    v.x = (touchPos[i].x - fromTouchPos[i].x) * Screen.width / Screen.height;
+                    v.y = touchPos[i].y - fromTouchPos[i].y;
+                    Debug.Log(dfRotRight);
+                    dfRotRight = Quaternion.AngleAxis(360 * v.magnitude * touchRotateSpeed, Quaternion.Euler(90 * ClampedLerp(fromTouchPos[i].y), 0, 90) * v) * dfRotRight;
+                    Debug.Log(dfRotRight);
                     break;
                 case TouchType.LeftTouchButton:
-                    if (touchEnded[i]) leftTouchButton = false;
+                    if (touchEnded[i] && !leftTouchToggleMode) leftTouchButton = false;
                     break;
                 case TouchType.RightTouchButton:
-                    if (touchEnded[i]) rightTouchButton = false;
+                    if (touchEnded[i] && !rightTouchToggleMode) rightTouchButton = false;
                     break;
                 case TouchType.CameraRotate:
-                    if (touchEnded[i]) { touchEnded[i] = false; touchType[i] = TouchType.None; }
                     break;
             }
             lastTouchPos[i] = touchPos[i];
@@ -429,7 +476,7 @@ public class Core : MonoBehaviour
         }
     }
 
-    private float ClampedLerp(float y) { return 90 * Mathf.Clamp01(((y - 0.5f) * lerpc + 1) * 0.5f); }
+    private float ClampedLerp(float y) { return Mathf.Clamp01(((y - 0.5f) * lerpc + 1) * 0.5f); }
 
     private double tAlign = 0.5; // threshold for align mode
     private double tAlignSpin = 0.8;
@@ -924,6 +971,7 @@ public class Core : MonoBehaviour
         // SteamVR_Actions.control.Activate(left);
         // SteamVR_Actions.control.Activate(right);
         menuCanvas.enabled = false;
+        inputCanvas.enabled = true;
     }
 
     public void doQuit()
