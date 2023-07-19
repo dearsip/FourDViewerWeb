@@ -51,14 +51,17 @@ public class Core : MonoBehaviour
     private bool leftTrigger, rightTrigger, lastLeftTrigger, lastRightTrigger, leftTriggerPressed, rightTriggerPressed,
         leftMove, rightMove, leftGrip, rightGrip, lastLeftGrip, lastRightGrip;
     private int maxTouchCount = 4;
+    private bool[] operated;
+    private List<int> fingerIds;
     private bool leftTouchButton, rightTouchButton;
     public bool leftTouchToggleMode = false;
     public bool rightTouchToggleMode = false;
     public bool allowDiagonalMovement = true;
-    private enum TouchType { MoveForward, MoveLateral, Turn, Spin, LeftTouchButton, RightTouchButton, CameraRotate, None }
+    private enum TouchType { MoveForward1, MoveForward2, MoveLateral1, MoveLateral2, Turn1, Turn2, Spin1, Spin2, LeftTouchButton, RightTouchButton, CameraRotate, None }
     private TouchType[] touchType;
     private bool[] touchEnded;
     private Vector2[] fromTouchPos, lastTouchPos, touchPos;
+    public Image AlignButton, ClickButton, RemoveShapeButton, AddShapesButton;
     public Menu menuPanel;
     public Canvas menuCanvas, inputCanvas;
 
@@ -174,6 +177,9 @@ public class Core : MonoBehaviour
         reg5 = new double[3];
         reg6 = new double[4];
 
+        operated = new bool[maxTouchCount];
+        fingerIds = new List<int>();
+        for (int i = 0; i < maxTouchCount; i++) fingerIds.Add(-1);
         touchType = new TouchType[maxTouchCount];
         for (int i = 0; i < maxTouchCount; i++) touchType[i] = TouchType.None;
         touchEnded = new bool[maxTouchCount];
@@ -246,10 +252,12 @@ public class Core : MonoBehaviour
 
         IModel model = new MapModel(this.dim, oa.omCurrent, oc(), oa.oeCurrent, ov(), null);
         engine.newGame(this.dim, model, ov(), /*oa.opt.os,*/ ot(), true);
-        controllerReset();
+        controllerReset(model.getSaveType());
     }
 
-    private void controllerReset() {
+    private readonly Color enabledColor = new Color(1, 1, 1, 0.25f);
+    private readonly Color disabledColor = new Color(1, 1, 1, 0.0625f);
+    private void controllerReset(int saveType) {
         setKeepUpAndDown();
 
         updateOptions();
@@ -260,6 +268,11 @@ public class Core : MonoBehaviour
         saveOrigin = new double[this.dim];
         saveAxis = new double[this.dim][];
         for (int i = 0; i < this.dim; i++) saveAxis[i] = new double[this.dim];
+
+        AlignButton.color = (saveType == IModel.SAVE_MAZE || saveType == IModel.SAVE_GEOM || saveType == IModel.SAVE_NONE) ? enabledColor : disabledColor;
+        ClickButton.color = (saveType != IModel.SAVE_MAZE) ? enabledColor : disabledColor;
+        RemoveShapeButton.color = (saveType == IModel.SAVE_GEOM || saveType == IModel.SAVE_NONE || saveType == IModel.SAVE_BLOCK) ? enabledColor : disabledColor;
+        AddShapesButton.color = (saveType != IModel.SAVE_MAZE && saveType != IModel.SAVE_ACTION) ? enabledColor : disabledColor;
     }
 
     public void resetWin() {
@@ -268,7 +281,7 @@ public class Core : MonoBehaviour
 
     public void restartGame() {
         engine.restartGame();
-        controllerReset();
+        controllerReset(engine.retrieveModel().getSaveType());
     }
 
     float now = 0;
@@ -281,7 +294,6 @@ public class Core : MonoBehaviour
     void Update()
     {
         if (!menuCanvas.enabled) calcInputFrame();
-        TouchInputFrame();
         // frameCount++;
         now = Time.realtimeSinceStartup;
         delta = Mathf.Clamp(now-last, 0.0001f, 0.5f);
@@ -324,11 +336,8 @@ public class Core : MonoBehaviour
             RightClick();
         if (leftC.GetButtonDown(WebXRController.ButtonTypes.Grip))
             LeftGrip();
-        if (rightC.GetButtonDown(WebXRController.ButtonTypes.ButtonB)) {
-            if (alignMode) { if (doToggleAlignMode()) overlayText.ShowText("Align mode off"); }
-            else if (command == align || alignTime > 0) { if (doToggleAlignMode()) overlayText.ShowText("Align mode on"); }
-            else if (doAlign()) { overlayText.ShowText("Align"); alignTime = .2f; }
-        }
+        if (rightC.GetButtonDown(WebXRController.ButtonTypes.ButtonB))
+            OperateAlign();
         if (alignTime > 0) alignTime -= Time.deltaTime;
 
         Vector2 v = rightC.GetAxis2D(WebXRController.Axis2DTypes.Thumbstick);
@@ -347,40 +356,65 @@ public class Core : MonoBehaviour
             command = addShapes;
         if (Input.GetKeyDown(KeyCode.Y) && command == null)
             command = removeShape;
+
+        TouchInputFrame();
+    }
+
+    private void OperateAlign()
+    {
+        if (alignMode) { if (doToggleAlignMode()) overlayText.ShowText("Align mode off"); }
+        else if (command == align || alignTime > 0) { if (doToggleAlignMode()) overlayText.ShowText("Align mode on"); }
+        else if (doAlign()) { overlayText.ShowText("Align"); alignTime = .2f; }
     }
 
     private void TouchInputFrame()
     {
+        for (int i = 0; i < maxTouchCount; i++) operated[i] = false;
         for (int j = 0; j < Mathf.Min(maxTouchCount, Input.touchCount); j++)
         {
             Touch touch = Input.GetTouch(j);
-            int i = touch.fingerId;
-            if (i >= maxTouchCount) continue;
-            if (touch.phase == TouchPhase.Began)
+            int id = touch.fingerId;
+            int i = fingerIds.IndexOf(id);
+            if (i < 0)
             {
+                i = fingerIds.IndexOf(-1); if (i < 0) continue; else fingerIds[i] = id;
                 fromTouchPos[i] = lastTouchPos[i] = touchPos[i] = touch.position / new Vector2(Screen.width, Screen.height);
-                if (fromTouchPos[i].x < 0.3125f) touchType[i] = rightTouchButton ? TouchType.MoveLateral : TouchType.MoveForward;
-                else if (fromTouchPos[i].x < 0.40625f && fromTouchPos[i].y < 0.09375f) { touchType[i] = TouchType.LeftTouchButton; leftTouchButton = leftTouchToggleMode ? !leftTouchButton : true; }
-                else if (fromTouchPos[i].x > 0.6875f) touchType[i] = leftTouchButton ? TouchType.Spin : TouchType.Turn;
-                else if (fromTouchPos[i].x > 0.59375f && fromTouchPos[i].y < 0.09375f) { touchType[i] = TouchType.RightTouchButton; rightTouchButton = rightTouchToggleMode ? !rightTouchButton : true; }
-                else touchType[i] = TouchType.CameraRotate;
-                Debug.Log("Touch " + i + " " + touchType[i] + " " + fromTouchPos[i]);
+                SetTypes(i);
+                operated[i] = true;
+                Debug.Log("fingerIds: " + string.Join(",", fingerIds));
             }
-            else if (touch.phase == TouchPhase.Moved) touchPos[i] = touch.position / new Vector2(Screen.width, Screen.height);
-            else if (touch.phase == TouchPhase.Ended) touchEnded[i] = true;
+            else { touchPos[i] = touch.position / new Vector2(Screen.width, Screen.height); operated[i] = true; }
         }
-        if (Input.GetMouseButtonDown(0))
+        for (int i = 0; i < maxTouchCount; i++) if (operated[i] == false && fingerIds[i] != -1) { fingerIds[i] = -1; touchEnded[i] = true; }
+        if (Input.touchCount == 0)
         {
-            fromTouchPos[3] = lastTouchPos[3] = touchPos[3] = Input.mousePosition / new Vector2(Screen.width, Screen.height);
-            if (fromTouchPos[3].x < 0.3125f) touchType[3] = rightTouchButton ? TouchType.MoveLateral : TouchType.MoveForward;
-            else if (fromTouchPos[3].x < 0.4375f && fromTouchPos[3].y < 0.125f) { touchType[3] = TouchType.LeftTouchButton; leftTouchButton = leftTouchToggleMode ? !leftTouchButton : true; }
-            else if (fromTouchPos[3].x > 0.6875f) touchType[3] = leftTouchButton ? TouchType.Spin : TouchType.Turn;
-            else if (fromTouchPos[3].x > 0.5625f && fromTouchPos[3].y < 0.125f) { touchType[3] = TouchType.RightTouchButton; rightTouchButton = rightTouchToggleMode ? !rightTouchButton : true; }
-            else touchType[3] = TouchType.CameraRotate;
-            Debug.Log("Touch " + 3 + " " + touchType[3] + " " + fromTouchPos[3]);
+            if (Input.GetMouseButtonDown(0))
+            {
+                    fromTouchPos[0] = lastTouchPos[0] = touchPos[0] = Input.mousePosition / new Vector2(Screen.width, Screen.height);
+                    SetTypes(0);
+                    Debug.Log("fingerIds: " + string.Join(",", fingerIds));
+            }
+            else if (Input.GetMouseButton(0)) touchPos[0] = Input.mousePosition / new Vector2(Screen.width, Screen.height);
+            else if (Input.GetMouseButtonUp(0)) { touchEnded[0] = true; }
         }
-        else if (Input.GetMouseButton(0)) touchPos[3] = Input.mousePosition / new Vector2(Screen.width, Screen.height);
-        else if (Input.GetMouseButtonUp(0)) touchEnded[3] = true;
+    }
+
+    private void SetTypes(int i) {
+        if (fromTouchPos[i].x < 0.09375f && fromTouchPos[i].y < 0.375f) {
+            if (fromTouchPos[i].y < 0.1875f) OperateAlign();
+            else if (command == null) command = removeShape; }
+        else if (fromTouchPos[i].x < 0.3125f) {
+            if (fromTouchPos[i].y < 0.375f) touchType[i] = rightTouchButton ? TouchType.MoveLateral1 : TouchType.MoveForward1;
+            else if (fromTouchPos[i].y < 0.75f) touchType[i] = rightTouchButton ? TouchType.MoveLateral2 : TouchType.MoveForward2; }
+        else if (fromTouchPos[i].x < 0.40625f && fromTouchPos[i].y < 0.16667f) { touchType[i] = TouchType.LeftTouchButton; leftTouchButton = leftTouchToggleMode ? !leftTouchButton : true; }
+        else if (fromTouchPos[i].x > 0.90625f && fromTouchPos[i].y < 0.375f) {
+            if (fromTouchPos[i].y < 0.1875f) RightClick();
+            else if (command == null) command = addShapes; }
+        else if (fromTouchPos[i].x > 0.6875f) {
+            if (fromTouchPos[i].y < 0.375f) touchType[i] = leftTouchButton ? TouchType.Spin1 : TouchType.Turn1;
+            else if (fromTouchPos[i].y < 0.75f) touchType[i] = leftTouchButton ? TouchType.Spin2 : TouchType.Turn2; }
+        else if (fromTouchPos[i].x > 0.71875f && fromTouchPos[i].y < 0.16667f) { touchType[i] = TouchType.RightTouchButton; rightTouchButton = rightTouchToggleMode ? !rightTouchButton : true; }
+        else if (fromTouchPos[i].y < 0.75f) touchType[i] = TouchType.CameraRotate;
     }
 
     float touchMoveSpeed = 1f;
@@ -414,53 +448,72 @@ public class Core : MonoBehaviour
 
         for (int i = 0; i < maxTouchCount; i++)
         {
-            if (touchType[i] == TouchType.None) continue;
-            Vector3 v = new Vector3();
+            reg0 = Vector3.zero;
             switch (touchType[i])
             {
-                case TouchType.MoveForward:
+                case TouchType.MoveForward1:
                     leftMove = true;
-                    v.x = (touchPos[i].x - lastTouchPos[i].x) * Screen.width / Screen.height;
-                    v.y = touchPos[i].y - lastTouchPos[i].y;
-                    v = Quaternion.Euler(90 * ClampedLerp(fromTouchPos[i].y), 0, 0) * v;
-                    dlRotLeft = Quaternion.Euler(0, 0, -2 * (float)(maxAng / limitLR) * v.y * touchRotateSpeed) * dlRotLeft;
-                    if (allowDiagonalMovement) { v.y = 0; dlPosLeft += v * touchMoveSpeed; }
-                    v.x = (touchPos[i].x - fromTouchPos[i].x) * Screen.width / Screen.height;
-                    v.y = touchPos[i].y - fromTouchPos[i].y;
-                    v =  Quaternion.Euler(90 * ClampedLerp(fromTouchPos[i].y), 0, 0) * v;
-                    dfRotLeft = Quaternion.Euler(0, 0, -(float)(limitAngForward / limit) * v.y * touchRotateSpeed) * dfRotLeft;
-                    if (allowDiagonalMovement) { v.y = 0; dfPosLeft += v * touchMoveSpeed; }
+                    dlRotLeft = Quaternion.Euler(0, 0, -2 * (float)(maxAng / limitLR) * (touchPos[i].y - lastTouchPos[i].y) * touchRotateSpeed) * dlRotLeft;
+                    dfRotLeft = Quaternion.Euler(0, 0, -(float)(limitAngForward / limit) * (touchPos[i].y - fromTouchPos[i].y) * touchRotateSpeed) * dfRotLeft;
+                    if (allowDiagonalMovement) {
+                        dlPosLeft.x += (touchPos[i].x - lastTouchPos[i].x) * Screen.width / Screen.height * touchMoveSpeed;
+                        dfPosLeft.x += (touchPos[i].x - fromTouchPos[i].x) * Screen.width / Screen.height * touchMoveSpeed; }
                     break;
-                case TouchType.MoveLateral:
+                case TouchType.MoveForward2:
+                case TouchType.MoveLateral2:
                     leftMove = true;
-                    v.x = (touchPos[i].x - lastTouchPos[i].x) * Screen.width / Screen.height;
-                    v.y = touchPos[i].y - lastTouchPos[i].y;
-                    dlPosLeft += Quaternion.Euler(90 * ClampedLerp(fromTouchPos[i].y), 0, 0) * v * touchMoveSpeed * 0.4f;
-                    v.x = (touchPos[i].x - fromTouchPos[i].x) * Screen.width / Screen.height;
-                    v.y = touchPos[i].y - fromTouchPos[i].y;
-                    dfPosLeft += Quaternion.Euler(90 * ClampedLerp(fromTouchPos[i].y), 0, 0) * v * touchMoveSpeed * 0.4f;
+                    if (allowDiagonalMovement) { 
+                        reg0.x = (touchPos[i].x - lastTouchPos[i].x) * Screen.width / Screen.height;
+                        reg0.z = touchPos[i].y - lastTouchPos[i].y;
+                        dlPosLeft += reg0 * touchMoveSpeed;
+                        reg0.x = (touchPos[i].x - fromTouchPos[i].x) * Screen.width / Screen.height;
+                        reg0.z = touchPos[i].y - fromTouchPos[i].y;
+                        dfPosLeft += reg0 * touchMoveSpeed; }
                     break;
-                case TouchType.Turn:
-                    rightMove = true;
-                    v.x = (touchPos[i].x - lastTouchPos[i].x) * Screen.width / Screen.height;
-                    v.y = touchPos[i].y - lastTouchPos[i].y;
-                    dlPosRight += Quaternion.Euler(90 * ClampedLerp(fromTouchPos[i].y), 0, 0) * v * touchMoveSpeed;
-                    v.x = (touchPos[i].x - fromTouchPos[i].x) * Screen.width / Screen.height;
-                    v.y = touchPos[i].y - fromTouchPos[i].y;
-                    dfPosRight += Quaternion.Euler(90 * ClampedLerp(fromTouchPos[i].y), 0, 0) * v * touchMoveSpeed;
+                case TouchType.MoveLateral1:
+                    leftMove = true;
+                    reg0.x = (touchPos[i].x - lastTouchPos[i].x) * Screen.width / Screen.height;
+                    reg0.y = touchPos[i].y - lastTouchPos[i].y;
+                    dlPosLeft += reg0 * touchMoveSpeed;
+                    reg0.x = (touchPos[i].x - fromTouchPos[i].x) * Screen.width / Screen.height;
+                    reg0.y = touchPos[i].y - fromTouchPos[i].y;
+                    dfPosLeft += reg0 * touchMoveSpeed;
                     break;
-                case TouchType.Spin:
+                case TouchType.Turn1:
                     rightMove = true;
-                    v.x = (touchPos[i].x - lastTouchPos[i].x) * Screen.width / Screen.height;
-                    v.y = touchPos[i].y - lastTouchPos[i].y;
-                    Debug.Log(dlRotRight);
-                    dlRotRight = Quaternion.AngleAxis(360 * v.magnitude * touchRotateSpeed, Quaternion.Euler(90 * ClampedLerp(fromTouchPos[i].y), 0, 90) * v) * dlRotRight;
-                    Debug.Log(dlRotRight);
-                    v.x = (touchPos[i].x - fromTouchPos[i].x) * Screen.width / Screen.height;
-                    v.y = touchPos[i].y - fromTouchPos[i].y;
-                    Debug.Log(dfRotRight);
-                    dfRotRight = Quaternion.AngleAxis(360 * v.magnitude * touchRotateSpeed, Quaternion.Euler(90 * ClampedLerp(fromTouchPos[i].y), 0, 90) * v) * dfRotRight;
-                    Debug.Log(dfRotRight);
+                    reg0.x = (touchPos[i].x - lastTouchPos[i].x) * Screen.width / Screen.height;
+                    reg0.y = touchPos[i].y - lastTouchPos[i].y;
+                    dlPosRight += reg0 * touchMoveSpeed;
+                    reg0.x = (touchPos[i].x - fromTouchPos[i].x) * Screen.width / Screen.height;
+                    reg0.y = touchPos[i].y - fromTouchPos[i].y;
+                    dfPosRight += reg0 * touchMoveSpeed;
+                    break;
+                case TouchType.Turn2:
+                    rightMove = true;
+                    reg0.x = (touchPos[i].x - lastTouchPos[i].x) * Screen.width / Screen.height;
+                    reg0.z = touchPos[i].y - lastTouchPos[i].y;
+                    dlPosRight += reg0 * touchMoveSpeed;
+                    reg0.x = (touchPos[i].x - fromTouchPos[i].x) * Screen.width / Screen.height;
+                    reg0.z = touchPos[i].y - fromTouchPos[i].y;
+                    dfPosRight += reg0 * touchMoveSpeed;
+                    break;
+                case TouchType.Spin1:
+                    rightMove = true;
+                    reg0.x = (touchPos[i].y - lastTouchPos[i].y) * Screen.width / Screen.height;
+                    reg0.y = lastTouchPos[i].x - touchPos[i].x;
+                    dlRotRight = Quaternion.AngleAxis(360 * reg0.magnitude * touchRotateSpeed, reg0) * dlRotRight;
+                    reg0.x = (touchPos[i].y - fromTouchPos[i].y) * Screen.width / Screen.height;
+                    reg0.y = fromTouchPos[i].x - touchPos[i].x;
+                    dfRotRight = Quaternion.AngleAxis(360 * reg0.magnitude * touchRotateSpeed, reg0) * dfRotRight;
+                    break;
+                case TouchType.Spin2:
+                    rightMove = true;
+                    reg0.x = (touchPos[i].y - lastTouchPos[i].y) * Screen.width / Screen.height;
+                    reg0.z = lastTouchPos[i].x - touchPos[i].x;
+                    dlRotRight = Quaternion.AngleAxis(360 * reg0.magnitude * touchRotateSpeed, reg0) * dlRotRight;
+                    reg0.x = (touchPos[i].y - fromTouchPos[i].y) * Screen.width / Screen.height;
+                    reg0.z = fromTouchPos[i].x - touchPos[i].x;
+                    dfRotRight = Quaternion.AngleAxis(360 * reg0.magnitude * touchRotateSpeed, reg0) * dfRotRight;
                     break;
                 case TouchType.LeftTouchButton:
                     if (touchEnded[i] && !leftTouchToggleMode) leftTouchButton = false;
@@ -470,6 +523,7 @@ public class Core : MonoBehaviour
                     break;
                 case TouchType.CameraRotate:
                     break;
+                default: break;
             }
             lastTouchPos[i] = touchPos[i];
             if (touchEnded[i]) { touchEnded[i] = false; touchType[i] = TouchType.None; }
@@ -1090,7 +1144,7 @@ public class Core : MonoBehaviour
 
         IModel model = new MapModel(dim,oa.omCurrent,oc(),oa.oeCurrent,ov(),store);
         engine.newGame(dim,model,ov(),/*oa.opt.os,*/ot(),false);
-        controllerReset();
+        controllerReset(model.getSaveType());
 
         engine.load(store,alignModeLoad);
     }
@@ -1152,7 +1206,7 @@ public class Core : MonoBehaviour
 
         // model already constructed
         engine.newGame(dim, model, ov(), /*oa.opt.os,*/ ot(), true);
-        controllerReset();
+        controllerReset(model.getSaveType());
 
         alignMode = model.getAlignMode(alignMode);
     }

@@ -29,7 +29,7 @@ public class Car {
       dScale[0] = save;
 
       shape.systemMove = true;
-      //shape.noUserMove = true;
+      shape.isNoUserMove = true;
 
       int i = shape.findFace(/* axis = */ 1,/* sign = */ -1);
       if (i == -1) throw new Exception("Unable to find bottom face of railcar.");
