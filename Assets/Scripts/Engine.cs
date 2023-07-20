@@ -658,10 +658,10 @@ public class Engine : IMove
         }catch(Exception e) {Debug.LogException(e);};
     }
 
-    private readonly Color white = new Color(0, 0, 0);
+    public Color objColor = Color.black;
     private void renderObject(PolygonBuffer buf, double[][] obj)
     {
-        renderObject(buf, obj, white);
+        renderObject(buf, obj, objColor);
     }
 
     private void renderObject(PolygonBuffer buf, double[][] obj, Color color)
@@ -686,10 +686,11 @@ public class Engine : IMove
 
     private void renderPolygon(PolygonBuffer buf, double[][] obj, int n) // for sliceMode
     {
-        renderPolygon(buf, obj, n, Color.clear);
+        renderPolygon(buf, obj, n, objColor);
     }
     private void renderPolygon(PolygonBuffer buf, double[][] obj, int n, Color color)
     {
+        color.a = 0f;
         Polygon poly = new Polygon();
         poly.vertex = new double[n][];
         for (int i = 0; i < obj.Length; i += n)
@@ -701,6 +702,8 @@ public class Engine : IMove
     }
     private void renderPolygon(PolygonBuffer buf, double[][] obj, int n, int dir)
     {
+        Color color = objColor;
+        color.a = 0f;
         Polygon poly = new Polygon();
         poly.vertex = new double[n][];
         for (int i = 0; i < obj.Length; i += n)
@@ -726,7 +729,7 @@ public class Engine : IMove
                 poly.vertex[j] = new double[3]; 
                 Vec.copy(poly.vertex[j], reg3);
             }
-            poly.color = Color.clear;
+            poly.color = color;
             buf.add(poly);
         }
     }

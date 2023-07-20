@@ -56,14 +56,16 @@ public class Core : MonoBehaviour
     private bool leftTouchButton, rightTouchButton;
     public bool leftTouchToggleMode = false;
     public bool rightTouchToggleMode = false;
+    public bool hideController = false;
     public bool allowDiagonalMovement = true;
-    private enum TouchType { MoveForward1, MoveForward2, MoveLateral1, MoveLateral2, Turn1, Turn2, Spin1, Spin2, LeftTouchButton, RightTouchButton, CameraRotate, None }
+    private enum TouchType { MoveForward1, MoveForward2, MoveLateral1, MoveLateral2, Turn1, Turn2, Spin1, Spin2, LeftTouchButton, RightTouchButton, CameraRotate, Align, Click, Remove, Add, Menu, None }
     private TouchType[] touchType;
     private bool[] touchEnded;
     private Vector2[] fromTouchPos, lastTouchPos, touchPos;
-    public Image AlignButton, ClickButton, RemoveShapeButton, AddShapesButton;
+    public Image alignButton, clickButton, removeShapeButton, addShapesButton;
     public Menu menuPanel;
     public Canvas menuCanvas, inputCanvas;
+    private WebXRState xrState = WebXRState.NORMAL;
 
     public Transform leftT, rightT;
     public Transform head;
@@ -193,6 +195,24 @@ public class Core : MonoBehaviour
         LeftDown(); RightDown();
     }
 
+    private void OnEnable() {
+        WebXRManager.OnXRChange += OnXRChange;
+    }
+
+    private void OnDisable() {
+        WebXRManager.OnXRChange -= OnXRChange;
+    }
+
+    private void OnXRChange(WebXRState state, int viewsCount, Rect leftRect, Rect rightRect)
+    {
+        xrState = state;
+        if (xrState != WebXRState.NORMAL)
+        {
+            menuCanvas.enabled = false;
+            inputCanvas.enabled = false;
+        }
+    }
+
     private void LeftDown() {
         posLeft = fromPosLeft = leftT.localPosition;
         rotLeft = fromRotLeft = leftT.localRotation;
@@ -222,6 +242,7 @@ public class Core : MonoBehaviour
 
     private void openMenu()
     {
+        if (xrState != WebXRState.NORMAL) return;
         menuCanvas.enabled = true;
         inputCanvas.enabled = false;
         menuPanel.Activate(oa);
@@ -252,12 +273,12 @@ public class Core : MonoBehaviour
 
         IModel model = new MapModel(this.dim, oa.omCurrent, oc(), oa.oeCurrent, ov(), null);
         engine.newGame(this.dim, model, ov(), /*oa.opt.os,*/ ot(), true);
-        controllerReset(model.getSaveType());
+        controllerReset();
     }
 
     private readonly Color enabledColor = new Color(1, 1, 1, 0.25f);
     private readonly Color disabledColor = new Color(1, 1, 1, 0.0625f);
-    private void controllerReset(int saveType) {
+    private void controllerReset() {
         setKeepUpAndDown();
 
         updateOptions();
@@ -269,10 +290,28 @@ public class Core : MonoBehaviour
         saveAxis = new double[this.dim][];
         for (int i = 0; i < this.dim; i++) saveAxis[i] = new double[this.dim];
 
-        AlignButton.color = (saveType == IModel.SAVE_MAZE || saveType == IModel.SAVE_GEOM || saveType == IModel.SAVE_NONE) ? enabledColor : disabledColor;
-        ClickButton.color = (saveType != IModel.SAVE_MAZE) ? enabledColor : disabledColor;
-        RemoveShapeButton.color = (saveType == IModel.SAVE_GEOM || saveType == IModel.SAVE_NONE || saveType == IModel.SAVE_BLOCK) ? enabledColor : disabledColor;
-        AddShapesButton.color = (saveType != IModel.SAVE_MAZE && saveType != IModel.SAVE_ACTION) ? enabledColor : disabledColor;
+        alignButton.color = ButtonEnabled(TouchType.Align) ? enabledColor : disabledColor;
+        clickButton.color = ButtonEnabled(TouchType.Click) ? enabledColor : disabledColor;
+        removeShapeButton.color = ButtonEnabled(TouchType.Remove) ? enabledColor : disabledColor;
+        addShapesButton.color = ButtonEnabled(TouchType.Add) ? enabledColor : disabledColor;
+    }
+
+    private bool ButtonEnabled(TouchType t)
+    {
+        int saveType = engine.getSaveType();
+        switch (t)
+        {
+            case TouchType.Align:
+                return saveType == IModel.SAVE_MAZE || saveType == IModel.SAVE_GEOM || saveType == IModel.SAVE_NONE;
+            case TouchType.Click:
+                return saveType != IModel.SAVE_MAZE;
+            case TouchType.Remove:
+                return saveType == IModel.SAVE_GEOM || saveType == IModel.SAVE_NONE || saveType == IModel.SAVE_BLOCK;
+            case TouchType.Add:
+                return saveType != IModel.SAVE_MAZE && saveType != IModel.SAVE_ACTION;
+            default:
+                return false;
+        }
     }
 
     public void resetWin() {
@@ -281,7 +320,7 @@ public class Core : MonoBehaviour
 
     public void restartGame() {
         engine.restartGame();
-        controllerReset(engine.retrieveModel().getSaveType());
+        controllerReset();
     }
 
     float now = 0;
@@ -381,7 +420,6 @@ public class Core : MonoBehaviour
                 fromTouchPos[i] = lastTouchPos[i] = touchPos[i] = touch.position / new Vector2(Screen.width, Screen.height);
                 SetTypes(i);
                 operated[i] = true;
-                Debug.Log("fingerIds: " + string.Join(",", fingerIds));
             }
             else { touchPos[i] = touch.position / new Vector2(Screen.width, Screen.height); operated[i] = true; }
         }
@@ -392,7 +430,6 @@ public class Core : MonoBehaviour
             {
                     fromTouchPos[0] = lastTouchPos[0] = touchPos[0] = Input.mousePosition / new Vector2(Screen.width, Screen.height);
                     SetTypes(0);
-                    Debug.Log("fingerIds: " + string.Join(",", fingerIds));
             }
             else if (Input.GetMouseButton(0)) touchPos[0] = Input.mousePosition / new Vector2(Screen.width, Screen.height);
             else if (Input.GetMouseButtonUp(0)) { touchEnded[0] = true; }
@@ -400,21 +437,29 @@ public class Core : MonoBehaviour
     }
 
     private void SetTypes(int i) {
+        if (fromTouchPos[i].y > 0.83333f) {
+            if (fromTouchPos[i].x < 0.09375f) touchType[i] = TouchType.Menu; }
         if (fromTouchPos[i].x < 0.09375f && fromTouchPos[i].y < 0.375f) {
-            if (fromTouchPos[i].y < 0.1875f) OperateAlign();
-            else if (command == null) command = removeShape; }
+            if (fromTouchPos[i].y < 0.1875f) {
+                if (ButtonEnabled(TouchType.Align)) OperateAlign();
+                else touchType[i] = rightTouchButton ? TouchType.MoveLateral1 : TouchType.MoveForward1; }
+            else if (ButtonEnabled(TouchType.Remove)) { if (command == null) command = removeShape; }
+            else touchType[i] = rightTouchButton ? TouchType.MoveLateral1 : TouchType.MoveForward1; }
         else if (fromTouchPos[i].x < 0.3125f) {
             if (fromTouchPos[i].y < 0.375f) touchType[i] = rightTouchButton ? TouchType.MoveLateral1 : TouchType.MoveForward1;
-            else if (fromTouchPos[i].y < 0.75f) touchType[i] = rightTouchButton ? TouchType.MoveLateral2 : TouchType.MoveForward2; }
+            else if (fromTouchPos[i].y < 0.83333f) touchType[i] = rightTouchButton ? TouchType.MoveLateral2 : TouchType.MoveForward2; }
         else if (fromTouchPos[i].x < 0.40625f && fromTouchPos[i].y < 0.16667f) { touchType[i] = TouchType.LeftTouchButton; leftTouchButton = leftTouchToggleMode ? !leftTouchButton : true; }
         else if (fromTouchPos[i].x > 0.90625f && fromTouchPos[i].y < 0.375f) {
-            if (fromTouchPos[i].y < 0.1875f) RightClick();
-            else if (command == null) command = addShapes; }
+            if (fromTouchPos[i].y < 0.1875f) {
+                if (ButtonEnabled(TouchType.Click)) RightClick();
+                else touchType[i] = leftTouchButton ? TouchType.Spin1 : TouchType.Turn1; }
+            else if (ButtonEnabled(TouchType.Add)) { if (command == null) command = addShapes; }
+            else touchType[i] = leftTouchButton ? TouchType.Spin1 : TouchType.Turn1; }
         else if (fromTouchPos[i].x > 0.6875f) {
             if (fromTouchPos[i].y < 0.375f) touchType[i] = leftTouchButton ? TouchType.Spin1 : TouchType.Turn1;
-            else if (fromTouchPos[i].y < 0.75f) touchType[i] = leftTouchButton ? TouchType.Spin2 : TouchType.Turn2; }
-        else if (fromTouchPos[i].x > 0.71875f && fromTouchPos[i].y < 0.16667f) { touchType[i] = TouchType.RightTouchButton; rightTouchButton = rightTouchToggleMode ? !rightTouchButton : true; }
-        else if (fromTouchPos[i].y < 0.75f) touchType[i] = TouchType.CameraRotate;
+            else if (fromTouchPos[i].y < 0.83333f) touchType[i] = leftTouchButton ? TouchType.Spin2 : TouchType.Turn2; }
+        else if (fromTouchPos[i].x > 0.59375f && fromTouchPos[i].y < 0.16667f) { touchType[i] = TouchType.RightTouchButton; rightTouchButton = rightTouchToggleMode ? !rightTouchButton : true; }
+        else if (fromTouchPos[i].y < 0.83333f) touchType[i] = TouchType.CameraRotate;
     }
 
     float touchMoveSpeed = 1f;
@@ -499,20 +544,20 @@ public class Core : MonoBehaviour
                     break;
                 case TouchType.Spin1:
                     rightMove = true;
-                    reg0.x = (touchPos[i].y - lastTouchPos[i].y) * Screen.width / Screen.height;
-                    reg0.y = lastTouchPos[i].x - touchPos[i].x;
+                    reg0.x = (lastTouchPos[i].y - touchPos[i].y) * Screen.width / Screen.height;
+                    reg0.y = touchPos[i].x - lastTouchPos[i].x;
                     dlRotRight = Quaternion.AngleAxis(360 * reg0.magnitude * touchRotateSpeed, reg0) * dlRotRight;
-                    reg0.x = (touchPos[i].y - fromTouchPos[i].y) * Screen.width / Screen.height;
-                    reg0.y = fromTouchPos[i].x - touchPos[i].x;
+                    reg0.x = (fromTouchPos[i].y - touchPos[i].y) * Screen.width / Screen.height;
+                    reg0.y = touchPos[i].x - fromTouchPos[i].x;
                     dfRotRight = Quaternion.AngleAxis(360 * reg0.magnitude * touchRotateSpeed, reg0) * dfRotRight;
                     break;
                 case TouchType.Spin2:
                     rightMove = true;
-                    reg0.x = (touchPos[i].y - lastTouchPos[i].y) * Screen.width / Screen.height;
-                    reg0.z = lastTouchPos[i].x - touchPos[i].x;
+                    reg0.x = (lastTouchPos[i].y - touchPos[i].y) * Screen.width / Screen.height;
+                    reg0.z = touchPos[i].x - lastTouchPos[i].x;
                     dlRotRight = Quaternion.AngleAxis(360 * reg0.magnitude * touchRotateSpeed, reg0) * dlRotRight;
-                    reg0.x = (touchPos[i].y - fromTouchPos[i].y) * Screen.width / Screen.height;
-                    reg0.z = fromTouchPos[i].x - touchPos[i].x;
+                    reg0.x = (fromTouchPos[i].y - touchPos[i].y) * Screen.width / Screen.height;
+                    reg0.z = touchPos[i].x - fromTouchPos[i].x;
                     dfRotRight = Quaternion.AngleAxis(360 * reg0.magnitude * touchRotateSpeed, reg0) * dfRotRight;
                     break;
                 case TouchType.LeftTouchButton:
@@ -522,6 +567,9 @@ public class Core : MonoBehaviour
                     if (touchEnded[i] && !rightTouchToggleMode) rightTouchButton = false;
                     break;
                 case TouchType.CameraRotate:
+                    break;
+                case TouchType.Menu:
+                    if (touchEnded[i] && touchPos[i].y > 0.83333f && touchPos[i].x < 0.09375f) menuCommand = ToggleMenu;
                     break;
                 default: break;
             }
@@ -899,7 +947,7 @@ public class Core : MonoBehaviour
     private const int KEYMODE_SPIN = 2;
     private const int KEYMODE_SPIN2 = 3;
     private void keyControl(int keyMode) {
-        if (Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl)) return;
+        if (menuCanvas.enabled || Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl)) return;
         switch (keyMode) {
             case (KEYMODE_SLIDE):
                 if (Input.GetKey(KEY_SLIDELEFT )) reg3[0] = -1;
@@ -1025,7 +1073,12 @@ public class Core : MonoBehaviour
         // SteamVR_Actions.control.Activate(left);
         // SteamVR_Actions.control.Activate(right);
         menuCanvas.enabled = false;
-        inputCanvas.enabled = true;
+        inputCanvas.enabled = xrState == WebXRState.NORMAL && !hideController;
+    }
+
+    public void ToggleSkyBox(bool b)
+    {
+        engine.objColor = b ? Color.white * OptionsColor.fixer : Color.black;
     }
 
     public void doQuit()
@@ -1144,7 +1197,7 @@ public class Core : MonoBehaviour
 
         IModel model = new MapModel(dim,oa.omCurrent,oc(),oa.oeCurrent,ov(),store);
         engine.newGame(dim,model,ov(),/*oa.opt.os,*/ot(),false);
-        controllerReset(model.getSaveType());
+        controllerReset();
 
         engine.load(store,alignModeLoad);
     }
@@ -1206,7 +1259,7 @@ public class Core : MonoBehaviour
 
         // model already constructed
         engine.newGame(dim, model, ov(), /*oa.opt.os,*/ ot(), true);
-        controllerReset(model.getSaveType());
+        controllerReset();
 
         alignMode = model.getAlignMode(alignMode);
     }
@@ -1383,7 +1436,7 @@ public class Core : MonoBehaviour
 
         if (delta != 0) {
             string file = FileItem.Retrieve(reloadFile);
-            string[] f = Array.ConvertAll<FileItem, string>(FileItem.Find(FileItem.GetParent(file)).children.ToArray(), f => f.path);
+            string[] f = Array.ConvertAll<FileItem, string>(FileItem.Find(FileItem.GetParent(file)).children.FindAll(x => !x.isDirectory).ToArray(), f => f.path);
             // Array.Sort(f);
 
             // results of listFiles have same parent directory so names are sufficient

@@ -461,16 +461,19 @@ public class RenderAbsolute
         Color color = colorizer.getColor(p, dir);
         // Color color5 = Color.clear;
 
-        if (texture[0]) addTexture(p, dir, useEdgeColor ? color : Color.white, 0.999999);
-
+        bool force = false;
         if (Grid.equals(p, map.getStart()))
         {
-            color/*5*/ = (texture[5] && color.Equals(COLOR_START)) ? COLOR_START_ALTERNATE : COLOR_START;
+            force = true;
+            color/*5*/ =/* (texture[5] && color.Equals(COLOR_START)) ? COLOR_START_ALTERNATE :*/ COLOR_START;
         }
         else if (Grid.equals(p, map.getFinish()))
         {
-            color/*5*/ = (texture[5] && color.Equals(COLOR_FINISH)) ? COLOR_FINISH_ALTERNATE : COLOR_FINISH;
+            force = true;
+            color/*5*/ =/* (texture[5] && color.Equals(COLOR_FINISH)) ? COLOR_FINISH_ALTERNATE :*/ COLOR_FINISH;
         }
+
+        if (texture[0]) addTexture(p, dir, useEdgeColor || force ? color : Color.white * OptionsColor.fixer, 0.999999);
 
         int d = colorizer.getTrace(p);
         if (texture[1] && d >= 0) addVector(p, dir, d, color);

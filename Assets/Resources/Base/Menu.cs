@@ -39,7 +39,7 @@ public class Menu : MonoBehaviour
         transparencyField, lineThicknessField, borderField, baseTransparencyField, sliceTransparencyField, 
         frameRateField, timeMoveField, timeRotateField, timeAlignMoveField, timeAlignRotateField, width, flare, rainbowGap;
     public Toggle allowLoopsCurrent, allowLoopsNext, allowReservedPathsCurrent, allowReservedPathsNext, usePolygon, useEdgeColor, hideSel, invertNormals, separate, map, invertLeftAndRight, invertForward,
-        invertYawAndPitch, invertRoll, alignMode, sliceMode, limit3D, keepUpAndDown, fisheye, custom, rainbow, glide;
+        invertYawAndPitch, invertRoll, alignMode, sliceMode, limit3D, keepUpAndDown, fisheye, custom, rainbow, glide, allowDiagonalMovement, buttonToggleModeLeft, buttonToggleModeRight, hideController;
     public Toggle[] enable, texture;
     public Dropdown colorMode, inputTypeLeftAndRight, inputTypeForward, inputTypeYawAndPitch, inputTypeRoll;
     public Material defaultMat, alternativeMat;
@@ -184,6 +184,11 @@ public class Menu : MonoBehaviour
 
         put(glide, oa.opt.od.glide);
 
+        put(allowDiagonalMovement, core.allowDiagonalMovement);
+        put(buttonToggleModeLeft, core.leftTouchToggleMode);
+        put(buttonToggleModeRight, core.rightTouchToggleMode);
+        put(hideController, core.hideController);
+
         isActivating = false;
     }
 
@@ -238,6 +243,11 @@ public class Menu : MonoBehaviour
         OptionsFisheye.recalculate();
 
         oa.opt.od.glide = getBool(glide);
+
+        core.allowDiagonalMovement = getBool(allowDiagonalMovement);
+        core.leftTouchToggleMode = getBool(buttonToggleModeLeft);
+        core.rightTouchToggleMode = getBool(buttonToggleModeRight);
+        core.hideController = getBool(hideController);
 
         core.menuCommand = core.updateOptions;
     }
@@ -356,6 +366,7 @@ public class Menu : MonoBehaviour
             environment.SetActive(true);
             RenderSettings.skybox = defaultMat;
         }
+        core.ToggleSkyBox(skyboxToggle.isOn);
     }
 
     public void doChangeScene() { SceneManager.LoadScene("New Scene"); }

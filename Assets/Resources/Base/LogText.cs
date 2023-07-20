@@ -32,7 +32,6 @@ public class LogText : MonoBehaviour
         builder.Clear();
 
         builder.Append(string.Format("[{0}:{1:D3}] ", DateTime.Now.ToLongTimeString(), DateTime.Now.Millisecond));
-        logText += "\r\n" + stackTrace;
 
         switch (logType)
         {

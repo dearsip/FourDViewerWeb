@@ -28,7 +28,7 @@ public class InputViewer : MonoBehaviour
     private const float threshold = 0.1f;
     private const float dist = 0.06f;
     private const float ringScale = 0.05f;
-    private static readonly Vector3 root = new Vector3(0f, 0.09f, 0.05f);
+    private static readonly Vector3 root = new Vector3(0f, 0f, 0.1f);
     private float fLen = 2f/Mathf.Sqrt(5f);
 
     public void ToggleLimit3D (bool isOn) {
