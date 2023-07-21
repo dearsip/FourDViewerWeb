@@ -32,14 +32,14 @@ public class Menu : MonoBehaviour
     public Slider dimSlider, sizeSlider, densitySlider, twistProbabilitySlider, branchProbabilitySlider, loopCrossProbabilitySlider,
         dimSameParallelSlider, dimSamePerpendicularSlider, depthSlider, retinaSlider, scaleSlider, trainSpeedSlider, cameraDistanceSlider,
         transparencySlider, lineThicknessSlider, borderSlider, baseTransparencySlider, sliceTransparencySlider, 
-        frameRateSlider, timeMoveSlider, timeRotateSlider, timeAlignMoveSlider, timeAlignRotateSlider;
+        frameRateSlider, timeMoveSlider, timeRotateSlider, timeAlignMoveSlider, timeAlignRotateSlider, iPDSlider;
     public InputField dimCurrent, dimNext, sizeCurrent, sizeNext, densityCurrent, densityNext, twistPobabilityCurrent, twistProbabilityNext,
         branchProbabilityCurrent, branchProbabilityNext, loopCrossProbabilityCurrent, loopCrossProbabilityNext, dimSameParallelField,
         dimSamePerpendicularField, mazeCurrent, mazeNext, colorCurrent, colorNext, depthField, retinaField, scaleField, trainSpeedField, cameraDistanceField,
         transparencyField, lineThicknessField, borderField, baseTransparencyField, sliceTransparencyField, 
-        frameRateField, timeMoveField, timeRotateField, timeAlignMoveField, timeAlignRotateField, width, flare, rainbowGap;
+        frameRateField, timeMoveField, timeRotateField, timeAlignMoveField, timeAlignRotateField, width, flare, rainbowGap, iPDField;
     public Toggle allowLoopsCurrent, allowLoopsNext, allowReservedPathsCurrent, allowReservedPathsNext, usePolygon, useEdgeColor, hideSel, invertNormals, separate, map, invertLeftAndRight, invertForward,
-        invertYawAndPitch, invertRoll, alignMode, sliceMode, limit3D, keepUpAndDown, fisheye, custom, rainbow, glide, allowDiagonalMovement, buttonToggleModeLeft, buttonToggleModeRight, hideController;
+        invertYawAndPitch, invertRoll, alignMode, sliceMode, limit3D, keepUpAndDown, fisheye, custom, rainbow, glide, allowDiagonalMovement, buttonToggleModeLeft, buttonToggleModeRight, hideController, horizontalInputFollowing, stereo;
     public Toggle[] enable, texture;
     public Dropdown colorMode, inputTypeLeftAndRight, inputTypeForward, inputTypeYawAndPitch, inputTypeRoll;
     public Material defaultMat, alternativeMat;
@@ -188,6 +188,9 @@ public class Menu : MonoBehaviour
         put(buttonToggleModeLeft, core.leftTouchToggleMode);
         put(buttonToggleModeRight, core.rightTouchToggleMode);
         put(hideController, core.hideController);
+        put(horizontalInputFollowing, core.horizontalInputFollowing);
+        put(stereo, core.stereo);
+        put(iPDField, iPDSlider, core.iPD);
 
         isActivating = false;
     }
@@ -248,6 +251,9 @@ public class Menu : MonoBehaviour
         core.leftTouchToggleMode = getBool(buttonToggleModeLeft);
         core.rightTouchToggleMode = getBool(buttonToggleModeRight);
         core.hideController = getBool(hideController);
+        core.horizontalInputFollowing = getBool(horizontalInputFollowing);
+        core.stereo = getBool(stereo);
+        getFloat(ref core.iPD, iPDField, true);
 
         core.menuCommand = core.updateOptions;
     }
