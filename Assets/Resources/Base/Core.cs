@@ -70,7 +70,7 @@ public class Core : MonoBehaviour
     public Menu menuPanel;
     public Canvas menuCanvas, inputCanvas;
     private WebXRState xrState = WebXRState.NORMAL;
-    public Camera fixedCamera;
+    public Camera fixedCamera, fixedCameraLeft, fixedCameraRight;
     public Transform cameraLookAt;
     private float cameraDistance;
     private readonly float cameraDistanceDefault = 0.54f;
@@ -221,10 +221,30 @@ public class Core : MonoBehaviour
         {
             menuCanvas.enabled = false;
             inputCanvas.enabled = false;
+            fixedCameraLeft.enabled = false;
+            fixedCameraRight.enabled = false;
+            stereo = false;
         }
         else menuCanvas.enabled = true;
 
         environment.SetActive(xrState != WebXRState.AR && !skyBox);
+    }
+
+    public void ToggleStereo(bool b)
+    {
+        stereo = b;
+        if (stereo)
+        {
+            fixedCameraLeft.enabled = true;
+            fixedCameraRight.enabled = true;
+            fixedCamera.enabled = false;
+        }
+        else
+        {
+            fixedCameraLeft.enabled = false;
+            fixedCameraRight.enabled = false;
+            fixedCamera.enabled = true;
+        }
     }
 
     private void LeftDown() {
@@ -380,6 +400,10 @@ public class Core : MonoBehaviour
         if (xrState == WebXRState.NORMAL) {
             fixedCamera.transform.rotation = Quaternion.Euler(cameraRot) * cameraLookAt.rotation;
             fixedCamera.transform.position = cameraLookAt.position + fixedCamera.transform.rotation * Vector3.back * cameraDistance;
+            fixedCameraLeft.transform.rotation = fixedCamera.transform.rotation * Quaternion.AngleAxis(iPD * 45, Vector3.up);
+            fixedCameraLeft.transform.position = fixedCamera.transform.position + fixedCamera.transform.rotation * (Vector3.left * iPD * 0.25f + Vector3.back * 0.05f);
+            fixedCameraRight.transform.rotation = fixedCamera.transform.rotation * Quaternion.AngleAxis(-iPD * 45, Vector3.up);
+            fixedCameraRight.transform.position = fixedCamera.transform.position + fixedCamera.transform.rotation * (Vector3.right * iPD * 0.25f + Vector3.back * 0.05f);
         }
     }
 
