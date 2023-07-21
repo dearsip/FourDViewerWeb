@@ -1,0 +1,11 @@
+"library" include
+"puzzle-mini3x" include
+
+block3 "piece" def
+
+piece [0 0 0] translate 4 picture3 PROJ_NORMAL null facetexture
+piece [1 0 0] translate 4 picture3 PROJ_NORMAL null facetexture
+
+piece [0 1 0] translate 4 picture3 PROJ_NORMAL null facetexture
+piece [1 1 0] translate 4 picture3 PROJ_NORMAL null facetexture
+

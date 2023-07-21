@@ -6,7 +6,6 @@ using System;
 /**
  * A model that lets the user move around geometric shapes.
  */
-// 末尾に追加あり。
 public class Vec
 {
     // --- non-mathematical operations ---
@@ -510,17 +509,16 @@ public class Vec
 
     // --- random ---
 
-        public static void randomNormalized(double[] dest, System.Random random)
+    public static void randomNormalized(double[] dest, System.Random random)
+    {
+        for (int i = 0; i < dest.Length; i++)
         {
-            for (int i = 0; i < dest.Length; i++)
-            {
-                dest[i] = 2 * random.NextDouble() - 1;
-            }
-            if (!normalizeTry(dest, dest)) unitVector(dest, 0);
+            dest[i] = 2 * random.NextDouble() - 1;
         }
+        if (!normalizeTry(dest, dest)) unitVector(dest, 0);
+    }
 
-    // srcをnormalが定義する平面で反転させる。
-    // normalは正規化されている必要がある。
+    // normal vector needs to be normalized
 
     public static void reflect(double[] dest, double[] src, double[] normal, double[] reg)
     {
@@ -528,8 +526,7 @@ public class Vec
         add(dest, reg, src);
     }
 
-    // 二度の反転を利用して、srcにfromをtoまで動かす回転を適用する。
-    // fromとtoは正規化されている必要がある。
+    // from & to vectors needs to be normalized
     public static void rotate(double[] dest, double[] src, double[] from, double[] to, double[] reg1, double[] reg2)
     {
         add(reg1, from, to);
@@ -538,7 +535,6 @@ public class Vec
         reflect(dest, dest, reg1, reg2);
     }
 
-    // 4次元の外積
     public static void outerProduct(double[] dest, double[] src1, double[] src2, double[] src3)
     {
         dest[0] =   src1[1] * src2[2] * src3[3]

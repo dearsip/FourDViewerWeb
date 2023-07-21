@@ -1,0 +1,12 @@
+"library2" include
+
+half3
+0 red facecolor
+1 red facecolor
+2 red facecolor
+3 red facecolor
+"piece" def
+
+piece
+piece x- y+ 180 rotate
+

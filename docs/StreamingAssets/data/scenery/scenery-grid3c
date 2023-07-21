@@ -1,0 +1,8 @@
+"library" include
+"sky3" include
+
+block3
+
+blue 3 true 0 1 grid3
+blue 15 true -2 5 grid3
+

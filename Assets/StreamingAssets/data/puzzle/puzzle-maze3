@@ -1,0 +1,24 @@
+"library" include
+"sky3" include
+
+block3 [1 1  7] scale [-2 0 -2] translate
+block3 [1 1  2] scale [-2 0  6] translate
+block3 [1 1 10] scale [ 2 0 -2] translate
+
+block3 [-1 0 -2] translate
+block3 [ 1 0 -2] translate
+
+block3 [ 0 0  0] translate
+
+block3 [ 1 0  1] translate
+
+block3 [ 0 0  3] translate
+
+block3 [-1 0  4] translate
+
+block3 [ 0 0  5] translate
+
+block3 [-1 0  7] translate
+block3 [ 0 0  7] translate
+block3 [ 1 0  7] translate
+

@@ -24,7 +24,6 @@ public abstract class IModel
     public abstract bool canMove(double[] p1, double[] p2, int[] reg1, double[] reg2, bool detectHits);
     public abstract bool atFinish(double[] origin, int[] reg1, int[] reg2);
     public abstract bool dead();
-    public abstract double touch(double[] vector);
 
     public abstract void setBuffer(PolygonBuffer buf);
     public abstract void animate(double delta);

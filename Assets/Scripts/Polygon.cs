@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-// 描画単位としての多面体。
 public class Polygon
 {
     public double[][] vertex;

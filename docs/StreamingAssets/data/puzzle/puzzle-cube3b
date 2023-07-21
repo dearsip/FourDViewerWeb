@@ -1,0 +1,110 @@
+"libnav" include
+
+block3 [-1 0 -1] translate
+0 cx- facecolor
+2 cy- facecolor
+4 cf- facecolor
+
+block3 [-1 0  0] translate
+0 cx- facecolor
+2 cy- facecolor
+
+block3 [-1 0  1] translate
+0 cx- facecolor
+2 cy- facecolor
+5 cf+ facecolor
+
+block3 [ 0 0 -1] translate
+2 cy- facecolor
+4 cf- facecolor
+
+block3 [ 0 0  0] translate
+2 cy- facecolor
+
+block3 [ 0 0  1] translate
+2 cy- facecolor
+5 cf+ facecolor
+
+block3 [ 1 0 -1] translate
+1 cx+ facecolor
+2 cy- facecolor
+4 cf- facecolor
+
+block3 [ 1 0  0] translate
+1 cx+ facecolor
+2 cy- facecolor
+
+block3 [ 1 0  1] translate
+1 cx+ facecolor
+2 cy- facecolor
+5 cf+ facecolor
+
+block3 [-1 1 -1] translate
+0 cx- facecolor
+4 cf- facecolor
+
+block3 [-1 1  0] translate
+0 cx- facecolor
+
+block3 [-1 1  1] translate
+0 cx- facecolor
+5 cf+ facecolor
+
+block3 [ 0 1 -1] translate
+4 cf- facecolor
+
+block3 [ 0 1  0] translate
+
+block3 [ 0 1  1] translate
+5 cf+ facecolor
+
+block3 [ 1 1 -1] translate
+1 cx+ facecolor
+4 cf- facecolor
+
+block3 [ 1 1  0] translate
+1 cx+ facecolor
+
+block3 [ 1 1  1] translate
+1 cx+ facecolor
+5 cf+ facecolor
+
+block3 [-1 2 -1] translate
+0 cx- facecolor
+3 cy+ facecolor
+4 cf- facecolor
+
+block3 [-1 2  0] translate
+0 cx- facecolor
+3 cy+ facecolor
+
+block3 [-1 2  1] translate
+0 cx- facecolor
+3 cy+ facecolor
+5 cf+ facecolor
+
+block3 [ 0 2 -1] translate
+3 cy+ facecolor
+4 cf- facecolor
+
+block3 [ 0 2  0] translate
+3 cy+ facecolor
+
+block3 [ 0 2  1] translate
+3 cy+ facecolor
+5 cf+ facecolor
+
+block3 [ 1 2 -1] translate
+1 cx+ facecolor
+3 cy+ facecolor
+4 cf- facecolor
+
+block3 [ 1 2  0] translate
+1 cx+ facecolor
+3 cy+ facecolor
+
+block3 [ 1 2  1] translate
+1 cx+ facecolor
+3 cy+ facecolor
+5 cf+ facecolor
+

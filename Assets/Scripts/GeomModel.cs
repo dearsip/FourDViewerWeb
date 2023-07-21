@@ -68,6 +68,7 @@ public class GeomModel : IModel, IMove//, IKeysNew, ISelectShape
     protected int shapeNumber; // extra result from canMove
 
     private double transparency;
+    // private double sceneryTransparency;
     protected double cameraDistance;
 
     private bool glide;
@@ -734,7 +735,7 @@ public class GeomModel : IModel, IMove//, IKeysNew, ISelectShape
         //if (a1 >= 2 || a2 >= 2) theta = -theta;
         //selectedShape.rotateFrame(axisDirection[a1], axisDirection[a2], theta, null);
 
-        if (from[3]==0) Vec.swap(from, to, reg1);
+        if (from[dim-1]==0) Vec.swap(from, to, reg1);
         Vec.fromAxisCoordinates(reg1, from, axis);
         Vec.fromAxisCoordinates(reg2, to, axis);
         Vec.normalize(reg1, reg1);
@@ -1011,8 +1012,6 @@ public class GeomModel : IModel, IMove//, IKeysNew, ISelectShape
 
     public override bool dead() { return false; }
 
-    public override double touch(double[] vector) { return 1; }
-
     public override void setBuffer(PolygonBuffer buf)
     {
         this.buf = buf;
@@ -1057,7 +1056,11 @@ public class GeomModel : IModel, IMove//, IKeysNew, ISelectShape
             double[][] texture;
             Color[] textureColor;
             scenery[i].draw(out texture, out textureColor, origin);
-            for (int j = 0; j < textureColor.Length; j++) drawLine(texture[j*2], texture[j*2+1], textureColor[j]);
+            for (int j = 0; j < textureColor.Length; j++)
+            {
+                // textureColor[j].a *= (float)sceneryTransparency;
+                drawLine(texture[j*2], texture[j*2+1], textureColor[j]);
+            }
         }
 
         calcInFront();

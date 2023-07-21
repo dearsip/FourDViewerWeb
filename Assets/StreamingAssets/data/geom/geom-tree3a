@@ -1,0 +1,5 @@
+// no library
+
+[0.5 0.5] 0.1 12 altpoly y [0 0.3] prism brown shapecolor
+[0.5 0.5] 0.5 12 altpoly [0.5 0.5] y [0.3 1.8] cone
+

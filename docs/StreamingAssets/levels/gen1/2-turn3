@@ -1,0 +1,45 @@
+// library --------------------------------
+
+[[0 1] [0 1] [0 1]] rect "block3" def
+
+// sky3 -----------------------------------
+
+16 0 meshring3 "mesh" def
+
+mesh brown 0 heightconst null horizon
+mesh brown 12 0.4 heightpower null horizon
+
+mesh
+[magenta #800080 null null cyan #008080] colorblend
+[0 1.2 1.2 1.56 1.56 2.09 2.09 3]
+yellow
+[0 0.333 0.667 1]
+5 index sky
+
+mesh yellow 3 sun
+
+// ----------------------------------------
+
+nomat
+
+blue 3 true 0 1 grid3
+
+blue 15 true -2 5 grid3
+
+[0.5 3.5 0.5] [X+ Y+ Z+] viewinfo
+
+[5 3 -5] finishinfo
+
+FOOT footinfo
+
+block3 [0 2 0] translate white shapecolor
+block3 [0 2 -1] translate white shapecolor
+block3 [0 2 -2] translate white shapecolor
+block3 [0 2 -3] translate white shapecolor
+block3 [0 2 -4] translate white shapecolor
+block3 [0 2 -5] translate white shapecolor
+block3 [1 2 -5] translate white shapecolor
+block3 [2 2 -5] translate white shapecolor
+block3 [3 2 -5] translate white shapecolor
+block3 [4 2 -5] translate white shapecolor
+block3 [5 2 -5] translate white shapecolor

@@ -1,0 +1,13 @@
+"library2" include
+
+cap3
+0 red facecolor
+"piece" def
+
+piece
+piece y- x- 90 rotate
+piece y- x+ 90 rotate
+piece y- z- 90 rotate
+piece y- z+ 90 rotate
+piece y- x- 180 rotate
+

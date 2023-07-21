@@ -1,0 +1,27 @@
+"libhouse" include
+"sky3" include
+
+wall3x-
+wall3x+
+door3z-
+wall3z+
+skylight3
+
+[
+wall3x-
+wall3x+
+wall3z-
+wall3z+
+skylight3
+]
+glue [0 3 0] translate
+
+[
+wall3x-
+wall3x+
+wall3z-
+wall3z+
+ceiling3
+]
+glue [0 6 0] translate
+

@@ -14,8 +14,8 @@ public class StandEnemy : Enemy {
    protected bool shoot;
    protected bool isMove;
    protected Random random;
-   protected int wshoot;
-   protected int wmove;
+   protected double wshoot;
+   protected double wmove;
    protected double[] walk;
    protected double[] reg1;
    protected double[] reg2;
@@ -25,7 +25,7 @@ public class StandEnemy : Enemy {
       this.shoot = shoot;
       this.isMove = move;
       random = new Random();
-      wshoot = 30;
+      wshoot = 1;
       wmove = 0;
       if (move) shape.setNoUserMove();
       int dim = shape.getDimension();
@@ -37,28 +37,29 @@ public class StandEnemy : Enemy {
 
    public override void move(double delta) {
       if (shoot) {
-         if (wshoot == 0) {
+         if (wshoot < 0) {
             Vec.sub(reg1,model.getOrigin(reg1),shape.aligncenter);
             model.addBullet(shape.aligncenter,reg1,4);
-            wshoot = 30 + random.Next(20);
+            wshoot = 1 + random.NextDouble();
          }
-         wshoot--;
+         wshoot -= delta;
       }
       if (isMove) {
-         if (wmove == 0) {
+         if (wmove < 0) {
             Vec.randomNormalized(reg3,random);
-            Vec.scale(reg3,reg3,0.6*delta);
+            Vec.scale(reg3,reg3,0.6);
             for (int i=0; i<reg3.Length; i++) {
                walk[(i+2)%walk.Length] = reg3[i];
             }
-            wmove = 50 + random.Next(60);
+            wmove = 1.5 + random.NextDouble() * 2;
          }
-         shape.translate(walk);
+         Vec.scale(reg1,walk,delta);
+         shape.translate(reg1);
          if (!model.isSeparated(shape,model.getOrigin(reg1))) {
             Vec.scale(reg1,walk,-1);
             shape.translate(reg1);
          }
-         wmove--;
+         wmove -= delta;
       }
    }
 

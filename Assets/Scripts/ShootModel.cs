@@ -136,7 +136,7 @@ public class ShootModel : ActionModel {
    }
 
    public bool bulletMove(Bullet bullet, double delta) {
-      if (bullet.leave-- == 0) return true;
+      if ((bullet.leave -= delta) == 0) return true;
       Geom.Shape shape = bullet.shape;
       Vec.scale(reg3,shape.axis[dim-1],bullet.speed*delta);
       Vec.add(reg3,shape.aligncenter,reg3);
@@ -163,7 +163,7 @@ public class ShootModel : ActionModel {
 
       public Geom.Shape shape;
       public double speed;
-      public int leave;
+      public double leave;
 
       public Bullet(double[] center, double[][] axis, double speed, double[] reg3) {
          int dim = center.Length;
@@ -184,7 +184,7 @@ public class ShootModel : ActionModel {
          shape.translate(reg3);
 
          this.speed = speed;
-         leave = 100;
+         leave = 3;
       }
 
    }
@@ -197,23 +197,4 @@ public class ShootModel : ActionModel {
       enemies[ie] = null;
       count--;
    }
-
-   //private void printShape() {
-      //for (int i=0; i<shapes.Length; i++) {
-         //if (shapes[i] != null) System.out.print("1");
-         //else System.out.print("0");
-         //System.out.print(",");
-      //}
-      //System.out.print("\n");
-   //}
-
-   //private void printBullet() {
-      //System.out.print("b");
-      //for (int i=0; i<bullets.Length; i++) {
-         //if (bullets[i] != null) System.out.print("1");
-         //else System.out.print("0");
-         //System.out.print(",");
-      //}
-      //System.out.print("\n");
-   //}
 }

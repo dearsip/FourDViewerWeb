@@ -1,0 +1,13 @@
+"library" include
+"library3" include
+
+diag3 cyan shapecolor "diag3" def
+
+block3 [0 5 0] translate
+
+block3 [-2 3 0] translate
+diag3 [-2 4 0] translate
+
+block3 [2 3 0] translate
+diag3 x+ z+ 180 [0.5 0 0.5] altrot [2 4 0] translate
+

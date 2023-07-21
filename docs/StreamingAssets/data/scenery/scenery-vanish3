@@ -1,0 +1,28 @@
+"library" include
+
+blue mat3
+
+block3
+
+[
+[-1 0 0]
+[1 0 0]
+[0 -1 0]
+[0 1 0]
+][
+0 1 edge
+2 3 edge
+]
+texture "cross" def
+
+30 "d" def
+
+cross [0 0 d] translate white monolith
+cross [0 0 d neg] translate white monolith
+
+cross z+ x+ 90 [0 0 0] altrot [d 0 0] translate white monolith
+cross z+ x+ 90 [0 0 0] altrot [d neg 0 0] translate white monolith
+
+cross z+ y+ 90 [0 0 0] altrot [0 d 0] translate white monolith
+cross z+ y+ 90 [0 0 0] altrot [0 d neg 0] translate white monolith
+

@@ -14,43 +14,34 @@ public class PlatformArray {
    private int dim;
    private int[] min;
    private int[] max;
-   private object[][][] data; // array of user objects
+   private object data; // array of user objects
 
 // --- construction ---
 
    public PlatformArray(int[] min, int[] max) {
-      //dim = min.Length;
-      if (min.Length == 2) throw new System.Exception("The system does not support 3D scene");
+      dim = min.Length;
+      // if (min.Length == 2) throw new System.Exception("The system does not support 3D scene");
       this.min = min;
       this.max = max;
-      //if (dim == 2) { // no y dimension here
-         //data = new object[max[0]-min[0]+1][max[1]-min[1]+1];
-      //} else {
-         data = new object[max[0]-min[0]+1][][];
-         for (int i = 0; i < data.Length; i++) {
-            data[i] = new object[max[1]-min[1]+1][];
-            for (int j = 0; j < data[i].Length; j++)
-                data[i][j] = new object[max[2]-min[2]+1];
-         }
-      //}
+      if (dim == 2) { // no y dimension here
+         data = new object[max[0]-min[0]+1,max[1]-min[1]+1];
+      } else {
+         data = new object[max[0]-min[0]+1,max[1]-min[1]+1,max[2]-min[2]+1];
+      }
    }
 
 // --- accessors ---
 
    public object get(int[] p) {
-      //if (dim == 2) {
-         //return ((object[][]) data)[p[0]-min[0]][p[1]-min[1]];
-      //} else {
-         return ((object[][][]) data)[p[0]-min[0]][p[1]-min[1]][p[2]-min[2]];
-      //}
+      if (dim == 2) return ((object[,]) data)[p[0]-min[0],p[1]-min[1]];
+      else return ((object[,,]) data)[p[0]-min[0],p[1]-min[1],p[2]-min[2]];
    }
 
    public void set(int[] p, object o) {
-      //if (dim == 2) {
-         //((object[][]) data)[p[0]-min[0]][p[1]-min[1]] = o;
-      //} else {
-         ((object[][][]) data)[p[0]-min[0]][p[1]-min[1]][p[2]-min[2]] = o;
-      //}
+      if (dim == 2)
+         ((object[,]) data)[p[0]-min[0],p[1]-min[1]] = o;
+      else
+         ((object[,,]) data)[p[0]-min[0],p[1]-min[1],p[2]-min[2]] = o;
    }
 
 // --- iterator ---

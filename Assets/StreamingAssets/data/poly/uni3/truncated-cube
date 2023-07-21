@@ -1,7 +1,6 @@
 "uni3/truncated-cube" include
 
-[0.5 2.5 0.5 -4.5] [X+ Y+ Z+ W+] viewinfo
+[0.5 2.5 -4.5] [X+ Y+ Z+] viewinfo
 
 truncated-cube [0 2 0] translate
-z [0 1] prism
 

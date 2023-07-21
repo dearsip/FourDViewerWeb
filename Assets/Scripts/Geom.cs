@@ -7,8 +7,7 @@ using UnityEngine;
  * Classes that are used to represent geometric shapes.
  * The same representation works for both 3D and 4D since we don't (currently) care about 2D faces in 4D.
  */
-// 描画対象とするために Face （2次元）を追加したので、元のコードの Face を Cell に書き換えてある。
-// このプログラムでは使用しないメソッド等も含む。
+// 2D Face was added as a drawing target, so Face in the original code was rewritten as Cell
 public class Geom
 {
 
@@ -342,25 +341,10 @@ public class Geom
 
         public Shape() { }
 
-        // 各要素を指定してShapeを生成する。
-        public Shape(double[][] vertex, int[][] eiv, int[][] fiv, int[][] cie, int[][] cif, double[][] cn, Color[] color)
-        {
-            this.vertex = vertex;
-            edge = new Edge[eiv.Length];
-            for (int i = 0; i < eiv.Length; i++) edge[i] = new Edge(eiv[i][0], eiv[i][1]);
-            face = new Face[fiv.Length];
-            for (int i = 0; i < fiv.Length; i++) face[i] = new Face(fiv[i]);
-            cell = new Cell[cie.Length];
-            for (int i = 0; i < cie.Length; i++) cell[i] = new Cell(cie[i], cif[i], cn[i]);
-            calculate();
-            ideal = copy();
-            for (int i = 0; i < cell.Length; i++) cell[i].color = color[i];
-        }
-
         public Shape(Cell[] cell, Face[] face, Edge[] edge, double[][] vertex)
         {
             this.cell = cell;
-            this.face = face;
+            this.face = face ?? new Face[0];
             this.edge = edge;
             this.vertex = vertex;
             calculate();
@@ -1412,12 +1396,12 @@ public class Geom
         public double getThreshold() { return threshold; }
         public void calcThreshold() { threshold = (normal != null) ? Vec.dot(center, normal) : 0; }
 
-        public Cell() { }
+        public Cell() { this.ifa = new int[0]; }
 
         public Cell(int[] ie, int[] ifa, double[] normal)
         {
             this.ie = ie;
-            this.ifa = ifa;
+            this.ifa = ifa ?? new int[0];
             this.normal = normal;
         }
 

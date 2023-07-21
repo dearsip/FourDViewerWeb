@@ -14,7 +14,7 @@ public class Core : MonoBehaviour
     public delegate void Command();
     private Options optDefault;
     private Options opt; // the next three are used only during load
-    private int dim;
+    public int dim;
     private string gameDirectory;
     private string reloadFile;
 
@@ -57,7 +57,9 @@ public class Core : MonoBehaviour
     public bool rightTouchToggleMode = false;
     public bool hideController = false;
     public bool allowDiagonalMovement = true;
-    public bool horizontalInputFollowing = true;
+    public bool horizontalInputFollowing = false;
+    public bool alternaviveControlIn3D = false;
+    private bool alt { get { return alternaviveControlIn3D && dim == 3; } }
     public bool stereo = false;
     public float iPD = 0.064f;
     private enum TouchType { MoveForward1, MoveForward2, MoveLateral1, MoveLateral2, Turn1, Turn2, Spin1, Spin2, LeftTouchButton, RightTouchButton, CameraRotate, Align, Click, Remove, Add, Menu, None }
@@ -81,7 +83,7 @@ public class Core : MonoBehaviour
     [SerializeField] WebXRController rightC;
 
     private Vector3 reg0, reg1;
-    private double[] reg2, reg3, reg4, reg5, reg6;
+    private double[] reg2, reg3, reg4, reg5, reg6, reg7, reg8;
     private double[] eyeVector;
     private double[] cursor;
     private double[][] cursorAxis;
@@ -158,14 +160,13 @@ public class Core : MonoBehaviour
    }
 
    // Start is called before the first frame update
-    void Start() // ルーチン開始
+    void Start()
     {
         posLeft = leftT.localPosition; rotLeft = leftT.localRotation;
         posRight = rightT.localPosition; rotRight = rightT.localRotation;
 
         optDefault = ScriptableObject.CreateInstance<Options>();
         opt = ScriptableObject.CreateInstance<Options>();
-        // ロード
         doInit();
         // dim and rest of oa are initialized when new game started
 
@@ -307,6 +308,9 @@ public class Core : MonoBehaviour
         clickButton.color = ButtonEnabled(TouchType.Click) ? enabledColor : disabledColor;
         removeShapeButton.color = ButtonEnabled(TouchType.Remove) ? enabledColor : disabledColor;
         addShapesButton.color = ButtonEnabled(TouchType.Add) ? enabledColor : disabledColor;
+
+        reg7 = new double[dim];
+        reg8 = new double[dim];
     }
 
     private bool ButtonEnabled(TouchType t)
@@ -467,25 +471,17 @@ public class Core : MonoBehaviour
             if (fromTouchPos[i].x < 0.09375f) touchType[i] = TouchType.Menu;
             else if (fromTouchPos[i].x > 0.896875f) Slice();
             else if (fromTouchPos[i].x > 0.79375f) LeftGrip(); }
-        if (fromTouchPos[i].x < 0.09375f && fromTouchPos[i].y < 0.375f) {
-            if (fromTouchPos[i].y < 0.1875f) {
-                if (ButtonEnabled(TouchType.Align)) OperateAlign();
-                else touchType[i] = rightTouchButton ? TouchType.MoveLateral1 : TouchType.MoveForward1; }
-            else if (ButtonEnabled(TouchType.Remove)) { if (command == null) command = removeShape; }
-            else touchType[i] = rightTouchButton ? TouchType.MoveLateral1 : TouchType.MoveForward1; }
+        else if (fromTouchPos[i].x < 0.09375f && fromTouchPos[i].y < 0.1875f && ButtonEnabled(TouchType.Align)) OperateAlign();
+        else if (fromTouchPos[i].x < 0.09375f && fromTouchPos[i].y < 0.375f && ButtonEnabled(TouchType.Remove) && command == null) command = removeShape;
         else if (fromTouchPos[i].x < 0.3125f) {
-            if (fromTouchPos[i].y < 0.375f) touchType[i] = rightTouchButton ? TouchType.MoveLateral1 : TouchType.MoveForward1;
-            else if (fromTouchPos[i].y < 0.8f) touchType[i] = rightTouchButton ? TouchType.MoveLateral2 : TouchType.MoveForward2; }
+            if (fromTouchPos[i].y < 0.375f) touchType[i] = !alt && rightTouchButton ? TouchType.MoveLateral1 : TouchType.MoveForward1;
+            else if (fromTouchPos[i].y < 0.8f) touchType[i] = alt ? TouchType.MoveLateral1 : rightTouchButton ? TouchType.MoveLateral2 : TouchType.MoveForward2; }
         else if (fromTouchPos[i].x < 0.40625f && fromTouchPos[i].y < 0.16667f) { touchType[i] = TouchType.LeftTouchButton; leftTouchButton = leftTouchToggleMode ? !leftTouchButton : true; }
-        else if (fromTouchPos[i].x > 0.90625f && fromTouchPos[i].y < 0.375f) {
-            if (fromTouchPos[i].y < 0.1875f) {
-                if (ButtonEnabled(TouchType.Click)) RightClick();
-                else touchType[i] = leftTouchButton ? TouchType.Spin1 : TouchType.Turn1; }
-            else if (ButtonEnabled(TouchType.Add)) { if (command == null) command = addShapes; }
-            else touchType[i] = leftTouchButton ? TouchType.Spin1 : TouchType.Turn1; }
+        else if (fromTouchPos[i].x > 0.90625f && fromTouchPos[i].y < 0.1875f && ButtonEnabled(TouchType.Click)) RightClick();
+        else if (fromTouchPos[i].x > 0.90625f && fromTouchPos[i].y < 0.375f && ButtonEnabled(TouchType.Add) && command == null) command = addShapes;
         else if (fromTouchPos[i].x > 0.6875f) {
-            if (fromTouchPos[i].y < 0.375f) touchType[i] = leftTouchButton ? TouchType.Spin1 : TouchType.Turn1;
-            else if (fromTouchPos[i].y < 0.8f) touchType[i] = leftTouchButton ? TouchType.Spin2 : TouchType.Turn2; }
+            if (fromTouchPos[i].y < 0.375f) touchType[i] = !alt && leftTouchButton ? TouchType.Spin1 : TouchType.Turn1;
+            else if (fromTouchPos[i].y < 0.8f) touchType[i] = alt || leftTouchButton ? TouchType.Spin2 : TouchType.Turn2; }
         else if (fromTouchPos[i].x > 0.59375f && fromTouchPos[i].y < 0.16667f) { touchType[i] = TouchType.RightTouchButton; rightTouchButton = rightTouchToggleMode ? !rightTouchButton : true; }
         else if (fromTouchPos[i].y < 0.8f) touchType[i] = TouchType.CameraRotate;
     }
@@ -671,12 +667,12 @@ public class Core : MonoBehaviour
                 reg3[3] /= Math.Max(limitAngForward * Math.PI / 180, Math.Abs(reg3[3]));
             }
 
-            if (opt.oo.limit3D) reg3[2] = 0;
+            if (!leftMove) Vec.zero(reg3);
+            keyControl(KEYMODE_SLIDE);
+            if (opt.oo.limit3D || dim == 3) reg3[2] = 0;
             if (disableLeftAndRight) for (int i=0; i<reg3.Length-1; i++) reg3[i] = 0;
             if (opt.oo.invertLeftAndRight) for (int i=0; i<reg3.Length-1; i++) reg3[i] = -reg3[i];
             if (opt.oo.invertForward) reg3[reg3.Length-1] = -reg3[reg3.Length-1];
-            if (!leftMove) Vec.zero(reg3);
-            keyControl(KEYMODE_SLIDE);
 
             if (alignMode)
             {
@@ -685,15 +681,16 @@ public class Core : MonoBehaviour
                     if (Math.Abs(reg3[i]) > tAlign)
                     {
                         tActive = timeMove;
-                        ad0 = Dir.forAxis(i, reg3[i] < 0);
+                        ad0 = Dir.forAxis(Math.Max(i,dim-1), reg3[i] < 0);
                         if (target.canMove(Dir.getAxis(ad0), Dir.getSign(ad0))) {command = alignMove; break;}
                     }
                 }
             }
             else
             {
-                Vec.scale(reg3, reg3, dMove);
-                target.move(reg3);
+                reg3[dim-1] = reg3[3];
+                Vec.scale(reg7, reg3, dMove);
+                target.move(reg7);
             }
 
             // right hand
@@ -701,10 +698,10 @@ public class Core : MonoBehaviour
             {
                 for (int i = 0; i < 3; i++) reg2[i] = dfPosRight[i];
                 Vec.scale(reg2, reg2, 1.0 / Math.Max(limit, Vec.norm(reg2)));
-                if (opt.oo.limit3D) reg2[2] = 0;
-                if (opt.oo.invertYawAndPitch) for (int i = 0; i < reg2.Length; i++) reg2[i] = -reg2[i];
                 if (!rightMove) Vec.zero(reg2);
                 keyControl(KEYMODE_TURN);
+                if (opt.oo.limit3D || dim == 3) reg2[2] = 0;
+                if (opt.oo.invertYawAndPitch) for (int i = 0; i < reg2.Length; i++) reg2[i] = -reg2[i];
                 for (int i = 0; i < reg2.Length; i++)
                 {
                     if (Math.Abs(reg2[i]) > tAlign)
@@ -720,11 +717,11 @@ public class Core : MonoBehaviour
                 {
                     relarot = dfRotRight;
                     for (int i = 0; i < 3; i++) reg0[i] = Mathf.Asin(relarot[i]) * Mathf.Sign(relarot.w) / (float)limitAng / Mathf.PI * 180;
-                    if (opt.oo.limit3D) { reg0[0] = 0; reg0[1] = 0; }
-                    if (isPlatformer()) { reg0[0] = 0; reg0[2] = 0; }
-                    if (opt.oo.invertRoll) reg0 = -reg0;
                     if (!rightMove) reg0 = Vector3.zero;
                     keyControl(KEYMODE_SPIN);
+                    if (opt.oo.limit3D || dim == 3) { reg0[0] = 0; reg0[1] = 0; }
+                    if (isPlatformer()) { reg0[0] = 0; reg0[2] = 0; }
+                    if (opt.oo.invertRoll) reg0 = -reg0;
                     for (int i = 0; i < 3; i++)
                     {
                         if (Mathf.Abs(reg0[i]) > tAlignSpin)
@@ -740,7 +737,6 @@ public class Core : MonoBehaviour
             }
             else
             {
-                Vec.unitVector(reg3, 3);
                 double t;
                 if (isDrag(TYPE_YAWANDPITCH)) {
                     for (int i = 0; i < 3; i++) reg2[i] = dlPosRight[i];
@@ -752,18 +748,19 @@ public class Core : MonoBehaviour
                     t = Vec.norm(reg2);
                     if (t>0) Vec.scale(reg2, reg2, Math.Min(limit, t) / limit / t);
                 }
-                if (opt.oo.limit3D) reg2[2] = 0;
-                if (opt.oo.invertYawAndPitch) for (int i = 0; i < reg2.Length; i++) reg2[i] = -reg2[i];
                 if (!rightMove) Vec.zero(reg2);
                 keyControl(KEYMODE_TURN);
+                if (opt.oo.limit3D || dim == 3) reg2[2] = 0;
+                if (opt.oo.invertYawAndPitch) for (int i = 0; i < reg2.Length; i++) reg2[i] = -reg2[i];
                 t = Vec.norm(reg2);
                 if (t != 0)
                 {
                     t *= dRotate * Math.PI / 180;
                     Vec.normalize(reg2, reg2);
-                    for (int i = 0; i < 3; i++) reg4[i] = reg2[i] * Math.Sin(t);
-                    reg4[3] = Math.Cos(t);
-                    target.rotateAngle(reg3, reg4);
+                    for (int i = 0; i < dim-1; i++) reg7[i] = reg2[i] * Math.Sin(t);
+                    reg7[dim-1] = Math.Cos(t);
+                    Vec.unitVector(reg8, dim-1);
+                    target.rotateAngle(reg8, reg7);
                 }
 
                 float f;
@@ -776,11 +773,11 @@ public class Core : MonoBehaviour
                     if (f>0) f = (float)(dRotate / limitAngRoll) * Mathf.Min((float)limitAngRoll * Mathf.PI / 180, f) / f;
                     relarot = Quaternion.Slerp(Quaternion.identity, relarot, f);
                 }
-                if (isPlatformer() || keepUpAndDown) { relarot[0] = 0; relarot[2] = 0; }
-                if (opt.oo.invertRoll) relarot = Quaternion.Inverse(relarot);
                 if (!rightMove) relarot = Quaternion.identity;
-                if (opt.oo.limit3D) { relarot[0] = 0; relarot[1] = 0; }
                 keyControl(KEYMODE_SPIN2);
+                if (opt.oo.limit3D || dim == 3) { relarot[0] = 0; relarot[1] = 0; relarot[3] = Mathf.Sqrt(1 - relarot[2] * relarot[2]); }
+                if (isPlatformer() || keepUpAndDown) { relarot[0] = 0; relarot[2] = 0; relarot[3] = Mathf.Sqrt(1 - relarot[1] * relarot[1]);}
+                if (opt.oo.invertRoll) relarot = Quaternion.Inverse(relarot);
                 if (relarot.w < 1f) {
                     relarot.ToAngleAxis(out f, out reg0);
                     //f = Math.PI / 180 * (float)dRotate * f / Mathf.Max((float)limitAng, f);
@@ -789,13 +786,13 @@ public class Core : MonoBehaviour
                     //for (int i = 0; i < 3; i++) relarot[i] = reg0[i] * Mathf.Sin(f);
                     //relarot[3] = Mathf.Cos(f);
                     reg0 = relarot * reg1;
-                    for (int i = 0; i < 3; i++) reg3[i] = reg0[i];
-                    reg3[3] = 0;
-                    for (int i = 0; i < 3; i++) reg4[i] = reg1[i];
-                    reg4[3] = 0;
-                    Vec.normalize(reg3, reg3);
-                    Vec.normalize(reg4, reg4);
-                    target.rotateAngle(reg4, reg3);
+                    for (int i = 0; i < 3; i++) reg7[i] = reg0[i];
+                    reg7[dim-1] = 0;
+                    for (int i = 0; i < 3; i++) reg8[i] = reg1[i];
+                    reg8[dim-1] = 0;
+                    Vec.normalize(reg7, reg7);
+                    Vec.normalize(reg8, reg8);
+                    target.rotateAngle(reg8, reg7);
                 }
             }
 
@@ -860,13 +857,15 @@ public class Core : MonoBehaviour
         double d;
         if ((d = tActive - delta) > 0) {
             tActive = d;
-            Vec.scale(reg3, reg3, Dir.getSign(ad0) * dMove);
-            target.move(reg3);
+            reg3[dim-1] = reg3[3];
+            Vec.scale(reg7, reg3, Dir.getSign(ad0) * dMove);
+            target.move(reg7);
         }
         else {
             d = tActive / timeMove;
-            Vec.scale(reg3, reg3, Dir.getSign(ad0) * d);
-            target.move(reg3);
+            reg3[dim-1] = reg3[3];
+            Vec.scale(reg7, reg3, Dir.getSign(ad0) * d);
+            target.move(reg7);
             target.align().snap();
             command = null;
         }
@@ -874,18 +873,18 @@ public class Core : MonoBehaviour
 
     private void alignRotate()
     {
-        Vec.unitVector(reg3, Dir.getAxis(ad0));
-        Vec.scale(reg3, reg3, Dir.getSign(ad0));
+        Vec.unitVector(reg7, Dir.getAxis(ad0));
+        Vec.scale(reg7, reg7, Dir.getSign(ad0));
         double d;
         if ((d = tActive - delta) > 0) {
             tActive = d;
-            Vec.rotateAbsoluteAngleDir(reg4, reg3, ad0, ad1, dRotate);
-            target.rotateAngle(reg3, reg4);
+            Vec.rotateAbsoluteAngleDir(reg8, reg7, ad0, ad1, dRotate);
+            target.rotateAngle(reg7, reg8);
         }
         else {
             d = 90 * tActive / timeRotate;
-            Vec.rotateAbsoluteAngleDir(reg4, reg3, ad0, ad1, d);
-            target.rotateAngle(reg3, reg4);
+            Vec.rotateAbsoluteAngleDir(reg8, reg7, ad0, ad1, d);
+            target.rotateAngle(reg7, reg8);
             target.align().snap();
             command = null;
         }
@@ -1269,7 +1268,8 @@ public class Core : MonoBehaviour
         //Debug.Log("complete");
         // switch to geom
 
-        if (model.getDimension() == 3) throw new Exception("The system does not support 3D scene");
+        // if (model.getDimension() == 3) throw new Exception("The system does not support 3D scene");
+        dim = model.getDimension();
 
         // no need to modify omCurrent, just leave it with previous maze values
         oa.ocCurrent = null;

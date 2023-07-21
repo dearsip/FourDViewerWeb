@@ -1,0 +1,9 @@
+"library" include
+
+block3 [0 1 0] translate 4 red facecolor
+
+block3 [-1 1 0] translate
+block3 [ 1 1 0] translate
+block3 [0 0 0] translate
+block3 [0 2 0] translate
+

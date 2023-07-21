@@ -128,7 +128,7 @@ public class DynamicArray
 
         private int dim;
         private int[] limits;
-        private bool[,,,] data;
+        private object data;
 
         // --- construction ---
 
@@ -136,45 +136,36 @@ public class DynamicArray
         {
             this.dim = dim;
             this.limits = limits;
-            //if (dim == 3)
-            //{
-            //    data = new bool[limits[0]][][];
-            //    for (int i = 0; i < data.Length, i++)
-            //    {
-            //        data[i] = new bool[limits[1]][];
-            //        for (int j = 0; j < data[0].Length; j++) data[i][j] = new bool[limits[2]];
-            //    }
-            //}
-            //else
-            //{
+            if (dim == 3)
+                data = new bool[limits[0],limits[1],limits[2]];
+            else
                 data = new bool[limits[0],limits[1],limits[2],limits[3]];
-            //}
         }
 
         // --- accessors ---
 
         public bool get(int[] p)
         {
-            //if (dim == 3)
-            //{
-            //    return ((bool[][][])data)[p[0]][p[1]][p[2]];
-            //}
-            //else
-            //{
-                return /*((bool[][][][])data)*/data[p[0],p[1],p[2],p[3]];
-            //}
+            if (dim == 3)
+            {
+                return ((bool[,,])data)[p[0],p[1],p[2]];
+            }
+            else
+            {
+                return ((bool[,,,])data)[p[0],p[1],p[2],p[3]];
+            }
         }
 
         public void set(int[] p, bool b)
         {
-            //if (dim == 3)
-            //{
-            //    ((bool[][][])data)[p[0]][p[1]][p[2]] = b;
-            //}
-            //else
-            //{
-                /*((bool[][][][])data)*/data[p[0],p[1],p[2],p[3]] = b;
-            //}
+            if (dim == 3)
+            {
+                ((bool[,,])data)[p[0],p[1],p[2]] = b;
+            }
+            else
+            {
+                ((bool[,,,])data)[p[0],p[1],p[2],p[3]] = b;
+            }
         }
 
         public bool inBounds(int[] p)
@@ -192,7 +183,7 @@ public class DynamicArray
 
         private int dim;
         private int[] limits;
-        private Color[,,,] data;
+        private object data;
 
         // --- construction ---
 
@@ -200,40 +191,40 @@ public class DynamicArray
         {
             this.dim = dim;
             this.limits = limits;
-            //if (dim == 3)
-            //{
-            //    data = new Color[limits[0]][limits[1]][limits[2]];
-            //}
-            //else
-            //{
+            if (dim == 3)
+            {
+                data = new Color[limits[0],limits[1],limits[2]];
+            }
+            else
+            {
                 data = new Color[limits[0],limits[1],limits[2],limits[3]];
-            //}
+            }
         }
 
         // --- accessors ---
 
         public Color get(int[] p)
         {
-            //if (dim == 3)
-            //{
-            //    return ((Color[][][])data)[p[0]][p[1]][p[2]];
-            //}
-            //else
-            //{
-                return /*((Color[][][][])data)*/data[p[0],p[1],p[2],p[3]];
-            //}
+            if (dim == 3)
+            {
+                return ((Color[,,])data)[p[0],p[1],p[2]];
+            }
+            else
+            {
+                return ((Color[,,,])data)[p[0],p[1],p[2],p[3]];
+            }
         }
 
         public void set(int[] p, Color color)
         {
-            //if (dim == 3)
-            //{
-            //    ((Color[][][])data)[p[0]][p[1]][p[2]] = color;
-            //}
-            //else
-            //{
-                /*((Color[][][][])data)*/data[p[0],p[1],p[2],p[3]] = color;
-            //}
+            if (dim == 3)
+            {
+                ((Color[,,])data)[p[0],p[1],p[2]] = color;
+            }
+            else
+            {
+                ((Color[,,,])data)[p[0],p[1],p[2],p[3]] = color;
+            }
         }
 
         public bool inBounds(int[] p)
@@ -251,7 +242,7 @@ public class DynamicArray
 
         private int dim;
         private int[] limits;
-        private int[,,,] data;
+        private object data;
 
         // --- construction ---
 
@@ -259,39 +250,39 @@ public class DynamicArray
         {
             this.dim = dim;
             this.limits = limits;
-            //if (dim == 3)
-            //{
-            //    data = new int[limits[0]][limits[1]][limits[2]];
-            //}
-            //else
-            //{
+            if (dim == 3)
+            {
+                data = new int[limits[0],limits[1],limits[2]];
+            }
+            else
+            {
                 data = new int[limits[0],limits[1],limits[2],limits[3]];
-            //}
+            }
         }
 
         // --- accessors ---
 
         public int get(int[] p)
         {
-            //if (dim == 3)
-            //{
-            //    return ((int[][][])data)[p[0]][p[1]][p[2]] - 1;
-            //}
-            //else
+            if (dim == 3)
             {
-                return /*((int[][][][])data)*/data[p[0],p[1],p[2],p[3]] - 1;
+                return ((int[,,])data)[p[0],p[1],p[2]] - 1;
+            }
+            else
+            {
+                return ((int[,,,])data)[p[0],p[1],p[2],p[3]] - 1;
             }
         }
 
         public void set(int[] p, int b)
         {
-            //if (dim == 3)
-            //{
-            //    ((int[][][])data)[p[0]][p[1]][p[2]] = b + 1;
-            //}
-            //else
+            if (dim == 3)
             {
-                /*((int[][][][])data)*/data[p[0],p[1],p[2],p[3]] = b + 1;
+                ((int[,,])data)[p[0],p[1],p[2]] = b + 1;
+            }
+            else
+            {
+                ((int[,,,])data)[p[0],p[1],p[2],p[3]] = b + 1;
             }
         }
 

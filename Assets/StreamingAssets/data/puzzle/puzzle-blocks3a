@@ -1,0 +1,16 @@
+
+[[0 1] [0 1] [0 1]] rect "block3" def
+
+block3 red     shapecolor "block3-red"     def
+block3 green   shapecolor "block3-green"   def
+block3 cyan    shapecolor "block3-cyan"    def
+block3 magenta shapecolor "block3-magenta" def
+block3 yellow  shapecolor "block3-yellow"  def
+block3 orange  shapecolor "block3-orange"  def
+block3 gray    shapecolor "block3-gray"    def
+block3 brown   shapecolor "block3-brown"   def
+
+null "block3" def
+
+noblock3
+

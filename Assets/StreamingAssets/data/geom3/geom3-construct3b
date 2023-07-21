@@ -1,0 +1,26 @@
+"library" include
+"library2" include
+
+cap3
+0 red facecolor
+"piece" def
+
+piece
+piece y- x- 90 rotate
+piece y- x+ 90 rotate
+piece y- z- 90 rotate
+piece y- z+ 90 rotate
+piece y- x- 180 rotate
+
+block3 [0 1 0] translate
+
+[
+piece
+piece y- x- 90 rotate
+piece y- x+ 90 rotate
+piece y- z- 90 rotate
+piece y- z+ 90 rotate
+piece y- x- 180 rotate
+]
+glue [0 2 0] translate
+

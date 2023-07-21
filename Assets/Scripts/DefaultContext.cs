@@ -208,6 +208,7 @@ public class DefaultContext
       c.dict.Add("gray",Color.gray);
       c.dict.Add("white",Color.white);
       c.dict.Add("brown",new Color(128,96,0));
+      c.dict.Add("clear",Color.clear);
 
       c.dict.Add("finishinfo",new Command.FinishInfo());
       c.dict.Add("footinfo",new Command.FootInfo());

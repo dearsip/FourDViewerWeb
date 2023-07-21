@@ -1,0 +1,35 @@
+"library" include
+"library3" include
+
+diag3 cyan shapecolor "diag3" def
+
+block3 [0 5 0] translate
+
+block3 [-2 3 0] translate
+diag3 [-2 4 0] translate
+
+block3 [2 3 0] translate
+diag3 x+ z+ 180 [0.5 0 0.5] altrot [2 4 0] translate
+
+block3 [0 1 0] translate
+diag3 [-2 1 0] translate y+ x+ 180 [0.5 2 0.5] altrot
+diag3 x+ z+ 180 [0.5 0 0.5] altrot [2 1 0] translate y+ x+ 180 [0.5 2 0.5] altrot
+
+// get into convenient positions
+block3 [0 3 0] translate "b" def
+diag3 y+ z+ 90 [0 0 1] altrot [0 3 0] translate cyan shapecolor "d" def
+
+[2.5 0.5 0.5] "p" def
+
+b
+d
+
+b x+ z+ 90 p altrot
+d x+ z+ 90 p altrot
+
+b x+ z+ 180 p altrot
+d x+ z+ 180 p altrot
+
+b x+ z+ 270 p altrot
+d x+ z+ 270 p altrot
+

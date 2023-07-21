@@ -1,0 +1,6 @@
+"library" include
+
+block3 [3 1 1] scale [-1 1 0] translate yellow shapecolor
+block3 [-1 0 0] translate
+block3 [1 0 0] translate
+

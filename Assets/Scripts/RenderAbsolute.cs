@@ -192,20 +192,23 @@ public class RenderAbsolute
     {
         // face
 
-        reg5 = new double[4][];
-        for (int i = 0; i < reg5.Length; i++) reg5[i] = new double[dim];
-        Vec.copy(reg5[0], p1);
-        p1[a1] += edge;
+        if (dim == 4)
+        {
+            reg5 = new double[4][];
+            for (int i = 0; i < reg5.Length; i++) reg5[i] = new double[dim];
+            Vec.copy(reg5[0], p1);
+            p1[a1] += edge;
 
-        Vec.copy(reg5[1], p1);
-        p1[a2] += edge;
+            Vec.copy(reg5[1], p1);
+            p1[a2] += edge;
 
-        Vec.copy(reg5[2], p1);
-        p1[a1] -= edge;
+            Vec.copy(reg5[2], p1);
+            p1[a1] -= edge;
 
-        Vec.copy(reg5[3], p1);
-        p1[a2] -= edge;
-        addPolygon(reg5, color);
+            Vec.copy(reg5[3], p1);
+            p1[a2] -= edge;
+            addPolygon(reg5, color);
+        }
 
         // edge
 
@@ -311,61 +314,64 @@ public class RenderAbsolute
 
         // face
 
-        Vec.copy(reg2, reg1);
-
-        if (dir1 != dir2)
+        if (dim == 4)
         {
-            reg5 = new double[3][];
-            for (int i = 0; i < reg5.Length; i++) reg5[i] = new double[dim];
-            Vec.copy(reg5[0], reg1);
-            Dir.apply(dir2, reg2, -0.5);
-            reg2[a3] += 0.25;
-            reg2[a4] += 0.25;
-            Vec.copy(reg5[1], reg2);
-            reg2[a3] -= 0.5;
-            Vec.copy(reg5[2], reg2);
-            addPolygon(reg5, color);
+            Vec.copy(reg2, reg1);
 
-            reg5 = new double[3][];
-            for (int i = 0; i < reg5.Length; i++) reg5[i] = new double[dim];
-            Vec.copy(reg5[0], reg1);
-            Vec.copy(reg5[1], reg2);
-            reg2[a4] -= 0.5;
-            Vec.copy(reg5[2], reg2);
-            addPolygon(reg5, color);
-
-            reg5 = new double[3][];
-            for (int i = 0; i < reg5.Length; i++) reg5[i] = new double[dim];
-            Vec.copy(reg5[0], reg1);
-            Vec.copy(reg5[1], reg2);
-            reg2[a3] += 0.5;
-            Vec.copy(reg5[2], reg2);
-            addPolygon(reg5, color);
-
-            reg5 = new double[3][];
-            for (int i = 0; i < reg5.Length; i++) reg5[i] = new double[dim];
-            Vec.copy(reg5[0], reg1);
-            Vec.copy(reg5[1], reg2);
-            reg2[a4] += 0.5;
-            Vec.copy(reg5[2], reg2);
-            addPolygon(reg5, color);
-        }
-        else
-        {
-            for (int i = 0; i < 8; i++)
+            if (dir1 != dir2)
             {
                 reg5 = new double[3][];
-                for (int j = 0; j < reg5.Length; j++) reg5[j] = new double[dim];
-                reg2[a3] += 0.25 * (i % 2 * 2 - 1);
-                Vec.copy(reg5[0], reg2);
-                reg2[a3] -= 0.25 * (i % 2 * 2 - 1);
-                reg2[a4] += 0.25 * (i / 2 % 2 * 2 - 1);
+                for (int i = 0; i < reg5.Length; i++) reg5[i] = new double[dim];
+                Vec.copy(reg5[0], reg1);
+                Dir.apply(dir2, reg2, -0.5);
+                reg2[a3] += 0.25;
+                reg2[a4] += 0.25;
                 Vec.copy(reg5[1], reg2);
-                reg2[a4] -= 0.25 * (i / 2 % 2 * 2 - 1);
-                reg2[a5] += 0.25 * (i / 4 % 2 * 2 - 1);
+                reg2[a3] -= 0.5;
                 Vec.copy(reg5[2], reg2);
                 addPolygon(reg5, color);
-                reg2[a5] -= 0.25 * (i / 4 % 2 * 2 - 1);
+
+                reg5 = new double[3][];
+                for (int i = 0; i < reg5.Length; i++) reg5[i] = new double[dim];
+                Vec.copy(reg5[0], reg1);
+                Vec.copy(reg5[1], reg2);
+                reg2[a4] -= 0.5;
+                Vec.copy(reg5[2], reg2);
+                addPolygon(reg5, color);
+
+                reg5 = new double[3][];
+                for (int i = 0; i < reg5.Length; i++) reg5[i] = new double[dim];
+                Vec.copy(reg5[0], reg1);
+                Vec.copy(reg5[1], reg2);
+                reg2[a3] += 0.5;
+                Vec.copy(reg5[2], reg2);
+                addPolygon(reg5, color);
+
+                reg5 = new double[3][];
+                for (int i = 0; i < reg5.Length; i++) reg5[i] = new double[dim];
+                Vec.copy(reg5[0], reg1);
+                Vec.copy(reg5[1], reg2);
+                reg2[a4] += 0.5;
+                Vec.copy(reg5[2], reg2);
+                addPolygon(reg5, color);
+            }
+            else
+            {
+                for (int i = 0; i < 8; i++)
+                {
+                    reg5 = new double[3][];
+                    for (int j = 0; j < reg5.Length; j++) reg5[j] = new double[dim];
+                    reg2[a3] += 0.25 * (i % 2 * 2 - 1);
+                    Vec.copy(reg5[0], reg2);
+                    reg2[a3] -= 0.25 * (i % 2 * 2 - 1);
+                    reg2[a4] += 0.25 * (i / 2 % 2 * 2 - 1);
+                    Vec.copy(reg5[1], reg2);
+                    reg2[a4] -= 0.25 * (i / 2 % 2 * 2 - 1);
+                    reg2[a5] += 0.25 * (i / 4 % 2 * 2 - 1);
+                    Vec.copy(reg5[2], reg2);
+                    addPolygon(reg5, color);
+                    reg2[a5] -= 0.25 * (i / 4 % 2 * 2 - 1);
+                }
             }
         }
 
@@ -416,16 +422,16 @@ public class RenderAbsolute
 
         Vec.copy(reg2, reg1);
 
-        //if (dim == 3)
-        //{
+        if (dim == 3)
+        {
 
-        //    int a1 = (a + 1) % dim;
-        //    int a2 = (a + 2) % dim;
+            int a1 = (a + 1) % dim;
+            int a2 = (a + 2) % dim;
 
-        //    addSquare(reg1, reg2, a1, a2, color, edge);
+            addSquare(reg1, reg2, a1, a2, color, edge);
 
-        //}
-        //else
+        }
+        else
         {
 
             int a1 = (a + 1) % dim;
@@ -440,10 +446,10 @@ public class RenderAbsolute
         }
     }
 
-    private static Color COLOR_START = Color.gray;
+    public static Color COLOR_START = Color.gray;
     private static Color COLOR_START_ALTERNATE = OptionsColor.RIGHTGRAY;
 
-    private static Color COLOR_FINISH = Color.yellow * OptionsColor.fixer; // the idea is, gold
+    public static Color COLOR_FINISH = Color.yellow * OptionsColor.fixer; // the idea is, gold
     private static Color COLOR_FINISH_ALTERNATE = OptionsColor.ORANGE * OptionsColor.fixer;
 
     // alternate colors are used when a start or finish mark
@@ -564,21 +570,5 @@ public class RenderAbsolute
             build(reg4, 0, Dir.DIR_NONE);
             count[Dir.getOpposite(dir)]--;
         }
-    }
-
-    private bool Trace(int[] from, int[] to) { // They are no more than two cells apart in one direction
-        int[] reg = new int[dim];
-        Grid.copy(reg, from);
-        while (!Grid.equals(from, to)){
-            for (int i = 0; i < dim; i++) {
-                if (reg[i] == to[i]) continue;
-                reg[i] = to[i];
-                if (map.inBounds(reg) && map.isOpen(reg)) { break; }
-                reg[i] = from[i];
-            }
-            if (Grid.equals(from, reg)) return false;
-            Grid.copy(from, reg);
-        }
-        return true;
     }
 }

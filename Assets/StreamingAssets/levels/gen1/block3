@@ -1,0 +1,28 @@
+// library --------------------------------
+
+[[0 1] [0 1] [0 1]] rect "block3" def
+
+// ----------------------------------------
+
+nomat
+
+blue 3 true 0 1 grid3
+
+blue 15 true -2 5 grid3
+
+[0.5 0.5 -4.5] [X+ Y+ Z+] viewinfo
+
+blockinfo
+
+FOOT_COMPASS footinfo
+
+block3 [ 0 0  4] translate white   shapecolor
+block3 [-2 0 -2] translate red     shapecolor
+block3 [ 0 0 -2] translate cyan    shapecolor
+block3 [ 2 0 -2] translate orange  shapecolor
+block3 [-2 0  0] translate green   shapecolor
+block3 [ 0 0  0] translate gray    shapecolor
+block3 [ 2 0  0] translate magenta shapecolor
+block3 [-2 0  2] translate brown   shapecolor
+block3 [ 0 0  2] translate blue    shapecolor
+block3 [ 2 0  2] translate yellow  shapecolor

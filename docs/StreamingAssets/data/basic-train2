@@ -1,0 +1,36 @@
+"libtrain" include
+
+3 1 0.2 0.15 0 7 orange red true 0.01 newtrack
+[0 0 0] z+ w+ "ulssldlusdrrssrs" track
+[0 0 0] z+ w+ "uslssls" track
+[0 0 0] z+ w+ "uslsssrrurssssssslldr" track
+[0 0 0] z- w+ "llsrsrr" track
+[0 0 0] z- w+ "llsrsrsrsr" track
+
+PS_THIN_ROUND platformstyle
+2 2 platforms
+[-4 1 4] dup platform
+[-4 1 5] dup platform
+PS_SQUARE platformstyle
+1 1 platforms
+
+[-0.3 2 -2.3] pylon
+[0.3 2 -2.3] pylon
+[-0.5 2 -0.5] pylon
+[-0.5 2 1.5] pylon
+[-0.7 2 5.3] pylon
+[-1.2 2 5.5] pylon
+[-3.3 1 5.3] pylon
+[-3.3 1 4.7] pylon
+
+0.5 pylonwidth
+[0.75 1 4.75] pylon
+[-2.75 1 4.75] pylon
+
+[
+block3 red shapecolor car
+block3 red shapecolor car
+block3 red shapecolor car
+]
+0.2 [0 0 0] z+ z- 0.1 TM_ROTATE train
+

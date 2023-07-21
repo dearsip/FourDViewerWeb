@@ -1,0 +1,29 @@
+"library" include
+"library4" include
+"libnav" include
+
+itetra
+
+rtetra
+1 cx- facecolor
+2 cy- facecolor
+3 cf- facecolor
+
+rtetra
+1 cx+ facecolor
+2 cy- facecolor
+3 cf+ facecolor
+x- z- 180 rotate
+
+rtetra
+1 cy+ facecolor
+2 cf- facecolor
+3 cx+ facecolor
+y+ x+ 90 rotate x- z- 90 rotate
+
+rtetra
+1 cy+ facecolor
+2 cf+ facecolor
+3 cx- facecolor
+y+ x+ 90 rotate x- z- 270 rotate
+

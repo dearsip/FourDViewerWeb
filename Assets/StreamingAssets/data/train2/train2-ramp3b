@@ -1,0 +1,10 @@
+"libtrain" include
+
+3 2 0.2 0.15 0 7 orange red true 0.01 newtrack
+[0 0 -3] z+ w+ "u" track
+
+true ramptriangle
+1 1 platforms
+
+block3 #00A000 shapecolor [0.3 0.3 0.4022] scale [0.35 0 -0.4022] translate nomove
+

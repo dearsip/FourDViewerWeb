@@ -1,0 +1,8 @@
+"library" include
+"sky3" include
+
+block3
+
+32 0 meshring3 brown 1.5 ground
+32 0 meshring3 brown 2.5 ground
+

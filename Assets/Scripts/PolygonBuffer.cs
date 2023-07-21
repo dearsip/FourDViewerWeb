@@ -5,7 +5,6 @@ using System;
 /**
  * A line buffer that reuses line objects to avoid memory allocation.
  */
-// 描画対象は Polygon に変更している。
 public class PolygonBuffer : IDraw
 {
     private int dim;
@@ -104,7 +103,7 @@ public class PolygonBuffer : IDraw
 
     public void sort(double[] eyeVector)
     {
-        double[] sum = new double[3];
+        double[] sum = new double[dim-1];
         for (int i = 0; i < size; i++)
         {
             Vec.copy(sum, polygons[i].vertex[0]);

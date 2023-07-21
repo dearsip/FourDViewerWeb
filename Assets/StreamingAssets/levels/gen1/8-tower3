@@ -1,0 +1,170 @@
+// library --------------------------------
+
+[[0 1] [0 1] [0 1]] rect "block3" def
+
+// sky3 -----------------------------------
+
+16 0 meshring3 "mesh" def
+
+mesh brown 0 heightconst null horizon
+mesh brown 12 0.4 heightpower null horizon
+
+mesh
+[magenta #800080 null null cyan #008080] colorblend
+[0 1.2 1.2 1.56 1.56 2.09 2.09 3]
+yellow
+[0 0.333 0.667 1]
+5 index sky
+
+mesh yellow 3 sun
+
+// ----------------------------------------
+
+nomat
+
+blue 3 true 0 1 grid3
+
+blue 15 true -2 5 grid3
+
+[0.5 0.5 -7.5] [X+ Y+ Z+] viewinfo
+
+[0 2 0] finishinfo
+
+FOOT_COMPASS footinfo
+
+block3 [1 2 1] scale [0 0 0] translate white shapecolor
+
+block3 [1 40 11] scale [-5 0 -5] translate white shapecolor
+block3 [1 40 11] scale [5 0 -5] translate white shapecolor
+block3 [9 40 1] scale [-4 0 5] translate white shapecolor
+block3 [3 3 1] scale [-4 0 -5] translate white shapecolor
+block3 [3 3 1] scale [2 0 -5] translate white shapecolor
+block3 [9 37 1] scale [-4 3 -5] translate white shapecolor
+
+block3 [4 0 -4] translate white shapecolor
+block3 [1 2 1] scale [3 0 -4] translate white shapecolor
+block3 [1 3 1] scale [2 0 -4] translate white shapecolor
+block3 [3 1 1] scale [-1 3 -4] translate white shapecolor
+block3 [0 4 -4] translate white shapecolor
+block3 [-1 5 -4] translate white shapecolor
+block3 [-2 6 -4] translate white shapecolor
+block3 [-3 7 -4] translate white shapecolor
+block3 [-4 8 -4] translate white shapecolor
+block3 [1 3 1] scale [-2 0 -4] translate white shapecolor
+
+block3 [-4 8 -2] translate white shapecolor
+block3 [-4 8 0] translate white shapecolor
+block3 [-4 8 2] translate white shapecolor
+block3 [-4 8 4] translate white shapecolor
+block3 [-3 8 3] translate white shapecolor
+block3 [-3 8 1] translate white shapecolor
+block3 [-3 8 -1] translate white shapecolor
+block3 [-3 8 -3] translate white shapecolor
+block3 [-2 8 -2] translate white shapecolor
+block3 [-2 8 0] translate white shapecolor
+block3 [-2 8 2] translate white shapecolor
+block3 [-2 8 4] translate white shapecolor
+block3 [-1 8 3] translate white shapecolor
+block3 [-1 8 1] translate white shapecolor
+block3 [-1 8 -1] translate white shapecolor
+block3 [-1 8 -3] translate white shapecolor
+block3 [0 8 -2] translate white shapecolor
+block3 [0 8 2] translate white shapecolor
+block3 [0 8 4] translate white shapecolor
+block3 [1 8 3] translate white shapecolor
+block3 [1 8 1] translate white shapecolor
+block3 [1 8 -1] translate white shapecolor
+block3 [1 8 -3] translate white shapecolor
+block3 [2 8 -2] translate white shapecolor
+block3 [2 8 0] translate white shapecolor
+block3 [2 8 2] translate white shapecolor
+block3 [2 8 4] translate white shapecolor
+block3 [3 8 3] translate white shapecolor
+block3 [3 8 1] translate white shapecolor
+block3 [3 8 -1] translate white shapecolor
+block3 [3 8 -3] translate white shapecolor
+block3 [4 8 -2] translate white shapecolor
+block3 [4 8 0] translate white shapecolor
+block3 [4 8 2] translate white shapecolor
+
+block3 [1 3 1] scale [-1 8 0] translate white shapecolor
+block3 [1 3 1] scale [0 8 1] translate white shapecolor
+block3 [1 3 1] scale [1 8 0] translate white shapecolor
+block3 [1 3 1] scale [0 8 -1] translate white shapecolor
+
+block3 [4 9 3] translate white shapecolor
+block3 [4 10 4] translate white shapecolor
+block3 [3 11 4] translate white shapecolor
+block3 [3 12 3] translate white shapecolor
+block3 [4 13 3] translate white shapecolor
+block3 [4 14 4] translate white shapecolor
+block3 [3 15 4] translate white shapecolor
+block3 [3 16 3] translate white shapecolor
+
+block3 [1 23 1] scale [1 20 0] translate white shapecolor
+block3 [1 23 1] scale [0 20 1] translate white shapecolor
+block3 [1 23 1] scale [-1 20 0] translate white shapecolor
+block3 [1 23 1] scale [0 20 -1] translate white shapecolor
+
+block3 [1 1 5] scale [4 17 -1] translate white shapecolor
+block3 [3 18 0] translate white shapecolor
+block3 [2 1 9] scale [1 19 -4] translate white shapecolor
+block3 [1 1 4] scale [0 19 -4] translate white shapecolor
+block3 [1 1 4] scale [0 19 1] translate white shapecolor
+block3 [2 1 9] scale [-2 19 -4] translate white shapecolor
+block3 [1 2 1] scale [-3 19 -4] translate white shapecolor
+block3 [1 3 1] scale [-3 19 -3] translate white shapecolor
+block3 [1 3 1] scale [-2 20 -2] translate white shapecolor
+block3 [1 4 1] scale [-1 20 -3] translate white shapecolor
+block3 [1 4 1] scale [1 20 -3] translate white shapecolor
+block3 [1 5 1] scale [2 20 -2] translate white shapecolor
+block3 [1 9 4] scale [3 17 -4] translate white shapecolor
+block3 [1 9 2] scale [3 17 1] translate white shapecolor
+block3 [1 7 3] scale [2 20 2] translate white shapecolor
+block3 [1 8 1] scale [1 20 3] translate white shapecolor
+block3 [1 8 1] scale [-1 20 3] translate white shapecolor
+block3 [1 9 2] scale [-2 20 1] translate white shapecolor
+block3 [-3 29 3] translate white shapecolor
+block3 [-3 30 4] translate white shapecolor
+block3 [-4 31 4] translate white shapecolor
+block3 [-4 32 3] translate white shapecolor
+block3 [-3 33 2] translate white shapecolor
+block3 [1 1 3] scale [-3 31 -2] translate white shapecolor
+block3 [4 1 1] scale [-3 31 -3] translate white shapecolor
+block3 [-1 31 2] translate white shapecolor
+block3 [1 32 2] translate white shapecolor
+block3 [1 1 3] scale [4 31 1] translate white shapecolor
+block3 [4 32 4] translate white shapecolor
+block3 [3 33 4] translate white shapecolor
+block3 [2 34 4] translate white shapecolor
+block3 [1 35 4] translate white shapecolor
+block3 [0 36 4] translate white shapecolor
+block3 [-1 37 4] translate white shapecolor
+block3 [-2 38 4] translate white shapecolor
+block3 [-3 39 4] translate white shapecolor
+
+block3 [2 33 0] translate white shapecolor
+block3 [2 34 -2] translate white shapecolor
+block3 [3 32 -3] translate white shapecolor
+
+block3 [1 1 8] scale [-4 40 -3] translate white shapecolor
+block3 [8 1 1] scale [-4 40 -4] translate white shapecolor
+block3 [1 1 8] scale [4 40 -4] translate white shapecolor
+block3 [1 1 6] scale [-3 41 -2] translate white shapecolor
+block3 [6 1 1] scale [-3 41 -3] translate white shapecolor
+block3 [1 1 6] scale [3 41 -3] translate white shapecolor
+block3 [6 1 1] scale [-2 41 3] translate white shapecolor
+block3 [1 1 4] scale [-2 42 -1] translate white shapecolor
+block3 [4 1 1] scale [-2 42 -2] translate white shapecolor
+block3 [1 1 4] scale [2 42 -2] translate white shapecolor
+block3 [4 1 1] scale [-1 42 2] translate white shapecolor
+block3 [1 1 2] scale [-1 43 0] translate white shapecolor
+block3 [2 1 1] scale [-1 43 -1] translate white shapecolor
+block3 [1 1 2] scale [1 43 -1] translate white shapecolor
+block3 [2 1 1] scale [0 43 1] translate white shapecolor
+
+block3 [1 2 1] scale [1 44 1] translate white shapecolor
+block3 [1 2 1] scale [-1 44 1] translate white shapecolor
+block3 [1 2 1] scale [-1 44 -1] translate white shapecolor
+block3 [1 2 1] scale [1 44 -1] translate white shapecolor
+block3 [0 46 0] translate white shapecolor

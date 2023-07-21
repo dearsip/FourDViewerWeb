@@ -1,7 +1,6 @@
 "uni3/truncated-tetrahedron" include
 
-[0.5 2.5 0.5 -4.5] [X+ Y+ Z+ W+] viewinfo
+[0.5 2.5 -4.5] [X+ Y+ Z+] viewinfo
 
 truncated-tetrahedron [0 2 0] translate
-z [0 1] prism
 

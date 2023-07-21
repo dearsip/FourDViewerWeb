@@ -1,0 +1,8 @@
+"libhouse" include
+"sky3" include
+
+room3t x- z- 90 p3 altrot
+room3c x- z- 90 p3 altrot [0 0 5] translate cyan shapecolor
+room3c [5 0 5] translate yellow shapecolor
+room3c x- z+ 90 p3 altrot [5 0 0] translate magenta shapecolor
+

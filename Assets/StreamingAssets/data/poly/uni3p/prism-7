@@ -1,8 +1,7 @@
 
-[0.5 1.5 0.5 -2.5] [X+ Y+ Z+ W+] viewinfo
+[0.5 1.5 -2.5] [X+ Y+ Z+] viewinfo
 
 [0.5 1.5] 1 7 altpoly z [0.066 0.934] prism
 x+ y- 90 rotate
 [0.5 1.5 0.5] aligncenter
-z [0 1] prism
 

@@ -6,7 +6,7 @@ using System.Linq;
 /**
  * A helper class to hold the line-clipping algorithm.
  */
-// 多角形のクリッピングを追加している。
+// adding polygon clipping
 public class Clip
 {
     // --- constants and structures ---
@@ -139,8 +139,8 @@ public class Clip
     }
 
     const double epsilon = 0.000001;
-    // polygon（凸多角形）を boundaryList（主に多胞体の投影の輪郭）で切り取る。
-    // 出力は複数の凸多角形になるので、list に入れる。
+    // cut (convex) polygon with boundaryList
+    // output is multiple convex polygons
     public static void clip(Polygon polygon, BoundaryList boundaryList, List<Polygon> list)
     {
         Polygon reg = new Polygon();
@@ -154,8 +154,8 @@ public class Clip
         for (int i = 0; i < boundaryList.getSize(); i++)
         {
             Boundary boundary = boundaryList.getBoundary(i);
-            polygon = clip(polygon, boundary, list); // 隠れる部分が返されるので、次の boundary を適用する
-            if (polygon == null) { // 隠れる部分が無ければ、元のpolygonを返す
+            polygon = clip(polygon, boundary, list);
+            if (polygon == null) {
                 list.Clear();
                 list.Add(reg);
                 break;
@@ -164,11 +164,6 @@ public class Clip
 
     }
 
-    // polygon（凸多角形）を boundary で分け、隠れない部分を list に追加し、隠れる部分を返す。
-    // 凸多角形なので、隠れない部分と隠れる部分それぞれの頂点は離れず並んでいる。
-    // 頂点を順番にチェックして、隠れない部分から隠れる部分に入る直前の頂点番号を va（番号a）、その逆を vb（番号b）とする。
-    // それぞれの次の頂点のなす線分は boundary で切り取られるので、その座標を取得する。
-    // それらの頂点と元の多角形の頂点とで、隠れない多角形（頂点vp）、隠れる多角形（頂点vn）を定義する。
     public static Polygon clip(Polygon polygon, Boundary boundary, List<Polygon> list)
     {
         double[] n = boundary.getNormal();
@@ -181,100 +176,99 @@ public class Clip
         double v0, v1;
         double[][] vp, vn;
 
-        bool np = Vec.dot(polygon.vertex[0], n) - t > epsilon; // 最初の頂点が隠れないか
+        bool np = Vec.dot(polygon.vertex[0], n) - t > epsilon;
         bool _np;
         for (int i = 1; i < size; i++)
         {
             _np = Vec.dot(polygon.vertex[i], n) - t > epsilon;
-            if (np ^ _np) // 変化あり
+            if (np ^ _np)
             {
-                if (np) a = i - 1; // 隠れない -> 隠れる
-                else b = i - 1; // 隠れる -> 隠れない
+                if (np) a = i - 1;
+                else b = i - 1;
             }
             np = _np;
         }
-        if (a < 0) // 隠れない -> 隠れる が起きていない
+        if (a < 0)
             if (b < 0)
             {
-                if (np) // 全て隠れない
+                if (np)
                 {
-                    list.Add(polygon); // 元の polygon をそのまま追加
-                    return null; // 隠れない部分はない、終了
+                    list.Add(polygon);
+                    return null;
                 }
-                else // 全て隠れる
+                else
                 {
-                    return polygon; // list への追加はなし、元の polygon を返す
+                    return polygon;
                 }
             }
-            else // 隠れる -> 隠れない はある、すなわち最後の頂点から最初の頂点へ移るときが 隠れない -> 隠れる
+            else
             {
                 a = size - 1;
-                v0 = Vec.dot(polygon.vertex[a], n) - t - epsilon; // va の計算
+                v0 = Vec.dot(polygon.vertex[a], n) - t - epsilon;
                 v1 = Vec.dot(polygon.vertex[0], n) - t - epsilon;
                 Vec.mid(va, polygon.vertex[a], polygon.vertex[0], v0 / (v0 - v1));
-                v0 = Vec.dot(polygon.vertex[b], n) - t - epsilon; // vb の計算
+                v0 = Vec.dot(polygon.vertex[b], n) - t - epsilon;
                 v1 = Vec.dot(polygon.vertex[b + 1], n) - t - epsilon;
                 Vec.mid(vb, polygon.vertex[b], polygon.vertex[b + 1], v0 / (v0 - v1));
             }
-        else if (b < 0) // 隠れない -> 隠れる はある、すなわち最後の頂点から最初の頂点へ移るときが 隠れる -> 隠れない
+        else if (b < 0)
         {
-            v0 = Vec.dot(polygon.vertex[a], n) - t - epsilon; // va の計算
+            v0 = Vec.dot(polygon.vertex[a], n) - t - epsilon;
             v1 = Vec.dot(polygon.vertex[a + 1], n) - t - epsilon;
             Vec.mid(va, polygon.vertex[a], polygon.vertex[a + 1], v0 / (v0 - v1));
             b = size - 1;
-            v0 = Vec.dot(polygon.vertex[b], n) - t - epsilon; // vb の計算
+            v0 = Vec.dot(polygon.vertex[b], n) - t - epsilon;
             v1 = Vec.dot(polygon.vertex[0], n) - t - epsilon;
             Vec.mid(vb, polygon.vertex[b], polygon.vertex[0], v0 / (v0 - v1));
         }
-        else // 共にある
+        else
         {
-            v0 = Vec.dot(polygon.vertex[a], n) - t - epsilon; // va の計算
+            v0 = Vec.dot(polygon.vertex[a], n) - t - epsilon;
             v1 = Vec.dot(polygon.vertex[a + 1], n) - t - epsilon;
             Vec.mid(va, polygon.vertex[a], polygon.vertex[a + 1], v0 / (v0 - v1));
-            v0 = Vec.dot(polygon.vertex[b], n) - t - epsilon; // vb の計算
+            v0 = Vec.dot(polygon.vertex[b], n) - t - epsilon;
             v1 = Vec.dot(polygon.vertex[b + 1], n) - t - epsilon;
             Vec.mid(vb, polygon.vertex[b], polygon.vertex[b + 1], v0 / (v0 - v1));
         }
 
-        if (a < b) // 最初の頂点は隠れない部分が含む
+        if (a < b)
         {
             int sub = b - a;
-            vp = new double[size - sub + 2][]; // 隠れない部分
+            vp = new double[size - sub + 2][];
             for (int i = 0; i <= a; i++) vp[i] = Geom.clone1(polygon.vertex[i]);
             vp[a + 1] = va;
             vp[a + 2] = vb;
             for (int i = 0; i < size - b - 1; i++) vp[a + 3 + i] = Geom.clone1(polygon.vertex[b + 1 + i]);
 
-            vn = new double[sub + 2][]; // 隠れる部分
+            vn = new double[sub + 2][];
             vn[0] = va;
             for (int i = 0; i < sub; i++) vn[1 + i] = Geom.clone1(polygon.vertex[a + 1 + i]);
             vn[sub + 1] = vb;
         }
-        else // 最初の頂点は隠れる部分が含む
+        else
         {
             int sub = a - b;
-            vn = new double[size - sub + 2][]; // 隠れる部分
+            vn = new double[size - sub + 2][];
             for (int i = 0; i <= b; i++) vn[i] = Geom.clone1(polygon.vertex[i]);
             vn[b + 1] = vb;
             vn[b + 2] = va;
             for (int i = 0; i < size - a - 1; i++) vn[b + 3 + i] = Geom.clone1(polygon.vertex[a + 1 + i]);
 
-            vp = new double[sub + 2][]; // 隠れない部分
+            vp = new double[sub + 2][];
             vp[0] = vb;
             for (int i = 0; i < sub; i++) vp[1 + i] = Geom.clone1(polygon.vertex[b + 1 + i]);
             vp[sub + 1] = va;
         }
 
-        Polygon poly = new Polygon(vp, polygon.color); // 隠れない部分を追加
+        Polygon poly = new Polygon(vp, polygon.color);
         list.Add(poly);
 
-        return new Polygon(vn, polygon.color); // 隠れる部分を返す
+        return new Polygon(vn, polygon.color);
     }
 
-    // 単一の boundary によるクリッピング（視錐台用）。完全に隠れたら true を返す。
     public static bool clip(Polygon polygon, Boundary boundary)
     {
-        List<Polygon> list = new List<Polygon>(); // 上の clip(..) を流用するために生成
+        List<Polygon> list = new List<Polygon>();
         if (clip(polygon, boundary, list) == polygon) return true;
         polygon.copy(list[0]);
         return false;
@@ -531,10 +525,22 @@ public class Clip
     {
         Geom.Separator sep = null;
 
+        // first check for any hints
+
+        if (s1.hint != null) {
+            sep = s1.hint.getHint(s1,s2, 1);
+            if (sep != null) return sep;
+        }
+
+        if (s2.hint != null) {
+            sep = s2.hint.getHint(s2,s1,-1);
+            if (sep != null) return sep;
+        }
+
         // try separating along axis between centers.
         // if that works it's probably the best plan.
 
-        double[] normal = new double[4]; // must be new so we can hand off to separator object
+        double[] normal = new double[s1.getDimension()]; // must be new so we can hand off to separator object
         Vec.sub(normal, s2.shapecenter, s1.shapecenter);
 
         // if the normal vector is near zero it's no good
@@ -551,7 +557,7 @@ public class Clip
         double q; // quality of separator
         double qsep = 0;
 
-        for (int axis = 0; axis < 4; axis++)
+        for (int axis = 0; axis < s1.getDimension(); axis++)
         {
 
             double vmin1 = vmin(s1, axis);

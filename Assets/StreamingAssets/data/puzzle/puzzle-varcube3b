@@ -1,0 +1,26 @@
+"library2" include
+"libnav" include
+
+cap3
+0 cy- facecolor
+
+cap3
+0 cx- facecolor
+y- x- 90 rotate
+
+cap3
+0 cx+ facecolor
+y- x+ 90 rotate
+
+cap3
+0 cf- facecolor
+y- z- 90 rotate
+
+cap3
+0 cf+ facecolor
+y- z+ 90 rotate
+
+cap3
+0 cy+ facecolor
+y- x- 180 rotate
+

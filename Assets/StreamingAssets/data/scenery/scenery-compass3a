@@ -1,0 +1,8 @@
+"library" include
+"sky3" include
+
+block3
+
+[magenta #800080 null null cyan #008080] colorblend
+2.25 0.5 0.25 compass3
+

@@ -1,7 +1,6 @@
 "reg3/tetrahedron" include
 
-[0.5 1.5 0.5 -2.5] [X+ Y+ Z+ W+] viewinfo
+[0.5 1.5 -2.5] [X+ Y+ Z+] viewinfo
 
 tetrahedron [0 1 0] translate
-z [0 1] prism
 

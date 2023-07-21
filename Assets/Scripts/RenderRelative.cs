@@ -6,7 +6,6 @@ using UnityEngine;
  * An object that takes a set of lines oriented with respect to absolute coordinates
  * and converts them to relative coordinates, i.e., projects them onto a retina.
  */
-// 描画対象が Polygon になった関係で少々修正がある。
 public class RenderRelative
 {
     // --- fields ---
@@ -98,7 +97,7 @@ public class RenderRelative
         reg.vertex = new double[src.vertex.Length][];
         for (int i = 0; i < src.vertex.Length; i++)
         {
-            reg.vertex[i] = new double[4];
+            reg.vertex[i] = new double[dim];
             Vec.toAxisCoordinates(reg.vertex[i], src.vertex[i], axis);
         }
         if (viewClip) {
@@ -122,13 +121,13 @@ public class RenderRelative
         if (retina > 0)
         for (int i = 0; i < reg.vertex.Length; i++)
         {
-            dest.vertex[i] = new double[3];
+            dest.vertex[i] = new double[dim-1];
             Vec.projectRetina(dest.vertex[i], reg.vertex[i], retina);
         }
         else
         for (int i = 0; i < reg.vertex.Length; i++)
         {
-            dest.vertex[i] = new double[3];
+            dest.vertex[i] = new double[dim-1];
             Vec.projectOrtho(dest.vertex[i], reg.vertex[i], orthoRetina);
         }
 
@@ -170,16 +169,16 @@ public class RenderRelative
     public void runObject(double[][] obj, int mask, PointTransform pt)
     {
         // no need for clear here
-        for (int i = 0; i < obj.Length; i += 3)
+        for (int i = 0; i < obj.Length; i += 2)
         {
             if ((mask & 1) == 1)
             {
                 Polygon dest = bout.getNext();
 
-                dest.vertex = new double[3][];
-                for (int j = 0; j < 3; j++)
+                dest.vertex = new double[2][];
+                for (int j = 0; j < 2; j++)
                 {
-                    dest.vertex[j] = new double[3];
+                    dest.vertex[j] = new double[dim-1];
                     Vec.copy(dest.vertex[j], obj[i + j]);
                 }
                 dest.color = Color.white;

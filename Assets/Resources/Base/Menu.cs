@@ -39,7 +39,7 @@ public class Menu : MonoBehaviour
         transparencyField, lineThicknessField, borderField, baseTransparencyField, sliceTransparencyField, 
         frameRateField, timeMoveField, timeRotateField, timeAlignMoveField, timeAlignRotateField, width, flare, rainbowGap, iPDField;
     public Toggle allowLoopsCurrent, allowLoopsNext, allowReservedPathsCurrent, allowReservedPathsNext, usePolygon, useEdgeColor, hideSel, invertNormals, separate, map, invertLeftAndRight, invertForward,
-        invertYawAndPitch, invertRoll, alignMode, sliceMode, limit3D, keepUpAndDown, fisheye, custom, rainbow, glide, allowDiagonalMovement, buttonToggleModeLeft, buttonToggleModeRight, hideController, horizontalInputFollowing, stereo;
+        invertYawAndPitch, invertRoll, alignMode, sliceMode, limit3D, keepUpAndDown, fisheye, custom, rainbow, glide, allowDiagonalMovement, buttonToggleModeLeft, buttonToggleModeRight, hideController, horizontalInputFollowing, stereo, alternativeControlIn3D;
     public Toggle[] enable, texture;
     public Dropdown colorMode, inputTypeLeftAndRight, inputTypeForward, inputTypeYawAndPitch, inputTypeRoll;
     public Material defaultMat, alternativeMat;
@@ -191,6 +191,7 @@ public class Menu : MonoBehaviour
         put(horizontalInputFollowing, core.horizontalInputFollowing);
         put(stereo, core.stereo);
         put(iPDField, iPDSlider, core.iPD);
+        put(alternativeControlIn3D, core.alternaviveControlIn3D);
 
         isActivating = false;
     }
@@ -254,6 +255,7 @@ public class Menu : MonoBehaviour
         core.horizontalInputFollowing = getBool(horizontalInputFollowing);
         core.stereo = getBool(stereo);
         getFloat(ref core.iPD, iPDField, true);
+        core.alternaviveControlIn3D = getBool(alternativeControlIn3D);
 
         core.menuCommand = core.updateOptions;
     }
@@ -342,14 +344,15 @@ public class Menu : MonoBehaviour
         if (dim>0) {
             OptionsAll oa = core.getOptionsAll();
             oa.opt.om4.dimMap = dim;
-            if (dim==3) {
-                oa.opt.oo.limit3D = true;
-                oa.opt.oo.sliceDir = 1;
-            } else {
-                oa.opt.oo.limit3D = false;
-                oa.opt.oo.sliceDir = 0;
-            }
+            // if (dim==3) {
+                // oa.opt.oo.limit3D = true;
+                // oa.opt.oo.sliceDir = 1;
+            // } else {
+                // oa.opt.oo.limit3D = false;
+                // oa.opt.oo.sliceDir = 0;
+            // }
         }
+        core.dim = dim;
         core.menuCommand = core.newGame;
     }
 

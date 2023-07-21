@@ -1,0 +1,15 @@
+"library5" include
+
+[0.5 1.5 -2.5] [X+ Y+ Z+] viewinfo
+
+rdpiece [0 1 0] translate
+1 red facecolor
+3 red facecolor
+5 red facecolor
+"piece" def
+
+piece
+piece x+ y+ 180 rotate
+piece y+ z+ 180 rotate
+piece z+ x+ 180 rotate
+

@@ -1,0 +1,17 @@
+"libhouse" include
+"libtrain" include
+"sky3" include
+
+room3t x- z- 90 p3 altrot
+room3c x- z- 90 p3 altrot [0 0 5] translate cyan shapecolor
+room3c [5 0 5] translate yellow shapecolor
+room3c x- z+ 90 p3 altrot [5 0 0] translate magenta shapecolor
+
+3 2 0.2 0.15 0 7 orange red true 0.01 newtrack
+[0 0 -5] z+ w+ "ss sssss ssrss ssrss ssrss ssr" track
+
+[
+boxcar3 car
+]
+0.1 [0 0 -4] z- z+ 0.5 TM_ROTATE train
+

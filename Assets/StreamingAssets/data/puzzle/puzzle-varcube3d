@@ -1,0 +1,59 @@
+"library" include
+"library2" include
+"libnav" include
+
+cubocta [2 2 2] scale [0.5 0.5 0.5] aligncenter
+0 cx- facecolor
+1 cx+ facecolor
+2 cy- facecolor
+3 cy+ facecolor
+4 cf- facecolor
+5 cf+ facecolor
+
+rtetra
+1 cx- facecolor
+2 cy- facecolor
+3 cf- facecolor
+
+rtetra
+1 cf- facecolor
+2 cy- facecolor
+3 cx+ facecolor
+x- z- 90 rotate [1 0 0] translate
+
+rtetra
+1 cx+ facecolor
+2 cy- facecolor
+3 cf+ facecolor
+x- z- 180 rotate [1 0 1] translate
+
+rtetra
+1 cf+ facecolor
+2 cy- facecolor
+3 cx- facecolor
+x- z- 270 rotate [0 0 1] translate
+
+rtetra
+1 cy+ facecolor
+2 cx- facecolor
+3 cf- facecolor
+y+ x+ 90 rotate [0 1 0] translate
+
+rtetra
+1 cy+ facecolor
+2 cf- facecolor
+3 cx+ facecolor
+y+ x+ 90 rotate x- z- 90 rotate [1 1 0] translate
+
+rtetra
+1 cy+ facecolor
+2 cx+ facecolor
+3 cf+ facecolor
+y+ x+ 90 rotate x- z- 180 rotate [1 1 1] translate
+
+rtetra
+1 cy+ facecolor
+2 cf+ facecolor
+3 cx- facecolor
+y+ x+ 90 rotate x- z- 270 rotate [0 1 1] translate
+

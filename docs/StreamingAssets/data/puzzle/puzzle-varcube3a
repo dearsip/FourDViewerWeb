@@ -1,0 +1,16 @@
+"library2" include
+"libnav" include
+
+half3
+0 cx- facecolor
+1 cy- facecolor
+2 cf- facecolor
+3 cf+ facecolor
+
+half3
+0 cx+ facecolor
+1 cy+ facecolor
+2 cf- facecolor
+3 cf+ facecolor
+x- y+ 180 rotate
+

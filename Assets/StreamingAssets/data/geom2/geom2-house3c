@@ -1,0 +1,15 @@
+"libhouse" include
+"libnav" include
+"sky3" include
+
+room3h z- x- 90 p3 altrot [5 0 0] translate cx+ shapecolor
+room3h z- x+ 90 p3 altrot [-5 0 0] translate cx- shapecolor
+room3h [0 0 5] translate cf+ shapecolor
+room3h z- x- 180 p3 altrot [0 0 -5] translate cf- shapecolor
+
+door3x-
+door3x+
+door3z-
+door3z+
+skylight3
+

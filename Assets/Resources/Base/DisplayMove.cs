@@ -6,7 +6,6 @@ using UnityEngine.UI;
 using UnityEngine.XR;
 using WebXR;
 
-// Display の位置を動かす。
 public class DisplayMove : MonoBehaviour
 {
     // public SteamVR_Input_Sources hand;

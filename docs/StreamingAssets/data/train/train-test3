@@ -1,0 +1,21 @@
+"libtrain" include
+
+3 2 0.2 0.15 0 7 orange red true 0.01 newtrack
+[0 0 0] z+ w+ "sllsls srrsrs lslslslr srrsrl" track
+
+[
+block3 red shapecolor car
+block3 car
+block3 car
+block3 cyan shapecolor car
+]
+0.1 [0 0 0] z+ z- 0.5 TM_ROTATE train
+
+/*
+[
+block3 magenta shapecolor car
+block3 yellow shapecolor car
+]
+0.1 [-1 0 -1] x+ x- 0.5 TM_ROTATE train
+*/
+

@@ -1,7 +1,6 @@
 "crf3/J91" include
 
-[0.5 2.5 0.5 -5.5] [X+ Y+ Z+ W+] viewinfo
+[0.5 2.5 -5.5] [X+ Y+ Z+] viewinfo
 
 J91 [0 2 0] translate
-z [0 1] prism
 

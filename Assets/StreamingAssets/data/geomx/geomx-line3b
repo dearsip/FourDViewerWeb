@@ -1,0 +1,12 @@
+"library" include
+
+block3 [5 1.5 1] scale [-2 0 0] translate
+block3 [5 1.5 1] scale [-2 3.5 0] translate
+block3 [1.5 2 1] scale [-2 1.5 0] translate
+block3 [1.5 2 1] scale [1.5 1.5 0] translate
+
+block3 [1 1 1.5] scale [0 2 1.5] translate
+block3 [1 1 1.5] scale [0 2 -2] translate
+
+block3 [0 2 0] translate red shapecolor
+

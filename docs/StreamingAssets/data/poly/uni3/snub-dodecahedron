@@ -1,7 +1,6 @@
 "uni3/snub-dodecahedron" include
 
-[0.5 13.5 0.5 -25.5] [X+ Y+ Z+ W+] viewinfo
+[0.5 13.5 -25.5] [X+ Y+ Z+] viewinfo
 
 snub-dodecahedron [0 13 0] translate
-z [0 1] prism
 

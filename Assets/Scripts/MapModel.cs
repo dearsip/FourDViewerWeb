@@ -45,6 +45,7 @@ public class MapModel : IModel
         geomModel = new GeomModel(dimSpace, new Geom.Shape[om.size[0] * om.size[1] * om.size[2] * om.size[3]], null, null);
         geomModel.setBuffer(bufAbsolute);
         geomRelative = new RenderRelative(bufAbsolute, bufRelative, dimSpace, retina);
+        cube = dimSpace == 3 ? cube3 : cube4;
         count = 0;
         reg = new double[dimSpace];
         reg3 = new double[dimSpace];
@@ -152,33 +153,6 @@ public class MapModel : IModel
 
     public override bool dead() { return false; }
 
-    public override double touch(double[] vector)
-    {
-        Vec.addScaled(reg3, axis[3], vector, retina);
-        Vec.addScaled(reg4, origin, reg3, 10000); // infinity
-        double d = 0;
-        for (int i = 0; i < 4; i++) reg7[i] = Math.Sign(reg4[i] - origin[i]);
-        int a = Grid.toCell(reg8, reg9, origin);
-        if (a != Dir.DIR_NONE) reg8 = (reg7[Dir.getAxis(a)] == 1) ? reg9 : reg8;
-        for (int i = 0; i < 4; i++)
-        {
-            if (reg7[i] == 0) { reg6[i] = 1; continue; }
-            reg5[i] = (reg7[i] == 1) ? Math.Ceiling(origin[i]) : Math.Floor(origin[i]);
-            reg6[i] = (reg5[i] - origin[i]) / (reg4[i] - origin[i]);
-        }
-        d = reg6[0]; a = 0;
-        while (d < 1)
-        {
-            for (int i = 0; i < 4; i++) if (d > reg6[i]) { d = reg6[i]; a = i; }
-            reg8[a] += reg7[a];
-            if (!map.isOpen(reg8)) return d;
-            reg5[a] += reg7[a];
-            reg6[a] = (reg5[a] - origin[a]) / (reg4[a] - origin[a]);
-            d = reg6[a];
-        }
-        return 1;
-    }
-
     public override void setBuffer(PolygonBuffer buf)
     {
         renderAbsolute.setBuffer(buf);
@@ -208,18 +182,24 @@ public class MapModel : IModel
         }
     }
 
-    private Geom.Shape cube = GeomUtil.rect(new double[][] { new double[] { 0, 1 },
+    private Geom.Shape cube;
+    private Geom.Shape cube3 = GeomUtil.rect(new double[][] { new double[] { 0, 1 },
+                                                             new double[] { 0, 1 },
+                                                             new double[] { 0, 1 } });
+    private Geom.Shape cube4 = GeomUtil.rect(new double[][] { new double[] { 0, 1 },
                                                              new double[] { 0, 1 },
                                                              new double[] { 0, 1 },
                                                              new double[] { 0, 1 } });
     public void addShape(int[] pos)
     {
         Geom.Shape s = cube.copy();
-        s.scale(new double[] { 0.999, 0.999, 0.999, 0.999 } );
-        s.translate(new double[] { pos[0], pos[1], pos[2], pos[3] });
+        for (int i = 0; i < pos.Length; i++) reg[i] = 0.999;
+        s.scale(reg);
+        for (int i = 0; i < pos.Length; i++) reg[i] = pos[i];
+        s.translate(reg);
         for (int i = 0; i < pos.Length * 2; i++)
         {
-            s.cell[i].color = colorizer.getColor(pos, i);
+            s.cell[i].color = Grid.equals(pos, map.getStart()) ? RenderAbsolute.COLOR_START : Grid.equals(pos, map.getFinish()) ? RenderAbsolute.COLOR_FINISH : colorizer.getColor(pos, i);
         }
         s.glass();
         geomModel.shapes[count++] = s;

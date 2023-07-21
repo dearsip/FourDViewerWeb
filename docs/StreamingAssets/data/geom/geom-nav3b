@@ -1,0 +1,13 @@
+"libnav" include
+
+block3 [101 101 101] scale [-50 -50 -50] translate "marker" def
+ 202 "p" def
+-202 "n" def
+
+marker cx+ shapecolor [p 0 0] translate
+marker cx- shapecolor [n 0 0] translate
+marker cy+ shapecolor [0 p 0] translate
+marker cy- shapecolor [0 n 0] translate
+marker cf+ shapecolor [0 0 p] translate
+marker cf- shapecolor [0 0 n] translate
+

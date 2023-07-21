@@ -176,7 +176,6 @@ public class GeomUtil
             }
         }
 
-        // VR仕様におけるface
         // faces - ne1*ne2 numbered            i1*ne2+i2 (  edge 1   edge 2) 
         //          n1     numbered ne1*ne2+          i2 (  cell 1 vertex 2)
         //              n2 numbered ne1*ne2+n2+       i1 (vertex 1   cell 2)
@@ -211,11 +210,11 @@ public class GeomUtil
         {
             Geom.Face f = new Geom.Face();
             f.iv = new int[n2];
-            for (int i2 = 0; i2 < n1; i2++) f.iv[i2] = i1 * n2 + i2;
+            for (int i2 = 0; i2 < n2; i2++) f.iv[i2] = i1 * n2 + i2;
             face[ne1 * ne2 + n2 + i1] = f;
         }
 
-        // 以下cell
+        // cell
 
         // faces - nf1 numbered     i1
         //         nf2 numbered nf1+i2
@@ -290,7 +289,7 @@ public class GeomUtil
             f.ifa = new int[2 + ne1];
             f.ifa[0] = ne1 * ne2 + e2.iv1;
             f.ifa[1] = ne1 * ne2 + e2.iv2;
-            for (int i1 = 0; i1 < ne1; i1++) f.ifa[2 + i2] = i1 * ne2 + ie2;
+            for (int i1 = 0; i1 < ne1; i1++) f.ifa[2 + i1] = i1 * ne2 + ie2;
 
             f.normal = concat(zero1, f2.normal);
 

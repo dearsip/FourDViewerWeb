@@ -1,0 +1,8 @@
+"library2" include
+
+cap3
+cap3 y- x- 90 rotate
+cap3 y- x+ 90 rotate
+cap3 y- z+ 90 rotate
+cap3 y- x- 180 rotate
+

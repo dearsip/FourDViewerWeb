@@ -13,7 +13,7 @@ piece y- z+ 90 rotate
 piece y- w- 90 rotate
 piece y- w+ 90 rotate
 
-r24cell null shapecolor [0 1 0 0] translate
+r24cell clear shapecolor [0 1 0 0] translate
 
 [
 piece y- x- 90 rotate
