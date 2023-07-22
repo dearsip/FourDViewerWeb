@@ -429,7 +429,7 @@ public class Command
     {
         public void exec(Context c) //throws Exception
         {
-            Color color = (Color)c.stack.Pop()*OptionsColor.fixer;
+            Color color = (Color)(c.stack.Pop() ?? Color.clear)*OptionsColor.fixer;
             Geom.ShapeInterface shape = (Geom.ShapeInterface)c.stack.Peek();
             shape.setShapeColor(color);
         }

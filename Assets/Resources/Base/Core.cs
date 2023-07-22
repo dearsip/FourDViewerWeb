@@ -40,6 +40,7 @@ public class Core : MonoBehaviour
     private Align alignActive;
     public bool keepUpAndDown;
     private bool disableLeftAndRight;
+    public bool threeDMazeIn3DScene;
 
     private int interval;
 
@@ -71,11 +72,15 @@ public class Core : MonoBehaviour
     public Canvas menuCanvas, inputCanvas;
     private WebXRState xrState = WebXRState.NORMAL;
     public Camera fixedCamera, fixedCameraLeft, fixedCameraRight;
-    public Transform cameraLookAt;
+    public Transform cameraLookAt, mapPos;
+    public bool focusOnMap = false;
     private float cameraDistance;
-    private readonly float cameraDistanceDefault = 0.54f;
+    private readonly float cameraDistanceDefault = 0.56f;
     private Vector2 cameraRot;
     private readonly Vector2 cameraRotDefault = new Vector2(26f, 0f);
+    private float verticalOffset = -0.01f;
+    public float fovscale = 1f;
+    private float fNear, fFar, sfWidth, fHeight, fWidth, sNear, sFar, sHeight, sWidth;
 
     public Transform leftT, rightT;
     public Transform head;
@@ -204,6 +209,15 @@ public class Core : MonoBehaviour
         StartCoroutine(FileItem.Build());
 
         LeftDown(); RightDown();
+
+        fNear = fixedCamera.nearClipPlane;
+        fFar = fixedCamera.farClipPlane;
+        fHeight = fNear * Mathf.Tan(fixedCamera.fieldOfView * 0.5f * Mathf.Deg2Rad);
+        fWidth = fHeight * fixedCamera.aspect;
+        sNear = fixedCameraLeft.nearClipPlane;
+        sFar = fixedCameraLeft.farClipPlane;
+        sHeight = sNear * Mathf.Tan(fixedCameraLeft.fieldOfView * 0.5f * Mathf.Deg2Rad);
+        sWidth = sHeight * fixedCameraLeft.aspect;
     }
 
     private void OnEnable() {
@@ -398,12 +412,18 @@ public class Core : MonoBehaviour
         engine.renderAbsolute(eyeVector, opt.oo, delta);
 
         if (xrState == WebXRState.NORMAL) {
-            fixedCamera.transform.rotation = Quaternion.Euler(cameraRot) * cameraLookAt.rotation;
-            fixedCamera.transform.position = cameraLookAt.position + fixedCamera.transform.rotation * Vector3.back * cameraDistance;
-            fixedCameraLeft.transform.rotation = fixedCamera.transform.rotation * Quaternion.AngleAxis(iPD * 45, Vector3.up);
-            fixedCameraLeft.transform.position = fixedCamera.transform.position + fixedCamera.transform.rotation * (Vector3.left * iPD * 0.25f + Vector3.back * 0.05f);
-            fixedCameraRight.transform.rotation = fixedCamera.transform.rotation * Quaternion.AngleAxis(-iPD * 45, Vector3.up);
-            fixedCameraRight.transform.position = fixedCamera.transform.position + fixedCamera.transform.rotation * (Vector3.right * iPD * 0.25f + Vector3.back * 0.05f);
+            // fixedCamera.transform.rotation = cameraLookAt.rotation * Quaternion.Euler(cameraRot.x, 0, 0);
+            // transform.rotation = cameraLookAt.rotation * Quaternion.Euler(0, -cameraRot.y, 0);
+            fixedCamera.transform.rotation = (focusOnMap ? mapPos : cameraLookAt).rotation * Quaternion.Euler(cameraRot);
+            fixedCamera.transform.position = (focusOnMap ? mapPos : cameraLookAt).position + fixedCamera.transform.rotation * Vector3.back * cameraDistance;
+            fixedCameraLeft.transform.rotation = fixedCamera.transform.rotation;
+            fixedCameraLeft.transform.position = fixedCamera.transform.position + fixedCamera.transform.rotation * (Vector3.left * iPD * 0.5f);
+            fixedCameraRight.transform.rotation = fixedCamera.transform.rotation;
+            fixedCameraRight.transform.position = fixedCamera.transform.position + fixedCamera.transform.rotation * (Vector3.right * iPD * 0.5f);
+
+            fixedCamera.projectionMatrix = PerspectiveOffCenter(-fWidth * fovscale, fWidth * fovscale, -fHeight * ((fovscale - 1) * 1.9f + 1) + verticalOffset, fHeight * ((fovscale - 1) * 0.1f + 1) + verticalOffset, fNear, fFar);
+            fixedCameraLeft.projectionMatrix = PerspectiveOffCenter(-sWidth * ((fovscale - 1) * 0.1f + 1) + iPD * 0.5f * sNear / cameraDistance, sWidth * ((fovscale - 1) * 1.9f + 1) + iPD * 0.5f * sNear / cameraDistance, -sHeight * ((fovscale - 1) * 1.9f + 1) + verticalOffset, sHeight * ((fovscale - 1) * 0.1f + 1) + verticalOffset, sNear, sFar);
+            fixedCameraRight.projectionMatrix = PerspectiveOffCenter(-sWidth * ((fovscale - 1) * 1.8f + 1) - iPD * 0.5f * sNear / cameraDistance, sWidth * ((fovscale - 1) * 0.2f + 1) - iPD  * 0.5f * sNear / cameraDistance, -sHeight * ((fovscale - 1) * 1.9f + 1) + verticalOffset, sHeight * ((fovscale - 1) * 0.1f + 1) + verticalOffset, sNear, sFar);
         }
     }
 
@@ -705,7 +725,7 @@ public class Core : MonoBehaviour
                     if (Math.Abs(reg3[i]) > tAlign)
                     {
                         tActive = timeMove;
-                        ad0 = Dir.forAxis(Math.Max(i,dim-1), reg3[i] < 0);
+                        ad0 = Dir.forAxis(Math.Min(i,dim-1), reg3[i] < 0);
                         if (target.canMove(Dir.getAxis(ad0), Dir.getSign(ad0))) {command = alignMove; break;}
                     }
                 }
@@ -877,18 +897,16 @@ public class Core : MonoBehaviour
 
     private void alignMove()
     {
-        Vec.unitVector(reg3, Dir.getAxis(ad0));
+        Vec.unitVector(reg7, Dir.getAxis(ad0));
         double d;
         if ((d = tActive - delta) > 0) {
             tActive = d;
-            reg3[dim-1] = reg3[3];
-            Vec.scale(reg7, reg3, Dir.getSign(ad0) * dMove);
+            Vec.scale(reg7, reg7, Dir.getSign(ad0) * dMove);
             target.move(reg7);
         }
         else {
             d = tActive / timeMove;
-            reg3[dim-1] = reg3[3];
-            Vec.scale(reg7, reg3, Dir.getSign(ad0) * d);
+            Vec.scale(reg7, reg7, Dir.getSign(ad0) * d);
             target.move(reg7);
             target.align().snap();
             command = null;
@@ -1600,5 +1618,22 @@ public class Core : MonoBehaviour
         //// version 2
         //store.putObject(KEY_FISHEYE,OptionsFisheye.of);
     }
+    private static Matrix4x4 PerspectiveOffCenter(float left, float right, float bottom, float top, float near, float far)
+    {
+        float x = 2.0f * near / (right - left);
+        float y = 2.0f * near / (top - bottom);
+        float a = (right + left) / (right - left);
+        float b = (top + bottom) / (top - bottom);
+        float c = -(far + near) / (far - near);
+        float d = -2.0f * far * near / (far - near);
+        float e = -1.0f;
 
+        Matrix4x4 m = new Matrix4x4();
+        m[0, 0] = x; m[0, 1] = 0; m[0, 2] = a; m[0, 3] = 0;
+        m[1, 0] = 0; m[1, 1] = y; m[1, 2] = b; m[1, 3] = 0;
+        m[2, 0] = 0; m[2, 1] = 0; m[2, 2] = c; m[2, 3] = d;
+        m[3, 0] = 0; m[3, 1] = 0; m[3, 2] = e; m[3, 3] = 0;
+
+        return m;
+    }
 }

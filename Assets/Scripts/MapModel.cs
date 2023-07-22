@@ -167,7 +167,7 @@ public class MapModel : IModel
     {
         renderAbsolute.run(origin, axis);
         if (showMap) {
-            Vec.addScaled(reg, origin, this.axis[3], -distance);
+            Vec.addScaled(reg, origin, this.axis[axis.Length-1], -distance);
             geomModel.render(reg, axis);
             geomRelative.run(this.axis, false);
             for (int i = 0; i < bufRelative.getSize(); i++)

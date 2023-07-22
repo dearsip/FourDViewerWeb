@@ -32,14 +32,14 @@ public class Menu : MonoBehaviour
     public Slider dimSlider, sizeSlider, densitySlider, twistProbabilitySlider, branchProbabilitySlider, loopCrossProbabilitySlider,
         dimSameParallelSlider, dimSamePerpendicularSlider, depthSlider, retinaSlider, scaleSlider, trainSpeedSlider, cameraDistanceSlider,
         transparencySlider, lineThicknessSlider, borderSlider, baseTransparencySlider, sliceTransparencySlider, 
-        frameRateSlider, timeMoveSlider, timeRotateSlider, timeAlignMoveSlider, timeAlignRotateSlider, iPDSlider;
+        frameRateSlider, timeMoveSlider, timeRotateSlider, timeAlignMoveSlider, timeAlignRotateSlider, iPDSlider, fovscaleSlider;
     public InputField dimCurrent, dimNext, sizeCurrent, sizeNext, densityCurrent, densityNext, twistPobabilityCurrent, twistProbabilityNext,
         branchProbabilityCurrent, branchProbabilityNext, loopCrossProbabilityCurrent, loopCrossProbabilityNext, dimSameParallelField,
         dimSamePerpendicularField, mazeCurrent, mazeNext, colorCurrent, colorNext, depthField, retinaField, scaleField, trainSpeedField, cameraDistanceField,
         transparencyField, lineThicknessField, borderField, baseTransparencyField, sliceTransparencyField, 
-        frameRateField, timeMoveField, timeRotateField, timeAlignMoveField, timeAlignRotateField, width, flare, rainbowGap, iPDField;
-    public Toggle allowLoopsCurrent, allowLoopsNext, allowReservedPathsCurrent, allowReservedPathsNext, usePolygon, useEdgeColor, hideSel, invertNormals, separate, map, invertLeftAndRight, invertForward,
-        invertYawAndPitch, invertRoll, alignMode, sliceMode, limit3D, keepUpAndDown, fisheye, custom, rainbow, glide, allowDiagonalMovement, buttonToggleModeLeft, buttonToggleModeRight, hideController, horizontalInputFollowing, stereo, alternativeControlIn3D;
+        frameRateField, timeMoveField, timeRotateField, timeAlignMoveField, timeAlignRotateField, width, flare, rainbowGap, iPDField, fovscaleField;
+    public Toggle allowLoopsCurrent, allowLoopsNext, allowReservedPathsCurrent, allowReservedPathsNext, usePolygon, useEdgeColor, hideSel, invertNormals, separate, map, focus, invertLeftAndRight, invertForward,
+        invertYawAndPitch, invertRoll, alignMode, sliceMode, limit3D, keepUpAndDown, fisheye, custom, rainbow, glide, allowDiagonalMovement, buttonToggleModeLeft, buttonToggleModeRight, hideController, horizontalInputFollowing, stereo, alternativeControlIn3D, threeDMazeIn3DScene;
     public Toggle[] enable, texture;
     public Dropdown colorMode, inputTypeLeftAndRight, inputTypeForward, inputTypeYawAndPitch, inputTypeRoll;
     public Material defaultMat, alternativeMat;
@@ -150,7 +150,8 @@ public class Menu : MonoBehaviour
         put(hideSel, oa.opt.od.hidesel);
         put(invertNormals, oa.opt.od.invertNormals);
         put(separate, oa.opt.od.separate);
-        put(map, oa.opt.od.map);
+        put(map, oa.opt.od.map); focus.interactable = oa.opt.od.map;
+        put(focus, core.focusOnMap);
         put(cameraDistanceField, cameraDistanceSlider, oa.opt.od.cameraDistance);
         put(trainSpeedField, trainSpeedSlider, oa.opt.od.trainSpeed);
 
@@ -191,7 +192,9 @@ public class Menu : MonoBehaviour
         put(horizontalInputFollowing, core.horizontalInputFollowing);
         put(stereo, core.stereo);
         put(iPDField, iPDSlider, core.iPD);
+        put(fovscaleField, fovscaleSlider, core.fovscale);
         put(alternativeControlIn3D, core.alternaviveControlIn3D);
+        put(threeDMazeIn3DScene, core.threeDMazeIn3DScene);
 
         isActivating = false;
     }
@@ -218,7 +221,8 @@ public class Menu : MonoBehaviour
         oa.opt.od.hidesel = getBool(hideSel);
         oa.opt.od.invertNormals = getBool(invertNormals);
         oa.opt.od.separate = getBool(separate);
-        oa.opt.od.map = getBool(map);
+        oa.opt.od.map = getBool(map); focus.interactable = oa.opt.od.map;
+        core.focusOnMap = oa.opt.od.map && getBool(focus); focus.isOn = core.focusOnMap;
         getDouble(ref oa.opt.od.cameraDistance, cameraDistanceField, OptionsDisplay.CAMERADISTANCE_MIN, OptionsDisplay.CAMERADISTANCE_MAX, true);
         getInt(ref oa.opt.od.trainSpeed, trainSpeedField, OptionsDisplay.TRAINSPEED_MIN, OptionsDisplay.TRAINSPEED_MAX);
 
@@ -255,7 +259,9 @@ public class Menu : MonoBehaviour
         core.horizontalInputFollowing = getBool(horizontalInputFollowing);
         core.stereo = getBool(stereo);
         getFloat(ref core.iPD, iPDField, true);
+        getFloat(ref core.fovscale, fovscaleField, true);
         core.alternaviveControlIn3D = getBool(alternativeControlIn3D);
+        core.threeDMazeIn3DScene = getBool(threeDMazeIn3DScene);
 
         core.menuCommand = core.updateOptions;
     }
@@ -344,15 +350,15 @@ public class Menu : MonoBehaviour
         if (dim>0) {
             OptionsAll oa = core.getOptionsAll();
             oa.opt.om4.dimMap = dim;
-            // if (dim==3) {
-                // oa.opt.oo.limit3D = true;
-                // oa.opt.oo.sliceDir = 1;
-            // } else {
-                // oa.opt.oo.limit3D = false;
-                // oa.opt.oo.sliceDir = 0;
-            // }
+            core.dim = core.threeDMazeIn3DScene ? dim : 4;
+            if (dim==3) {
+                oa.opt.oo.limit3D = true;
+                oa.opt.oo.sliceDir = 1;
+            } else {
+                oa.opt.oo.limit3D = false;
+                oa.opt.oo.sliceDir = 0;
+            }
         }
-        core.dim = dim;
         core.menuCommand = core.newGame;
     }
 

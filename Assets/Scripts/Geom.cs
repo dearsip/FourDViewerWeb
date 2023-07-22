@@ -593,7 +593,7 @@ public class Geom
         public void calculate()
         {
             calcCenters();
-            if (face == null && getDimension() == 4) calcSubfacesAndFaces(); else calcSubfaces();
+            if (face.Length == 0 && getDimension() == 4) calcSubfacesAndFaces(); else calcSubfaces();
             calcNeighbors();
 
             int dim = getDimension();

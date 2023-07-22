@@ -882,7 +882,7 @@ public class Engine : IMove
         {
             p = bufRelative.get(i);
             int v = p.vertex.Length;
-            if (oo.sliceDir > 0) p.color.a *= oo.baseTransparency;
+            if (oo.sliceDir > 0 && dim == 4) p.color.a *= oo.baseTransparency;
             if (v == 2)
             {
                 v = 4;
@@ -891,7 +891,7 @@ public class Engine : IMove
                 Vec.sub(reg5, reg8, reg7);
                 Vec.cross(reg6, reg5, eyeVector);
                 Vec.normalize(reg6, reg6);
-                Vec.scale(reg6, reg6, width);
+                Vec.scale(reg6, reg6, dim == 4 ? width : width * 2);
 
                 Vec.add(reg5, reg7, reg6);
                 verts.Add(new Vector3((float)reg5[0], (float)reg5[1], (float)reg5[2]));
