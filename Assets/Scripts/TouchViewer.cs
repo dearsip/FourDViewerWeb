@@ -16,10 +16,10 @@ public class TouchViewer : MonoBehaviour
 
     void Update()
     {
-        int touchCount = Input.touchCount + (Input.GetMouseButton(0) ? 1 : 0);
+        int touchCount = Input.touchCount;// + (Input.GetMouseButton(0) ? 1 : 0);
         for (int i = 0; i < touchCount; i++)
         {
-            Vector2 position = i == Input.touchCount ? Input.mousePosition : Input.GetTouch(i).position;
+            Vector2 position = /*i == Input.touchCount ? Input.mousePosition :*/ Input.GetTouch(i).position;
             RectTransformUtility.ScreenPointToLocalPointInRectangle(
                 rectTransform,
                 position,

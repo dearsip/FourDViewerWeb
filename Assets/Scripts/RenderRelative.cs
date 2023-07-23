@@ -166,7 +166,7 @@ public class RenderRelative
         }
     }
 
-    public void runObject(double[][] obj, int mask, PointTransform pt)
+    public void runObject(double[][] obj, int mask, PointTransform pt, Color color)
     {
         // no need for clear here
         for (int i = 0; i < obj.Length; i += 2)
@@ -180,12 +180,34 @@ public class RenderRelative
                 {
                     dest.vertex[j] = new double[dim-1];
                     Vec.copy(dest.vertex[j], obj[i + j]);
+                    pt.transform(dest.vertex[j]);
                 }
-                dest.color = Color.white;
-                dest.color.a = 0.05f;
+                dest.color = color;
             }
             mask >>= 1;
         }
     }
 
+    public void runPolygon(double[][] obj, int mask, PointTransform pt, int n, Color color)
+    {
+        Color c = color;
+        color.a = 0f;
+        Polygon dest = null;
+        for (int i = 0; i < obj.Length; i += n)
+        {
+            if ((mask & 1) == 1)
+            {
+                dest = bout.getNext();
+                dest.vertex = new double[n][];
+                for (int j = 0; j < n; j++)
+                {
+                    dest.vertex[j] = new double[dim-1];
+                    Vec.copy(dest.vertex[j], obj[i + j]);
+                    pt.transform(dest.vertex[j]);
+                }
+                dest.color = color;
+            }
+            mask >>= 1;
+        }
+    }
 }

@@ -24,14 +24,15 @@ public class Core : MonoBehaviour
     private Mesh mesh;
 
     private bool engineAlignMode;
-    private bool active, excluded;
-    private int[] param;
+    // private bool active, excluded;
+    // private int[] param;
     private double delta;
     private double timeMove, timeRotate, timeAlignMove, timeAlignRotate;
-    private int nMove, nRotate, nAlignMove, nAlignRotate;
+    // private int nMove, nRotate, nAlignMove, nAlignRotate;
     private double dMove, dRotate, dAlignMove, dAlignRotate;
-    private bool alwaysRun;
+    private bool start, started;
     private IMove target;
+    public int quantity;
     private double[] saveOrigin;
     private double[][] saveAxis;
     public bool alignMode;
@@ -41,6 +42,7 @@ public class Core : MonoBehaviour
     public bool keepUpAndDown;
     private bool disableLeftAndRight;
     public bool threeDMazeIn3DScene;
+    public bool paintWithAddButton;
 
     private int interval;
 
@@ -186,7 +188,6 @@ public class Core : MonoBehaviour
         engine = new Engine(mesh);
 
         newGame(dim);
-        active = true;
 
         reg2 = new double[3];
         reg3 = new double[4];
@@ -293,7 +294,7 @@ public class Core : MonoBehaviour
         if (xrState != WebXRState.NORMAL) return;
         menuCanvas.enabled = true;
         inputCanvas.enabled = false;
-        menuPanel.Activate(oa);
+        menuPanel.Activate(oa, engine.retrieveModel() as ISelectShape);
     }
 
     public Slider size;
@@ -337,6 +338,7 @@ public class Core : MonoBehaviour
         saveOrigin = new double[this.dim];
         saveAxis = new double[this.dim][];
         for (int i = 0; i < this.dim; i++) saveAxis[i] = new double[this.dim];
+        started = false;
 
         alignButton.color = ButtonEnabled(TouchType.Align) ? enabledColor : disabledColor;
         clickButton.color = ButtonEnabled(TouchType.Click) ? enabledColor : disabledColor;
@@ -409,7 +411,8 @@ public class Core : MonoBehaviour
         menuCommand?.Invoke();
         menuCommand = null;
         control();
-        engine.renderAbsolute(eyeVector, opt.oo, delta);
+        started = started || start;
+        engine.renderAbsolute(eyeVector, opt.oo, delta, !menuCanvas.enabled && started);
 
         if (xrState == WebXRState.NORMAL) {
             // fixedCamera.transform.rotation = cameraLookAt.rotation * Quaternion.Euler(cameraRot.x, 0, 0);
@@ -462,14 +465,36 @@ public class Core : MonoBehaviour
         if  (swipeDir >= 0 && v.x < -tSwipe && command == null) { command = removeShape; swipeDir = -1; }
         else if (swipeDir <= 0 && v.x > tSwipe && command == null) { command = addShapes; swipeDir = 1; }
 
-        if ((leftC.GetButtonDown(WebXRController.ButtonTypes.Trigger)) || Input.GetKeyDown(KeyCode.Q)) 
+        if ((leftC.GetButtonDown(WebXRController.ButtonTypes.Trigger)) || Input.GetKeyDown(KeyCode.G)) 
             Slice();
-        if (Input.GetKeyDown(KeyCode.Space))
-            RightClick();
-        if (Input.GetKeyDown(KeyCode.H) && command == null)
-            command = addShapes;
-        if (Input.GetKeyDown(KeyCode.Y) && command == null)
-            command = removeShape;
+
+        bool update = false;
+        if (Input.GetKeyDown(KeyCode.Space)) RightClick();
+        if (Input.GetKeyDown(KeyCode.M) && command == null) command = addShapes;
+        if (Input.GetKeyDown(KeyCode.N) && command == null) command = removeShape;
+        if (Input.GetKeyDown(KeyCode.Return)) OperateAlign();
+        if (Input.GetKeyDown(KeyCode.T)) LeftGrip();
+        if (Input.GetKeyDown(KeyCode.Alpha1)) { update = true; opt.ov4.texture[1] = !opt.ov4.texture[1]; }
+        if (Input.GetKeyDown(KeyCode.Alpha2)) { update = true; opt.ov4.texture[2] = !opt.ov4.texture[2]; }
+        if (Input.GetKeyDown(KeyCode.Alpha3)) { update = true; opt.ov4.texture[3] = !opt.ov4.texture[3]; }
+        if (Input.GetKeyDown(KeyCode.Alpha4)) { update = true; opt.ov4.texture[4] = !opt.ov4.texture[4]; }
+        if (Input.GetKeyDown(KeyCode.Alpha5)) { update = true; opt.ov4.texture[5] = !opt.ov4.texture[5]; }
+        if (Input.GetKeyDown(KeyCode.Alpha6)) { update = true; opt.ov4.texture[6] = !opt.ov4.texture[6]; }
+        if (Input.GetKeyDown(KeyCode.Alpha7)) { update = true; opt.ov4.texture[7] = !opt.ov4.texture[7]; }
+        if (Input.GetKeyDown(KeyCode.Alpha8)) { update = true; opt.ov4.texture[8] = !opt.ov4.texture[8]; }
+        if (Input.GetKeyDown(KeyCode.Alpha9)) { update = true; opt.ov4.texture[9] = !opt.ov4.texture[9]; }
+        if (Input.GetKeyDown(KeyCode.Alpha0)) { update = true; opt.ov4.texture[0] = !opt.ov4.texture[0]; }
+        if (Input.GetKeyDown(KeyCode.X)) { update = true; opt.od.trainSpeed--; }
+        if (Input.GetKeyDown(KeyCode.C)) { update = true; opt.od.trainSpeed = 0; }
+        if (Input.GetKeyDown(KeyCode.V)) { update = true; opt.od.trainSpeed++; }
+        if (Input.GetKeyDown(KeyCode.Q)) doToggleTrack();
+        if (Input.GetKeyDown(KeyCode.Y)) engine.toggleFisheye();
+        if (Input.GetKeyDown(KeyCode.P) && command == null) command = doPaint;
+        if (Input.GetKeyDown(KeyCode.H)) { update = true; opt.od.useEdgeColor = !opt.od.useEdgeColor; }
+        if (Input.GetKeyDown(KeyCode.B)) { update = true; opt.od.invertNormals = !opt.od.invertNormals; }
+        if (Input.GetKeyDown(KeyCode.Comma)) { update = true; opt.od.hidesel = !opt.od.hidesel; }
+        if (Input.GetKeyDown(KeyCode.Period)) { update = true; opt.od.separate = !opt.od.separate; }
+        if (update) updateOptions();
     }
 
     private void OperateAlign()
@@ -520,13 +545,13 @@ public class Core : MonoBehaviour
         else if (fromTouchPos[i].x < 0.3125f) {
             if (fromTouchPos[i].y < 0.375f) touchType[i] = !alt && rightTouchButton ? TouchType.MoveLateral1 : TouchType.MoveForward1;
             else if (fromTouchPos[i].y < 0.8f) touchType[i] = alt ? TouchType.MoveLateral1 : rightTouchButton ? TouchType.MoveLateral2 : TouchType.MoveForward2; }
-        else if (fromTouchPos[i].x < 0.40625f && fromTouchPos[i].y < 0.16667f) { touchType[i] = TouchType.LeftTouchButton; leftTouchButton = leftTouchToggleMode ? !leftTouchButton : true; }
+        else if (fromTouchPos[i].x < 0.5f && fromTouchPos[i].y < 0.16667f) { touchType[i] = TouchType.LeftTouchButton; leftTouchButton = leftTouchToggleMode ? !leftTouchButton : true; }
         else if (fromTouchPos[i].x > 0.90625f && fromTouchPos[i].y < 0.1875f && ButtonEnabled(TouchType.Click)) RightClick();
         else if (fromTouchPos[i].x > 0.90625f && fromTouchPos[i].y < 0.375f && ButtonEnabled(TouchType.Add) && command == null) command = addShapes;
         else if (fromTouchPos[i].x > 0.6875f) {
             if (fromTouchPos[i].y < 0.375f) touchType[i] = !alt && leftTouchButton ? TouchType.Spin1 : TouchType.Turn1;
             else if (fromTouchPos[i].y < 0.8f) touchType[i] = alt || leftTouchButton ? TouchType.Spin2 : TouchType.Turn2; }
-        else if (fromTouchPos[i].x > 0.59375f && fromTouchPos[i].y < 0.16667f) { touchType[i] = TouchType.RightTouchButton; rightTouchButton = rightTouchToggleMode ? !rightTouchButton : true; }
+        else if (fromTouchPos[i].x > 0.5f && fromTouchPos[i].y < 0.16667f) { touchType[i] = TouchType.RightTouchButton; rightTouchButton = rightTouchToggleMode ? !rightTouchButton : true; }
         else if (fromTouchPos[i].y < 0.8f) touchType[i] = TouchType.CameraRotate;
     }
 
@@ -649,6 +674,8 @@ public class Core : MonoBehaviour
             lastTouchPos[i] = touchPos[i];
             if (touchEnded[i]) { touchEnded[i] = false; touchType[i] = TouchType.None; }
         }
+
+        start = leftMove || rightMove;
     }
 
     private float ClampedLerp(float y) { return Mathf.Clamp01(((y - 0.5f) * lerpc + 1) * 0.5f); }
@@ -970,7 +997,8 @@ public class Core : MonoBehaviour
     }
 
     public void addShapes() {
-        engine.addShapes(alignMode);
+        if (paintWithAddButton) doPaint();
+        else engine.addShapes(alignMode);
         command = null;
     }
 
@@ -1010,12 +1038,12 @@ public class Core : MonoBehaviour
     public const KeyCode KEY_TURNDOWN   = KeyCode.K;
     public const KeyCode KEY_TURNIN     = KeyCode.U;
     public const KeyCode KEY_TURNOUT    = KeyCode.O;
-    public const KeyCode KEY_SPINLEFT   = KeyCode.J;
-    public const KeyCode KEY_SPINRIGHT  = KeyCode.L;
-    public const KeyCode KEY_SPINUP     = KeyCode.I;
-    public const KeyCode KEY_SPINDOWN   = KeyCode.K;
-    public const KeyCode KEY_SPININ     = KeyCode.U;
-    public const KeyCode KEY_SPINOUT    = KeyCode.O;
+    public const KeyCode KEY_SPINLEFT   = KeyCode.I;
+    public const KeyCode KEY_SPINRIGHT  = KeyCode.K;
+    public const KeyCode KEY_SPINUP     = KeyCode.L;
+    public const KeyCode KEY_SPINDOWN   = KeyCode.J;
+    public const KeyCode KEY_SPININ     = KeyCode.O;
+    public const KeyCode KEY_SPINOUT    = KeyCode.U;
     private const int KEYMODE_SLIDE = 0;
     private const int KEYMODE_TURN = 1;
     private const int KEYMODE_SPIN = 2;
@@ -1024,44 +1052,44 @@ public class Core : MonoBehaviour
         if (menuCanvas.enabled || Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl)) return;
         switch (keyMode) {
             case (KEYMODE_SLIDE):
-                if (Input.GetKey(KEY_SLIDELEFT )) reg3[0] = -1;
-                if (Input.GetKey(KEY_SLIDERIGHT)) reg3[0] =  1;
-                if (Input.GetKey(KEY_SLIDEUP   )) reg3[1] =  1;
-                if (Input.GetKey(KEY_SLIDEDOWN )) reg3[1] = -1;
-                if (Input.GetKey(KEY_SLIDEIN   )) reg3[2] =  1;
-                if (Input.GetKey(KEY_SLIDEOUT  )) reg3[2] = -1;
-                if (Input.GetKey(KEY_FORWARD   )) reg3[3] =  1;
-                if (Input.GetKey(KEY_BACK      )) reg3[3] = -1;
+                if (Input.GetKey(KEY_SLIDELEFT )) { start = true; reg3[0] = -1; }
+                if (Input.GetKey(KEY_SLIDERIGHT)) { start = true; reg3[0] =  1; }
+                if (Input.GetKey(KEY_SLIDEUP   )) { start = true; reg3[1] =  1; }
+                if (Input.GetKey(KEY_SLIDEDOWN )) { start = true; reg3[1] = -1; }
+                if (Input.GetKey(KEY_SLIDEIN   )) { start = true; reg3[2] =  1; }
+                if (Input.GetKey(KEY_SLIDEOUT  )) { start = true; reg3[2] = -1; }
+                if (Input.GetKey(KEY_FORWARD   )) { start = true; reg3[3] =  1; }
+                if (Input.GetKey(KEY_BACK      )) { start = true; reg3[3] = -1; }
                 break;
             case (KEYMODE_TURN):
                 if (!Input.GetKey(KeyCode.LeftShift) && !Input.GetKey(KeyCode.RightShift)) {
-                    if (Input.GetKey(KEY_TURNLEFT )) reg2[0] = -1;
-                    if (Input.GetKey(KEY_TURNRIGHT)) reg2[0] =  1;
-                    if (Input.GetKey(KEY_TURNUP   )) reg2[1] =  1;
-                    if (Input.GetKey(KEY_TURNDOWN )) reg2[1] = -1;
-                    if (Input.GetKey(KEY_TURNIN   )) reg2[2] =  1;
-                    if (Input.GetKey(KEY_TURNOUT  )) reg2[2] = -1;
+                    if (Input.GetKey(KEY_TURNLEFT )) { start = true; reg2[0] = -1; }
+                    if (Input.GetKey(KEY_TURNRIGHT)) { start = true; reg2[0] =  1; }
+                    if (Input.GetKey(KEY_TURNUP   )) { start = true; reg2[1] =  1; }
+                    if (Input.GetKey(KEY_TURNDOWN )) { start = true; reg2[1] = -1; }
+                    if (Input.GetKey(KEY_TURNIN   )) { start = true; reg2[2] =  1; }
+                    if (Input.GetKey(KEY_TURNOUT  )) { start = true; reg2[2] = -1; }
                 }
                 break;
             case (KEYMODE_SPIN):
                 if (Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift)) {
-                    if (Input.GetKey(KEY_SPINLEFT )) reg0[0] = -1;
-                    if (Input.GetKey(KEY_SPINRIGHT)) reg0[0] =  1;
-                    if (Input.GetKey(KEY_SPINUP   )) reg0[1] =  1;
-                    if (Input.GetKey(KEY_SPINDOWN )) reg0[1] = -1;
-                    if (Input.GetKey(KEY_SPININ   )) reg0[2] =  1;
-                    if (Input.GetKey(KEY_SPINOUT  )) reg0[2] = -1;
+                    if (Input.GetKey(KEY_SPINLEFT )) { start = true; reg0[0] = -1; }
+                    if (Input.GetKey(KEY_SPINRIGHT)) { start = true; reg0[0] =  1; }
+                    if (Input.GetKey(KEY_SPINUP   )) { start = true; reg0[1] =  1; }
+                    if (Input.GetKey(KEY_SPINDOWN )) { start = true; reg0[1] = -1; }
+                    if (Input.GetKey(KEY_SPININ   )) { start = true; reg0[2] =  1; }
+                    if (Input.GetKey(KEY_SPINOUT  )) { start = true; reg0[2] = -1; }
                 }
                 break;
             case (KEYMODE_SPIN2):
                 if (Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift)) {
                     Quaternion q = Quaternion.identity;
-                    if (Input.GetKey(KEY_SPINLEFT )) q *= Quaternion.Euler(-(float)dRotate,0,0);
-                    if (Input.GetKey(KEY_SPINRIGHT)) q *= Quaternion.Euler( (float)dRotate,0,0);
-                    if (Input.GetKey(KEY_SPINUP   )) q *= Quaternion.Euler(0, (float)dRotate,0);
-                    if (Input.GetKey(KEY_SPINDOWN )) q *= Quaternion.Euler(0,-(float)dRotate,0);
-                    if (Input.GetKey(KEY_SPININ   )) q *= Quaternion.Euler(0,0, (float)dRotate);
-                    if (Input.GetKey(KEY_SPINOUT  )) q *= Quaternion.Euler(0,0,-(float)dRotate);
+                    if (Input.GetKey(KEY_SPINLEFT )) { start = true; q *= Quaternion.Euler(-(float)dRotate,0,0); }
+                    if (Input.GetKey(KEY_SPINRIGHT)) { start = true; q *= Quaternion.Euler( (float)dRotate,0,0); }
+                    if (Input.GetKey(KEY_SPINUP   )) { start = true; q *= Quaternion.Euler(0, (float)dRotate,0); }
+                    if (Input.GetKey(KEY_SPINDOWN )) { start = true; q *= Quaternion.Euler(0,-(float)dRotate,0); }
+                    if (Input.GetKey(KEY_SPININ   )) { start = true; q *= Quaternion.Euler(0,0, (float)dRotate); }
+                    if (Input.GetKey(KEY_SPINOUT  )) { start = true; q *= Quaternion.Euler(0,0,-(float)dRotate); }
                     if (q != Quaternion.identity) relarot = q;
                 }
                 break;
@@ -1138,6 +1166,30 @@ public class Core : MonoBehaviour
         keepUpAndDown = opt.oo.keepUpAndDown;
         if (keepUpAndDown) alignMode = false;
         engine.setKeepUpAndDown(keepUpAndDown);
+    }
+
+    public void doPaint()
+    {
+        var model = engine.retrieveModel() as GeomModel;
+        if (model != null && model.canPaint()) model.paint(engine.getOrigin(), engine.getViewAxis());
+    }
+
+    public void doAddShapes()
+    {
+        var model = engine.retrieveModel() as GeomModel;
+        if (model != null && model.canAddShapes()) model.addShapes(quantity, alignMode, engine.getOrigin(), engine.getViewAxis());
+    }
+    
+    public void doScramble()
+    {
+        var model = engine.retrieveModel() as GeomModel;
+        if (model != null) model.scramble(alignMode, engine.getOrigin());
+    }
+
+    public void doToggleTrack()
+    {
+        var model = engine.retrieveModel() as GeomModel;
+        if (model != null) model.toggleTrack();
     }
 
     public void closeMenu()

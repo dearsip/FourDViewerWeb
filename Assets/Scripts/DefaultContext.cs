@@ -204,10 +204,10 @@ public class DefaultContext
       c.dict.Add("cyan",Color.cyan);
       c.dict.Add("magenta",Color.magenta);
       c.dict.Add("yellow",Color.yellow);
-      c.dict.Add("orange",new Color(255,128,0)); // Color.orange is (255,200,0)
+      c.dict.Add("orange",new Color(1,.25f,0)); // Color.orange is (255,200,0)
       c.dict.Add("gray",Color.gray);
       c.dict.Add("white",Color.white);
-      c.dict.Add("brown",new Color(128,96,0));
+      c.dict.Add("brown",new Color(.5f,0.375f,0));
       c.dict.Add("clear",Color.clear);
 
       c.dict.Add("finishinfo",new Command.FinishInfo());

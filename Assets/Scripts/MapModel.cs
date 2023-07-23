@@ -163,12 +163,12 @@ public class MapModel : IModel
     }
 
     private Polygon p;
-    public override void render(double[] origin, double[][] axis)
+    public override void render(double[] origin, double[][] axis, bool viewClip)
     {
         renderAbsolute.run(origin, axis);
         if (showMap) {
             Vec.addScaled(reg, origin, this.axis[axis.Length-1], -distance);
-            geomModel.render(reg, axis);
+            geomModel.render(reg, axis, false);
             geomRelative.run(this.axis, false);
             for (int i = 0; i < bufRelative.getSize(); i++)
             {

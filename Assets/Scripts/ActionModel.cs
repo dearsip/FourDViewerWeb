@@ -87,7 +87,8 @@ public class ActionModel : GeomModel {
       engine.Fall(delta);
    }
 
-   public override void render(double[] origin, double[][] axis) {
+   public override void render(double[] origin, double[][] axis, bool viewClip) {
+      this.viewClip = viewClip;
       Vec.unitVector(reg1,1);
       Vec.addScaled(reg3,origin,reg1,0.5);
       Vec.addScaled(reg3,reg3,axis[dim-1],-cameraDistance);

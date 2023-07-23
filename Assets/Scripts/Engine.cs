@@ -18,6 +18,7 @@ public class Engine : IMove
     private double[][] axis;
     private bool win;
     private bool keepUpAndDown;
+    private bool glide;
 
     private Clip.Result clipResult;
     private double fall;
@@ -39,7 +40,7 @@ public class Engine : IMove
 
     //private Display[] display;
 
-    private int dimSpaceCache; // display-related cache of engine-level fields
+    // private int dimSpaceCache; // display-related cache of engine-level fields
     private int dim;
     private bool enableCache;
     private int edgeCache;
@@ -347,6 +348,7 @@ public class Engine : IMove
 
         //renderAbsolute(); // not always necessary, but who cares, it's fast enough
         width = od.lineThickness;
+        glide = od.glide;
     }
 
     public void setKeepUpAndDown(bool b) {
@@ -459,7 +461,7 @@ public class Engine : IMove
         if (!isPlatformer())
         {
             Vec.addScaled(reg3, origin, axis[a], d);
-            if (!model.canMove(origin, reg3, reg1, reg4, true)) return false;
+            return model.canMove(origin, reg3, reg1, reg4, true);
         }
 
         return true;
@@ -488,21 +490,9 @@ public class Engine : IMove
             Vec.unitVector(reg4, 1);
             Vec.rotate(d,reg3,axis[1],reg4,regA,regB);
             Vec.add(reg3, origin, d);
-            if (model.canMove(origin, reg3, reg1, reg4, false))
+            if (model.canMove(origin, reg3, reg1, reg4, false) || glide)
             {
                 Vec.copy(origin, reg3);
-            }
-            else
-            { // not functioning (climing)
-                Clip.Result clipResult = ((ActionModel)model).getResult();
-                int ib = clipResult.ib;
-                Vec.unitVector(reg3, 1);
-                Vec.addScaled(reg3, origin, reg3, Vec.norm(d));
-                if ((Clip.clip(origin, reg3, ((GeomModel)model).retrieveShapes()[ib], clipResult) & Clip.KEEP_B) != 0)
-                {
-                    Vec.unitVector(reg3, 1);
-                    Vec.addScaled(origin, origin, reg3, fall * clipResult.b + epsilon);
-                }
             }
         }
     }
@@ -580,7 +570,7 @@ public class Engine : IMove
 
     public bool update(double[] saveOrigin, double[][] saveAxis, double[] viewOrigin)
     {
-        if (model.canMove(saveOrigin, origin, reg1, reg4, false))
+        if (model.canMove(saveOrigin, origin, reg1, reg4, false) || glide)
         {
             if (atFinish()) win = true;
             return true;
@@ -608,7 +598,18 @@ public class Engine : IMove
         const double epsilon = 0.001;
         Vec.unitVector(reg3, 1);
         Vec.addScaled(reg3, origin, reg3, -epsilon);
-        if (!model.canMove(origin, reg3, reg1, reg4, true) || reg3[1] < 0) fall = hdef;
+        if (reg3[1] < 0) { fall = hdef; return; }
+        if (!model.canMove(origin, reg3, reg1, reg4, true))
+        {
+            if (glide) // no good for multiple shapes
+            {
+                clipResult = ((ActionModel)model).getResult();
+                Vec.copy(reg3, ((GeomModel)model).getHitShape().cell[clipResult.ia].normal);
+                Vec.normalize(reg3, reg3);
+                if (Math.Abs(reg3[1]) > 0.7) fall = hdef;
+            }
+            else fall = hdef;
+        }
     }
 
     public void Fall(double delta)
@@ -623,16 +624,27 @@ public class Engine : IMove
             fall = 0;
             origin[1] = epsilon;
         }
-        else if (model.canMove(origin, reg3, reg1, reg4, true))
+        else if (model.canMove(origin, reg3, reg1, reg4, false))
         {
             Vec.copy(origin, reg3);
         }
         else
         {
             clipResult = ((ActionModel)model).getResult();
-            Vec.unitVector(reg3, 1);
-            Vec.addScaled(origin, origin, reg3, d * clipResult.a + ((fall > 0) ? -epsilon : epsilon));
-            fall = 0;
+            if (glide) // no good for multiple shapes
+            {
+                Vec.copy(origin, reg3);
+                Vec.copy(reg3, ((GeomModel)model).getHitShape().cell[clipResult.ia].normal);
+                Vec.normalize(reg3, reg3);
+                Debug.Log("reg3[1] = " + reg3[1]);
+                if (Math.Abs(reg3[1]) > 0.7) fall = 0;
+            }
+            else
+            {
+                Vec.unitVector(reg3, 1);
+                Vec.addScaled(origin, origin, reg3, d * clipResult.a + ((fall > 0) ? -epsilon : epsilon));
+                fall = 0;
+            }
         }
         if (atFinish()) win = true;
     }
@@ -650,11 +662,11 @@ public class Engine : IMove
 
     // --- rendering ---
 
-    public void renderAbsolute(double[] eyeVector, OptionsControl oo, double delta)
+    public void renderAbsolute(double[] eyeVector, OptionsControl oo, double delta, bool animate)
     {
         try {
-            model.animate(delta);
-            model.render(origin, axis);
+            if (animate) model.animate(delta);
+            model.render(origin, axis, !OptionsFisheye.of.fisheye);
             RenderRelative(eyeVector, oo);
         }catch(Exception e) {Debug.LogException(e);};
     }
@@ -740,7 +752,7 @@ public class Engine : IMove
         if (OptionsFisheye.of.fisheye)
         {
             renderPrepare();
-            if (OptionsFisheye.of.rainbow && dimSpaceCache == 4)
+            if (OptionsFisheye.of.rainbow && dim == 4)
             {
                 renderRainbow();
             }
@@ -753,7 +765,7 @@ public class Engine : IMove
         {
             renderRelative.run(axis, model.getSaveType()==IModel.SAVE_MAZE);
             renderObject(bufRelative, objRetina);
-            renderPolygon(bufRelative, objRetinaPoly, 3, oo.sliceDir);
+            renderPolygon(bufRelative, objRetinaPoly, 4, oo.sliceDir);
             renderObject(bufRelative, objCross);
             renderPolygon(bufRelative, objCrossPoly, 4, oo.sliceDir);
         }
@@ -795,8 +807,9 @@ public class Engine : IMove
     {
         int f = sraxis.Length - 1;
 
-        renderRelative.run(axis, true, mt, model.getSaveType()==IModel.SAVE_MAZE);
-        renderRelative.runObject(objCross, -1, ct);
+        renderRelative.run(axis, true, mt, true);
+        renderRelative.runObject(objCross, -1, ct, objColor);
+        if (dim == 4) renderRelative.runPolygon(objCrossPoly, -1, ct, 4, objColor);
 
         for (int i = 0; i < f; i++)
         {
@@ -809,9 +822,11 @@ public class Engine : IMove
         int f = sraxis.Length - 1;
 
         reg3[1] = -OptionsFisheye.rdist;
-        renderRelative.run(axis, true, mt, model.getSaveType()==IModel.SAVE_MAZE);
-        renderRelative.runObject(objRetina, r, mt);
-        renderRelative.runObject(objCross, -1, ct);
+        renderRelative.run(axis, true, mt, true);
+        renderRelative.runObject(objRetina, r, mt, objColor);
+        renderRelative.runPolygon(objRetinaPoly, p, mt, 4, objColor);
+        renderRelative.runObject(objCross, -1, ct, objColor);
+        renderRelative.runPolygon(objCrossPoly, -1, ct, 4, objColor);
         renderPair(f, 0, 0); // x pair offset in x
 
         Vec.copy(sraxis[3], axis[3]); // renderPair doesn't really put everything back
@@ -824,34 +839,41 @@ public class Engine : IMove
         Vec.copy(sraxis[0], axis[2]);
 
         reg3[1] = OptionsFisheye.rdist;
-        renderRelative.run(sraxis, false, mt, model.getSaveType()==IModel.SAVE_MAZE);
-        renderRelative.runObject(objRetina, r, mt);
-        renderRelative.runObject(objCross, -1, ct);
+        renderRelative.run(sraxis, false, mt, true);
+        renderRelative.runObject(objRetina, r, mt, objColor);
+        renderRelative.runPolygon(objRetinaPoly, p, mt, 4, objColor);
+        renderRelative.runObject(objCross, -1, ct, objColor);
+        renderRelative.runPolygon(objCrossPoly, -1, ct, 4, objColor);
         renderPair(f, 2, 0); // z pair offset in x
 
         // no need to put back, we're done
     }
 
     private static int[] rmask = new int[] { 0x7, 0xD, 0xE, 0xB, 0x677, 0x9DD, 0xCEE, 0x3BB, 0xFF0, 0xF0F };
+    private static int[] pmask = new int[] { 0x03D, 0x3E, 0x037, 0x03B, 0x01F, 0x02F };
     private const int r = 0x055; // rainbow mode main retina mask
+    private const int p = 0x03C;
 
     private void renderPair(int f, int i, int j)
     {
-        int n = ((dimSpaceCache == 4) ? 4 : 0) + 2 * j;
+        int n = ((dim == 4) ? 4 : 0) + 2 * j;
 
         reg3[j] = OptionsFisheye.offset;
         Vec.scale(sraxis[j], axis[f], -1);
         Vec.copy(sraxis[f], axis[i]);
         st.configure(j, 1);
-        renderRelative.run(sraxis, false, st, model.getSaveType()==IModel.SAVE_MAZE);
-        renderRelative.runObject(objRetina, rmask[n], st);
+        renderRelative.run(sraxis, false, st, true);
+        renderRelative.runObject(objRetina, rmask[n], st, objColor);
+        if (dim == 4) renderRelative.runPolygon(objRetinaPoly, pmask[n-4], st, 4, objColor);
 
         reg3[j] = -OptionsFisheye.offset;
         Vec.copy(sraxis[j], axis[f]);
         Vec.scale(sraxis[f], axis[i], -1);
         st.configure(j, -1);
-        renderRelative.run(sraxis, false, st, model.getSaveType()==IModel.SAVE_MAZE);
-        renderRelative.runObject(objRetina, rmask[n + 1], st);
+        renderRelative.run(sraxis, false, st, true);
+        renderRelative.runObject(objRetina, rmask[n + 1], st, objColor);
+        if (dim == 4) renderRelative.runPolygon(objRetinaPoly, pmask[n-3], st, 4, objColor);
+
 
         // now put everything back
         reg3[j] = 0;
@@ -938,8 +960,9 @@ public class Engine : IMove
                     int z = (oo.sliceDir + 1) % 3;
                     for (int j = 0; j < v - 1; j++)
                     {
-                        if (p.vertex[j][z] * p.vertex[j + 1][z] < 0)
+                        if (p.vertex[j][z] * p.vertex[j + 1][z] <= 0)
                         {
+                            if (p.vertex[j][z] == 0) continue;
                             if (k == 0)
                             {
                                 reg7[x] = (p.vertex[j][x] * Math.Abs(p.vertex[j + 1][z]) + p.vertex[j + 1][x] * Math.Abs(p.vertex[j][z])) / (Math.Abs(p.vertex[j][z]) + Math.Abs(p.vertex[j + 1][z]));
@@ -1025,23 +1048,12 @@ public class Engine : IMove
     };
 
     private static readonly double[][] objRetinaPoly = new double[][] {
-        //new double[] {-1,-1,-1}, new double[] { 1,-1,-1}, new double[] {-1, 1,-1},
-        //new double[] {-1, 1,-1}, new double[] { 1,-1,-1}, new double[] { 1, 1,-1},
-
-        new double[] { 1,-1,-1}, new double[] { 1,-1, 1}, new double[] { 1, 1,-1},
-        new double[] { 1, 1,-1}, new double[] { 1,-1, 1}, new double[] { 1, 1, 1},
-
-        new double[] { 1, 1,-1}, new double[] { 1, 1, 1}, new double[] {-1, 1,-1},
-        new double[] {-1, 1,-1}, new double[] { 1, 1, 1}, new double[] {-1, 1, 1},
-
-        new double[] {-1, 1,-1}, new double[] {-1, 1, 1}, new double[] {-1,-1,-1},
-        new double[] {-1,-1,-1}, new double[] {-1, 1, 1}, new double[] {-1,-1, 1},
-
-        new double[] {-1,-1,-1}, new double[] {-1,-1, 1}, new double[] { 1,-1,-1},
-        new double[] { 1,-1,-1}, new double[] {-1,-1, 1}, new double[] { 1,-1, 1},
-
-        //new double[] { 1,-1, 1}, new double[] {-1,-1, 1}, new double[] { 1, 1, 1},
-        //new double[] { 1, 1, 1}, new double[] {-1,-1, 1}, new double[] {-1, 1, 1}
+        new double[] { 1,-1,-1}, new double[] { 1, 1,-1}, new double[] { 1, 1, 1}, new double[] { 1,-1, 1},
+        new double[] {-1,-1,-1}, new double[] {-1, 1,-1}, new double[] {-1, 1, 1}, new double[] {-1,-1, 1},
+        new double[] {-1, 1,-1}, new double[] {-1, 1, 1}, new double[] { 1, 1, 1}, new double[] { 1, 1,-1},
+        new double[] {-1,-1,-1}, new double[] {-1,-1, 1}, new double[] { 1,-1, 1}, new double[] { 1,-1,-1},
+        new double[] {-1,-1, 1}, new double[] { 1,-1, 1}, new double[] { 1, 1, 1}, new double[] {-1, 1, 1},
+        new double[] {-1,-1,-1}, new double[] { 1,-1,-1}, new double[] { 1, 1,-1}, new double[] {-1, 1,-1},
     };
     private static readonly double[][] objRetina3 = new double[][] {
       new double[] {-1,-1,-1}, new double[] { 1,-1,-1},
@@ -1088,11 +1100,9 @@ public class Engine : IMove
    };
 
     private static readonly double[][] objCrossPoly = new double[][] {
-      new double[] {-C, 0, -C}, new double[] { C, 0, -C},
-      new double[] { C, 0, C}, new double[] { -C, 0, C},
-
-         new double[] { 0,-C, -C}, new double[] { 0, C, -C},
-         new double[] { 0, C, C}, new double[] { 0, -C, C}
+        new double[] { 0,-C,-C}, new double[] { 0, C,-C}, new double[] { 0, C, C}, new double[] { 0,-C, C},
+        new double[] {-C, 0,-C}, new double[] {-C, 0, C}, new double[] { C, 0, C}, new double[] { C, 0,-C},
+        new double[] {-C,-C, 0}, new double[] { C,-C, 0}, new double[] { C, C, 0}, new double[] {-C, C, 0},
    };
 
     private static readonly double[][] objCrossMap = new double[][] {

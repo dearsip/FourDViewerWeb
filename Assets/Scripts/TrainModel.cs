@@ -65,6 +65,7 @@ public class TrainModel : GeomModel {
         invertNormals = od.invertNormals;
         useSeparation = od.separate;
         cameraDistance = od.cameraDistance;
+        glide = od.glide;
         velNumber = od.trainSpeed;
     }
 

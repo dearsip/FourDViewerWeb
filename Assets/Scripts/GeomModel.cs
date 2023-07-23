@@ -18,7 +18,7 @@ using System.Linq;
  * A model that lets the user move around geometric shapes.
  */
 
-public class GeomModel : IModel, IMove//, IKeysNew, ISelectShape
+public class GeomModel : IModel, IMove, ISelectShape
 {
 
     // --- fields ---
@@ -71,7 +71,8 @@ public class GeomModel : IModel, IMove//, IKeysNew, ISelectShape
     // private double sceneryTransparency;
     protected double cameraDistance;
 
-    private bool glide;
+    protected bool glide;
+    protected bool viewClip;
 
     // --- construction ---
 
@@ -111,7 +112,7 @@ public class GeomModel : IModel, IMove//, IKeysNew, ISelectShape
         reg2 = new double[dim];
         clipResult = new Clip.Result();
 
-        paintColor = Color.red; // annoying to have to set up every time
+        paintColor = Color.red * OptionsColor.fixer; // annoying to have to set up every time
 
         clip = new Clip.CustomBoundary[2 * (dim - 1)];
         axisClip = new Clip.CustomBoundary[2 * (dim - 1)];
@@ -523,7 +524,7 @@ public class GeomModel : IModel, IMove//, IKeysNew, ISelectShape
         Color color = addColor;
         if (color != null)
         {
-            if (color == /*ISelectShape.RANDOM_COLOR*/Color.clear) color = pickFrom(availableColors);
+            if (color == ISelectShape.RANDOM_COLOR) color = pickFrom(availableColors);
             shape.setShapeColor(color);
         }
 
@@ -619,14 +620,14 @@ public class GeomModel : IModel, IMove//, IKeysNew, ISelectShape
         paintMode >>= 1;
         // even if color is "no effect", it still counts as a paint operation
 
-        if (paintColor == null) return; // no effect
+        if (paintColor == ISelectShape.NO_EFFECT_COLOR) return; // no effect
 
         Geom.Shape shape = findShape(origin, viewAxis);
         if (shape == null) return; // no shape
 
         Color useColor;
-        if (paintColor == Color.clear) useColor = pickFrom(availableColors);
-        //else if (paintColor == ISelectShape.REMOVE_COLOR) useColor = null;
+        if (paintColor == ISelectShape.RANDOM_COLOR) useColor = pickFrom(availableColors);
+        else if (paintColor == ISelectShape.REMOVE_COLOR) useColor = Color.clear;
         else useColor = paintColor;
 
         if (paintShape)
@@ -958,6 +959,7 @@ public class GeomModel : IModel, IMove//, IKeysNew, ISelectShape
     const double epsilon = 0.00001;
     public override bool canMove(double[] p1, double[] p2, int[] reg1, double[] reg2, bool detectHits)
     {
+        bool through = true;
 
         if (!useSeparation) return true;
 
@@ -965,9 +967,10 @@ public class GeomModel : IModel, IMove//, IKeysNew, ISelectShape
         {
             shapeNumber = -1;
             if (!glide || detectHits) return false; // solid floor
-            else p2[1] = epsilon;
+            else { through = false; p2[1] = epsilon; }
         }
         // I once got to negative y by aligning while near the floor
+        List<double[]> normals = new List<double[]>();
 
         for (int i = 0; i < shapes.Length; i++)
         {
@@ -983,17 +986,29 @@ public class GeomModel : IModel, IMove//, IKeysNew, ISelectShape
             // jerky motion you get if you try to follow a slow train.  so, nope
 
             // prefilter by checking distance to shape against radius
-            if (Clip.outsideRadius(p1, p2, shape)) continue;
+            // if (Clip.outsideRadius(p1, p2, shape)) continue;
 
-            if ((Clip.clip(p1, p2, shape, clipResult) & Clip.KEEP_A) != 0)
+            if ((Clip.clip(p1, p2, shape, clipResult) & (invertNormals ? Clip.KEEP_B : Clip.KEEP_A)) != 0)
             {
                 shapeNumber = i;
                 if (!glide || detectHits) return false;
                 else
                 {
+                    through = false;
+                    // projection on hitting cell
                     Vec.sub(reg2,p1,p2);
-                    Vec.scale(reg2,shape.cell[clipResult.ia].normal,Vec.dot(reg2,shape.cell[clipResult.ia].normal)*(1-clipResult.a+epsilon));
-                    Vec.add(p2,p2,reg2);
+                    double[] normal = new double[dim];
+                    Vec.copy(normal, shape.cell[invertNormals ? clipResult.ib : clipResult.ia].normal);
+                    foreach (double[] n in normals)
+                    {
+                        Vec.addScaled(normal, normal, n, -Vec.dot(normal, n) / Vec.norm2(n));
+                    }
+                    double d = Math.Max((invertNormals ? clipResult.b : clipResult.a) - epsilon / Vec.norm(reg2), 0);
+                    Vec.scale(reg2, normal, Vec.dot(reg2, normal) / Vec.norm2(normal));
+                    Vec.addScaled(p2, p2, reg2, 1 - d);
+                    Vec.addScaled(p1, p1, reg2,   - d);
+                    normals.Add(normal);
+                    i = -1;
                 }
             }
             // it's possible to get inside a block by aligning
@@ -1002,7 +1017,7 @@ public class GeomModel : IModel, IMove//, IKeysNew, ISelectShape
             // so you can't navigate around inside a chain of blocks if you get in.
         }
 
-        return true;
+        return through;
     }
 
     public override bool atFinish(double[] origin, int[] reg1, int[] reg2)
@@ -1021,8 +1036,9 @@ public class GeomModel : IModel, IMove//, IKeysNew, ISelectShape
     {
     }
 
-    public override void render(double[] origin, double[][] axis)
+    public override void render(double[] origin, double[][] axis, bool viewClip)
     {
+        this.viewClip = viewClip;
         renderer(origin, axis);
     }
 
@@ -1223,7 +1239,7 @@ public class GeomModel : IModel, IMove//, IKeysNew, ISelectShape
 
     private void drawLine(double[] p1, double[] p2, Color color)
     {
-        for (int i = 0; i < clip.Length; i++)
+        if (viewClip) for (int i = 0; i < clip.Length; i++)
         {
             if (Vec.clip(p1, p2, axisClip[i].n, axisClip[i].getThreshold(), 1)) return;
         }

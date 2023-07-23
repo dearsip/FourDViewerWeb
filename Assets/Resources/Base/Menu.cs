@@ -11,6 +11,7 @@ using WebXR;
 public class Menu : MonoBehaviour
 {
     public Core core;
+    public ISelectShape iss;
     // public SteamVR_Action_Boolean interactUI, menu;
     // public SteamVR_Input_Sources left, right;
     // public Hand leftHand, rightHand;
@@ -37,55 +38,22 @@ public class Menu : MonoBehaviour
         branchProbabilityCurrent, branchProbabilityNext, loopCrossProbabilityCurrent, loopCrossProbabilityNext, dimSameParallelField,
         dimSamePerpendicularField, mazeCurrent, mazeNext, colorCurrent, colorNext, depthField, retinaField, scaleField, trainSpeedField, cameraDistanceField,
         transparencyField, lineThicknessField, borderField, baseTransparencyField, sliceTransparencyField, 
-        frameRateField, timeMoveField, timeRotateField, timeAlignMoveField, timeAlignRotateField, width, flare, rainbowGap, iPDField, fovscaleField;
+        frameRateField, timeMoveField, timeRotateField, timeAlignMoveField, timeAlignRotateField, width, flare, rainbowGap, iPDField, fovscaleField, paintColorField, quantityField;
     public Toggle allowLoopsCurrent, allowLoopsNext, allowReservedPathsCurrent, allowReservedPathsNext, usePolygon, useEdgeColor, hideSel, invertNormals, separate, map, focus, invertLeftAndRight, invertForward,
-        invertYawAndPitch, invertRoll, alignMode, sliceMode, limit3D, keepUpAndDown, fisheye, custom, rainbow, glide, allowDiagonalMovement, buttonToggleModeLeft, buttonToggleModeRight, hideController, horizontalInputFollowing, stereo, alternativeControlIn3D, threeDMazeIn3DScene;
+        invertYawAndPitch, invertRoll, alignMode, sliceMode, limit3D, keepUpAndDown, fisheye, custom, rainbow, glide, allowDiagonalMovement, buttonToggleModeLeft, buttonToggleModeRight, hideController, horizontalInputFollowing, stereo, alternativeControlIn3D, threeDMazeIn3DScene, paintWithAddButton;
     public Toggle[] enable, texture;
-    public Dropdown colorMode, inputTypeLeftAndRight, inputTypeForward, inputTypeYawAndPitch, inputTypeRoll;
+    public Dropdown colorMode, inputTypeLeftAndRight, inputTypeForward, inputTypeYawAndPitch, inputTypeRoll, paintColor, addShapes, paintMode;
     public Material defaultMat, alternativeMat;
     public GameObject environment;
     public Toggle skyboxToggle;
 
     private void Start()
     {
-        // SteamVR_Actions._default.Deactivate(left);
-        // SteamVR_Actions._default.Deactivate(right);
-        // interactUI.AddOnStateDownListener(LeftActivate, left);
-        // interactUI.AddOnStateDownListener(RightActivate, right);
-        //menu.AddOnStateUpListener(CloseMenu, left);
-        //menu.AddOnStateUpListener(CloseMenu, right);
         defaultPosition = transform.localPosition;
         defaultRotation = transform.localRotation;
         defaultScale = transform.localScale;
         canvas.enabled = false;
     }
-
-    // private void LeftActivate(SteamVR_Action_Boolean fromBoolean, SteamVR_Input_Sources fromSource)
-    // {
-        // if (gameObject.activeSelf)
-        // {
-            // rightLaser.SetActive(false);
-            // //rightHand.useRaycastHover = false;
-            // leftLaser.SetActive(true);
-            // //leftHand.useRaycastHover = true;
-        // }
-    // }
-
-    // private void RightActivate(SteamVR_Action_Boolean fromBoolean, SteamVR_Input_Sources fromSource)
-    // {
-        // if (gameObject.activeSelf)
-        // {
-            // leftLaser.SetActive(false);
-            // //leftHand.useRaycastHover = false;
-            // rightLaser.SetActive(true);
-            // //rightHand.useRaycastHover = true;
-        // }
-    // }
-
-    // private void CloseMenu(SteamVR_Action_Boolean fromBoolean, SteamVR_Input_Sources fromSource)
-    // {
-        // CloseMenu();
-    // }
 
     private void CloseMenu() {
         if (canvas.enabled)
@@ -94,21 +62,13 @@ public class Menu : MonoBehaviour
         }
     }
 
-    public void OnDestroy()
-    {
-        // interactUI.RemoveOnStateDownListener(LeftActivate, left);
-        // interactUI.RemoveOnStateDownListener(RightActivate, right);
-        // menu.RemoveOnStateUpListener(CloseMenu, left);
-        // menu.RemoveOnStateUpListener(CloseMenu, right);
-    }
-
     void Update() {
         if (leftC.GetButtonUp(WebXRController.ButtonTypes.ButtonB))
             CloseMenu();
         lastLeftMButton = leftMButton;
         lastRightMButton = rightMButton;
     }
-    public void Activate(OptionsAll oa)
+    public void Activate(OptionsAll oa, ISelectShape iss)
     {
         isActivating = true;
 
@@ -195,6 +155,27 @@ public class Menu : MonoBehaviour
         put(fovscaleField, fovscaleSlider, core.fovscale);
         put(alternativeControlIn3D, core.alternaviveControlIn3D);
         put(threeDMazeIn3DScene, core.threeDMazeIn3DScene);
+        put(paintWithAddButton, core.paintWithAddButton);
+
+        this.iss = iss;
+        if (iss != null)
+        {
+            paintColor.options.Clear();
+            paintColor.options.Add(new Dropdown.OptionData("(no effect)"));
+            paintColor.options.Add(new Dropdown.OptionData("(paint remover)"));
+            paintColor.options.Add(new Dropdown.OptionData("(random color)"));
+            foreach (NamedObject<Color> c in iss.getAvailableColors())
+            {
+                paintColor.options.Add(new Dropdown.OptionData(c.name));
+            }
+
+            addShapes.options.Clear();
+            addShapes.options.Add(new Dropdown.OptionData("(random block)"));
+            foreach (NamedObject<Geom.Shape> s in iss.getAvailableShapes())
+            {
+                addShapes.options.Add(new Dropdown.OptionData(s.name));
+            }
+        }
 
         isActivating = false;
     }
@@ -262,6 +243,7 @@ public class Menu : MonoBehaviour
         getFloat(ref core.fovscale, fovscaleField, true);
         core.alternaviveControlIn3D = getBool(alternativeControlIn3D);
         core.threeDMazeIn3DScene = getBool(threeDMazeIn3DScene);
+        core.paintWithAddButton = getBool(paintWithAddButton);
 
         core.menuCommand = core.updateOptions;
     }
@@ -313,19 +295,11 @@ public class Menu : MonoBehaviour
 
         // command
         core.menuCommand = core.setOptions;
-        // SteamVR_Actions._default.Deactivate(left);
-        // SteamVR_Actions._default.Deactivate(right);
         doCancel();
     }
 
     public void doCancel()
     {
-        // leftLaser.SetActive(false);
-        // leftHand.useRaycastHover = false;
-        // rightLaser.SetActive(false);
-        // rightHand.useRaycastHover = false;
-        // SteamVR_Actions._default.Deactivate(left);
-        // SteamVR_Actions._default.Deactivate(right);
         core.closeMenu();
     }
 
@@ -382,6 +356,58 @@ public class Menu : MonoBehaviour
             RenderSettings.skybox = defaultMat;
         }
         core.ToggleSkyBox(skyboxToggle.isOn);
+    }
+
+    private bool SelectPaintColor()
+    {
+        Color c;
+        if (!ColorUtility.TryParseHtmlString(paintColorField.text, out c))
+        {
+            string s = paintColor.options[paintColor.value].text;
+            if (s == "(no effect)") { c = ISelectShape.NO_EFFECT_COLOR; }
+            else if (s == "(paint remover)") { c = ISelectShape.REMOVE_COLOR; }
+            else if (s == "(random color)") { c = ISelectShape.RANDOM_COLOR; }
+            else foreach (NamedObject<Color> c_ in iss.getAvailableColors())
+                if (c_.name == s) c = c_.obj;
+        }
+        if (c == Color.clear) return false;
+        c *= OptionsColor.fixer;
+        iss.setSelectedColor(c);
+        iss.setPaintColor(c);
+        return true;
+    }
+
+    private void SelectAddShapes()
+    {
+        string s = addShapes.options[addShapes.value].text;
+        if (s == "(random block)") iss.setSelectedShape(null);
+        else
+        {
+            foreach (NamedObject<Geom.Shape> shape in iss.getAvailableShapes())
+            {
+                if (shape.name == s)
+                {
+                    iss.setSelectedShape(shape.obj);
+                    break;
+                }
+            }
+        }
+    }
+
+    public void doPaint()
+    {
+        if (iss == null) return;
+        iss.setPaintMode(-paintMode.value);
+        if (SelectPaintColor() && core.menuCommand == null) core.menuCommand = core.doPaint;
+    }
+
+    public void doAddShapes()
+    {
+        if (iss == null) return;
+        SelectPaintColor();
+        SelectAddShapes();
+        try { core.quantity = int.Parse(quantityField.text); } catch (Exception) { core.quantity = 1; }
+        if (core.menuCommand == null) core.menuCommand = core.doAddShapes;
     }
 
     public void doChangeScene() { SceneManager.LoadScene("New Scene"); }

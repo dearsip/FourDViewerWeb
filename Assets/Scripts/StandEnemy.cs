@@ -56,8 +56,10 @@ public class StandEnemy : Enemy {
          Vec.scale(reg1,walk,delta);
          shape.translate(reg1);
          if (!model.isSeparated(shape,model.getOrigin(reg1))) {
-            Vec.scale(reg1,walk,-1);
-            shape.translate(reg1);
+            // Vec.scale(reg1,walk,-1);
+            // shape.translate(reg1);
+            Vec.scale(walk,walk,-1);
+            wmove = 1.5 + random.NextDouble() * 2;
          }
          wmove -= delta;
       }

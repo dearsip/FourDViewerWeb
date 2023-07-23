@@ -23,7 +23,7 @@ public class RenderAbsolute
 
     private int depthMax;
     private bool[] texture;
-    private double transparency;
+    private float transparency;
 
     private int[] count; // direction use count
     private bool[] useClip;
@@ -89,7 +89,7 @@ public class RenderAbsolute
 
     public void setTransparency(double transparency)
     {
-        this.transparency = transparency;
+        this.transparency = (float)transparency;
     }
 
     // --- clipping ---
@@ -152,7 +152,7 @@ public class RenderAbsolute
             for (int i = 0; i < vertex.Length; i++) Vec.sub(vertex[i], vertex[i], origin);
             poly.vertex = vertex;
             poly.color = color;
-            poly.color.a = (float)transparency;
+            poly.color.a = Mathf.Min(poly.color.a, transparency);
 
             for (int i = 0; i < OptionsView.DEPTH_MAX; i++)
             {
@@ -357,21 +357,68 @@ public class RenderAbsolute
             }
             else
             {
-                for (int i = 0; i < 8; i++)
-                {
-                    reg5 = new double[3][];
-                    for (int j = 0; j < reg5.Length; j++) reg5[j] = new double[dim];
-                    reg2[a3] += 0.25 * (i % 2 * 2 - 1);
-                    Vec.copy(reg5[0], reg2);
-                    reg2[a3] -= 0.25 * (i % 2 * 2 - 1);
-                    reg2[a4] += 0.25 * (i / 2 % 2 * 2 - 1);
-                    Vec.copy(reg5[1], reg2);
-                    reg2[a4] -= 0.25 * (i / 2 % 2 * 2 - 1);
-                    reg2[a5] += 0.25 * (i / 4 % 2 * 2 - 1);
-                    Vec.copy(reg5[2], reg2);
-                    addPolygon(reg5, color);
-                    reg2[a5] -= 0.25 * (i / 4 % 2 * 2 - 1);
-                }
+                // for (int i = 0; i < 8; i++)
+                // {
+                    // reg5 = new double[3][];
+                    // for (int j = 0; j < reg5.Length; j++) reg5[j] = new double[dim];
+                    // reg2[a3] += 0.25 * (i % 2 * 2 - 1);
+                    // Vec.copy(reg5[0], reg2);
+                    // reg2[a3] -= 0.25 * (i % 2 * 2 - 1);
+                    // reg2[a4] += 0.25 * (i / 2 % 2 * 2 - 1);
+                    // Vec.copy(reg5[1], reg2);
+                    // reg2[a4] -= 0.25 * (i / 2 % 2 * 2 - 1);
+                    // reg2[a5] += 0.25 * (i / 4 % 2 * 2 - 1);
+                    // Vec.copy(reg5[2], reg2);
+                    // addPolygon(reg5, color);
+                    // reg2[a5] -= 0.25 * (i / 4 % 2 * 2 - 1);
+                // }
+                reg5 = new double[4][];
+                for (int i = 0; i < reg5.Length; i++) reg5[i] = new double[dim];
+                reg2[a3] += 0.25;
+                Vec.copy(reg5[0], reg2);
+                reg2[a3] -= 0.25;
+                reg2[a4] += 0.25;
+                Vec.copy(reg5[1], reg2);
+                reg2[a4] -= 0.25;
+                reg2[a3] -= 0.25;
+                Vec.copy(reg5[2], reg2);
+                reg2[a3] += 0.25;
+                reg2[a4] -= 0.25;
+                Vec.copy(reg5[3], reg2);
+                reg2[a4] += 0.25;
+                addPolygon(reg5, color);
+
+                reg5 = new double[4][];
+                for (int i = 0; i < reg5.Length; i++) reg5[i] = new double[dim];
+                reg2[a4] += 0.25;
+                Vec.copy(reg5[0], reg2);
+                reg2[a4] -= 0.25;
+                reg2[a5] += 0.25;
+                Vec.copy(reg5[1], reg2);
+                reg2[a5] -= 0.25;
+                reg2[a4] -= 0.25;
+                Vec.copy(reg5[2], reg2);
+                reg2[a4] += 0.25;
+                reg2[a5] -= 0.25;
+                Vec.copy(reg5[3], reg2);
+                reg2[a5] += 0.25;
+                addPolygon(reg5, color);
+
+                reg5 = new double[4][];
+                for (int i = 0; i < reg5.Length; i++) reg5[i] = new double[dim];
+                reg2[a5] += 0.25;
+                Vec.copy(reg5[0], reg2);
+                reg2[a5] -= 0.25;
+                reg2[a3] += 0.25;
+                Vec.copy(reg5[1], reg2);
+                reg2[a3] -= 0.25;
+                reg2[a5] -= 0.25;
+                Vec.copy(reg5[2], reg2);
+                reg2[a5] += 0.25;
+                reg2[a3] -= 0.25;
+                Vec.copy(reg5[3], reg2);
+                reg2[a3] += 0.25;
+                addPolygon(reg5, color);
             }
         }
 
