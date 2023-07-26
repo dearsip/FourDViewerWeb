@@ -1,12 +1,12 @@
 ﻿
 
-public class OptionsDisplay// : IValidate
+public class OptionsDisplay
 {
 
     // --- fields ---
     
-    public double transparency, lineThickness, cameraDistance;
-    public double border;
+    public float transparency, lineThickness, cameraDistance;
+    public float border;
     public bool usePolygon, useEdgeColor, hidesel, invertNormals, separate, map, glide;
     public int trainSpeed;
 
@@ -34,12 +34,12 @@ public class OptionsDisplay// : IValidate
         dest.glide = src.glide;
     }
 
-    public const double TRANSPARENCY_MIN = 0;
-    public const double TRANSPARENCY_MAX = 1;
-    public const double LINETHICKNESS_MIN = 0.001;
-    public const double LINETHICKNESS_MAX = 0.01;
-    public const double BORDER_MIN = -1;
-    public const double BORDER_MAX = 1;
+    public const float TRANSPARENCY_MIN = 0;
+    public const float TRANSPARENCY_MAX = 1;
+    public const float LINETHICKNESS_MIN = 0.001f;
+    public const float LINETHICKNESS_MAX = 0.01f;
+    public const float BORDER_MIN = -1;
+    public const float BORDER_MAX = 1;
     public const int CAMERADISTANCE_MIN = 0;
     public const int CAMERADISTANCE_MAX = 1;
     public const int TRAINSPEED_MIN = -5;

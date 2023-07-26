@@ -14,9 +14,10 @@ public abstract class IModel
 
     public abstract void setColorMode(int colorMode);
     public abstract void setDepth(int depth);
+    public abstract void setArrow(bool arrow);
     public abstract void setTexture(bool[] texture);
     public abstract void setTransparency(double transparency);
-    public abstract void setOptions(OptionsColor oc, int seed, int depth, bool[] texture, OptionsDisplay od);
+    public abstract void setOptions(OptionsColor oc, int seed, int depth, bool arrow, bool[] texture, OptionsDisplay od);
     public abstract void setRetina(double retina);
 
     public abstract bool isAnimated();

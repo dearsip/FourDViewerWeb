@@ -77,7 +77,7 @@ public class PropertyStore : IStore {
         try {
             return parseBool(value); // there is no Boolean.parseBoolean, see above
         } catch (/*NumberFormat*/Exception e) {
-            throw e;//App.getException("PropertyStore.e2",new Object[] { key, value });
+            throw e;
         }
     }
 
@@ -89,7 +89,7 @@ public class PropertyStore : IStore {
             Debug.Log(o);
             return (int)Int64.Parse(value);
         } catch (/*NumberFormat*/Exception e) {
-            throw e;//App.getException("PropertyStore.e3",new Object[] { key, value });
+            throw e;
         }
     }
 
@@ -98,7 +98,7 @@ public class PropertyStore : IStore {
         try {
             return Int64.Parse(value);
         } catch (/*NumberFormat*/Exception e) {
-            throw e;//App.getException("PropertyStore.e4",new Object[] { key, value });
+            throw e;
         }
     }
 
@@ -107,7 +107,7 @@ public class PropertyStore : IStore {
         try {
             return Single.Parse(value);
         } catch (/*NumberFormat*/Exception e) {
-            throw e;//App.getException("PropertyStore.e5",new Object[] { key, value });
+            throw e;
         }
     }
 
@@ -116,7 +116,7 @@ public class PropertyStore : IStore {
         try {
             return Double.Parse(value);
         } catch (/*NumberFormat*/Exception e) {
-            throw e;//App.getException("PropertyStore.e5",new Object[] { key, value });
+            throw e;
         }
     }
 
@@ -130,7 +130,7 @@ public class PropertyStore : IStore {
         try {
             return Int32.Parse(value);
         } catch (/*NumberFormat*/Exception e) {
-            throw e;//App.getException("PropertyStore.e11",new Object[] { key, value });
+            throw e;
         }
     }
 
@@ -176,7 +176,7 @@ public class PropertyStore : IStore {
                 else getObject(fieldKey,field[i].GetValue(o));
 
             } catch (/*IllegalAccess*/Exception e) {
-                throw e;//App.getException("PropertyStore.e9",new Object[] { key, e.getMessage() });
+                Debug.LogWarning(e);
             }
         }
 
@@ -193,7 +193,7 @@ public class PropertyStore : IStore {
         else if (c == typeof(long)  ) return getLong   (key);
         else if (c == typeof(float) ) return getSingle (key);
         else if (c == typeof(double)) return getDouble (key);
-        else throw new Exception("not primitive "+key+", "+c);//App.getException("PropertyStore.e6",new Object[] { key, c.getName() });
+        else throw new Exception("not primitive "+key+", "+c);
     }
 
     /**
@@ -206,7 +206,7 @@ public class PropertyStore : IStore {
     public void getObject(string key, object o) {
         Type c = o.GetType();
 
-             if (c.IsPrimitive) throw new Exception("not object "+key+", "+o+", "+c);//App.getException("PropertyStore.e7",new object[] { key, c.getName() });
+             if (c.IsPrimitive) throw new Exception("not object "+key+", "+o+", "+c);
         else if (c.IsArray    ) getArray (key,o);
         else                    getStruct(key,o);
     }
@@ -269,7 +269,7 @@ public class PropertyStore : IStore {
                 putObject(FieldKey(key,field[i]),field[i].GetValue(o));
 
             } catch (/*IllegalAccess*/Exception e) {
-                throw e;//App.getException("PropertyStore.e10",new object[] { key, e.getMessage() });
+                throw e;
             }
         }
     }
@@ -286,7 +286,7 @@ public class PropertyStore : IStore {
         else if (c == typeof(float) ) putSingle (key,((float) o));
         else if (c == typeof(double)) putDouble (key,((double)o));
 
-        else if (c.IsPrimitive) throw new Exception("not object");//App.getException("PropertyStore.e8",new object[] { key, c.getName() });
+        else if (c.IsPrimitive) throw new Exception("not object");
         else if (c.IsArray    ) putArray (key,o);
         else                    putStruct(key,o);
     }

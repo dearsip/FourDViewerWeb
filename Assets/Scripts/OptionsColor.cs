@@ -8,7 +8,7 @@ using UnityEngine;
  * Options for how the walls are colored.
  */
 
-public class OptionsColor //implements IValidate
+public class OptionsColor
 {
 
     // --- fields ---
@@ -51,31 +51,30 @@ public class OptionsColor //implements IValidate
 
     // the following table must be kept in sync with the numbers
 
-    public static readonly Color ORANGE = new Color(0.9f, 0.3f, 0);
+    public static readonly Color ORANGE = new Color(1f, 0.25f, 0);
     //public static readonly Color PINK = new Color(1, 0.3f, 0.5f);
     public static readonly Color DARKGREEN = new Color(0, 0.3f, 0.0f);
     public static readonly Color PURPLE = new Color(0.6f, 0.2f, 0.9f);
     public static readonly Color DARKGRAY = new Color(0.25f, 0.25f, 0.25f);
     public static readonly Color RIGHTGRAY = new Color(0.7f, 0.7f, 0.7f);
-    public static readonly Color fixer = new Color(5.3f, 5f, 4f);
 
     private static readonly Color[] table = {
 
-      Color.red * fixer,
-      Color.green * fixer,
-      Color.blue * fixer,
+      Color.red,
+      Color.green,
+      Color.blue,
 
-      Color.cyan * fixer,
-      Color.magenta * fixer,
-      PURPLE * fixer,
+      Color.cyan,
+      Color.magenta,
+      PURPLE,
 
-      ORANGE * fixer,
-      DARKGREEN * fixer,
+      ORANGE,
+      DARKGREEN,
 
-      DARKGRAY * fixer,
-      Color.gray * fixer,
-      RIGHTGRAY * fixer,
-      Color.white * fixer
+      DARKGRAY,
+      Color.gray,
+      RIGHTGRAY,
+      Color.white
 };
 
 // --- construction ---
@@ -129,25 +128,7 @@ public Color[] getColors()
     return color;
 }
 
-    // --- implementation of IValidate ---
-
     public const int DIM_SAME_MIN = 0;
     public const int DIM_SAME_MAX = 4;
-
-    //public void validate() throws ValidationException
-    //{
-
-    //      if (    colorMode != COLOR_MODE_EXTERIOR
-    //           && colorMode != COLOR_MODE_INTERIOR
-    //           && colorMode != COLOR_MODE_BY_ORIENTATION
-    //           && colorMode != COLOR_MODE_BY_DIRECTION
-    //           && colorMode != COLOR_MODE_BY_TRACE   ) throw App.getException("OptionsColor.e1");
-
-    //      if (dimSameParallel      < DIM_SAME_MIN || dimSameParallel      > DIM_SAME_MAX) throw App.getException("OptionsColor.e2",new Object[] { new Integer(DIM_SAME_MIN), new Integer(DIM_SAME_MAX) });
-    //      if (dimSamePerpendicular<DIM_SAME_MIN || dimSamePerpendicular> DIM_SAME_MAX) throw App.getException("OptionsColor.e3",new Object[] { new Integer(DIM_SAME_MIN), new Integer(DIM_SAME_MAX) });
-
-    //      if (getColorCount() == 0) throw App.getException("OptionsColor.e4");
-    //   }
-
 }
 

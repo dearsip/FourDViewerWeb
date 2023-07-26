@@ -11,28 +11,35 @@ public class DisplayMove : MonoBehaviour
     // public SteamVR_Input_Sources hand;
     // public SteamVR_Action_Boolean grab;
     // public SteamVR_Action_Pose pose;
-    public Transform hand;
-    [SerializeField] WebXRController controller;
-    public Vector3 lastPos;
-    public Quaternion lastRot;
-    private bool button;
+    public Transform handL, handR;
+    [SerializeField] WebXRController controllerL, controllerR;
+    public Vector3 lastPosL, lastPosR;
+    public Quaternion lastRotL, lastRotR;
     public Slider size;
     private Quaternion relarot;
     void Update()
     {
-        // if (grab.GetState(hand)) {
-            // transform.position += (pose.GetLocalPosition(hand) - pose.GetLastLocalPosition(hand))*size.value;
-            // relarot = pose.GetLocalRotation(hand) * Quaternion.Inverse(pose.GetLastLocalRotation(hand));
+        // if (grab.GetState(handL)) {
+            // transform.position += (pose.GetLocalPosition(handL) - pose.GetLastLocalPosition(handL))*size.value;
+            // relarot = pose.GetLocalRotation(handL) * Quaternion.Inverse(pose.GetLastLocalRotation(handL));
             // relarot.x = 0; relarot.z = 0;
             // transform.rotation *= relarot;
         // }
-        if (controller.GetButton(WebXRController.ButtonTypes.Grip)) {
-            transform.localPosition += (hand.localPosition - lastPos)*size.value;
-            relarot = hand.localRotation * Quaternion.Inverse(lastRot);
+        if (controllerL.GetButton(WebXRController.ButtonTypes.Grip)) {
+            transform.localPosition += (handL.localPosition - lastPosL)*size.value;
+            relarot = handL.localRotation * Quaternion.Inverse(lastRotL);
             relarot.x = 0; relarot.z = 0;
             transform.rotation *= relarot;
         }
-        lastPos = hand.localPosition;
-        lastRot = hand.localRotation;
+        else if (controllerR.GetButton(WebXRController.ButtonTypes.Grip)) {
+            transform.localPosition += (handR.localPosition - lastPosR)*size.value;
+            relarot = handR.localRotation * Quaternion.Inverse(lastRotR);
+            relarot.x = 0; relarot.z = 0;
+            transform.rotation *= relarot;
+        }
+        lastPosL = handL.localPosition;
+        lastRotL = handL.localRotation;
+        lastPosR = handR.localPosition;
+        lastRotR = handR.localRotation;
     }
 }

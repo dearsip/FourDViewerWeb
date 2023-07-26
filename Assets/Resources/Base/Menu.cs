@@ -12,10 +12,6 @@ public class Menu : MonoBehaviour
 {
     public Core core;
     public ISelectShape iss;
-    // public SteamVR_Action_Boolean interactUI, menu;
-    // public SteamVR_Input_Sources left, right;
-    // public Hand leftHand, rightHand;
-    // public GameObject leftLaser, rightLaser;
     private Options optDefault;
     private OptionsAll oaResult;
     private bool isActivating;
@@ -33,14 +29,14 @@ public class Menu : MonoBehaviour
     public Slider dimSlider, sizeSlider, densitySlider, twistProbabilitySlider, branchProbabilitySlider, loopCrossProbabilitySlider,
         dimSameParallelSlider, dimSamePerpendicularSlider, depthSlider, retinaSlider, scaleSlider, trainSpeedSlider, cameraDistanceSlider,
         transparencySlider, lineThicknessSlider, borderSlider, baseTransparencySlider, sliceTransparencySlider, 
-        frameRateSlider, timeMoveSlider, timeRotateSlider, timeAlignMoveSlider, timeAlignRotateSlider, iPDSlider, fovscaleSlider;
+        frameRateSlider, timeMoveSlider, timeRotateSlider, timeAlignMoveSlider, timeAlignRotateSlider, iPDSlider, fovscaleSlider, distanceSlider;
     public InputField dimCurrent, dimNext, sizeCurrent, sizeNext, densityCurrent, densityNext, twistPobabilityCurrent, twistProbabilityNext,
         branchProbabilityCurrent, branchProbabilityNext, loopCrossProbabilityCurrent, loopCrossProbabilityNext, dimSameParallelField,
         dimSamePerpendicularField, mazeCurrent, mazeNext, colorCurrent, colorNext, depthField, retinaField, scaleField, trainSpeedField, cameraDistanceField,
         transparencyField, lineThicknessField, borderField, baseTransparencyField, sliceTransparencyField, 
-        frameRateField, timeMoveField, timeRotateField, timeAlignMoveField, timeAlignRotateField, width, flare, rainbowGap, iPDField, fovscaleField, paintColorField, quantityField;
-    public Toggle allowLoopsCurrent, allowLoopsNext, allowReservedPathsCurrent, allowReservedPathsNext, usePolygon, useEdgeColor, hideSel, invertNormals, separate, map, focus, invertLeftAndRight, invertForward,
-        invertYawAndPitch, invertRoll, alignMode, sliceMode, limit3D, keepUpAndDown, fisheye, custom, rainbow, glide, allowDiagonalMovement, buttonToggleModeLeft, buttonToggleModeRight, hideController, horizontalInputFollowing, stereo, alternativeControlIn3D, threeDMazeIn3DScene, paintWithAddButton;
+        frameRateField, timeMoveField, timeRotateField, timeAlignMoveField, timeAlignRotateField, width, flare, rainbowGap, iPDField, fovscaleField, distanceField, paintColorField, quantityField;
+    public Toggle allowLoopsCurrent, allowLoopsNext, allowReservedPathsCurrent, allowReservedPathsNext, arrow, usePolygon, useEdgeColor, hideSel, invertNormals, separate, map, focus, invertLeftAndRight, invertForward,
+        invertYawAndPitch, invertRoll, sliceMode, limit3D, keepUpAndDown, fisheye, custom, rainbow, glide, allowDiagonalMovement, buttonToggleModeLeft, buttonToggleModeRight, showController, showHint,horizontalInputFollowing, stereo, alternativeControlIn3D, threeDMazeIn3DScene, paintWithAddButton;
     public Toggle[] enable, texture;
     public Dropdown colorMode, inputTypeLeftAndRight, inputTypeForward, inputTypeYawAndPitch, inputTypeRoll, paintColor, addShapes, paintMode;
     public Material defaultMat, alternativeMat;
@@ -98,6 +94,7 @@ public class Menu : MonoBehaviour
         put(colorCurrent, oa.oeCurrent.colorSeed);
 
         put(depthField, depthSlider, oa.opt.ov4.depth);
+        put(arrow, oa.opt.ov4.arrow);
         put(texture, oa.opt.ov4.texture);
         put(retinaField, retinaSlider, oa.opt.ov4.retina);
         put(scaleField, scaleSlider, oa.opt.ov4.scale);
@@ -114,6 +111,7 @@ public class Menu : MonoBehaviour
         put(focus, core.focusOnMap);
         put(cameraDistanceField, cameraDistanceSlider, oa.opt.od.cameraDistance);
         put(trainSpeedField, trainSpeedSlider, oa.opt.od.trainSpeed);
+        put(glide, oa.opt.od.glide);
 
         put(inputTypeLeftAndRight, oa.opt.oo.inputTypeLeftAndRight);
         put(inputTypeForward, oa.opt.oo.inputTypeForward);
@@ -123,7 +121,6 @@ public class Menu : MonoBehaviour
         put(invertForward, oa.opt.oo.invertForward);
         put(invertYawAndPitch, oa.opt.oo.invertYawAndPitch);
         put(invertRoll, oa.opt.oo.invertRoll);
-        put(alignMode, core.alignMode);
         put(sliceMode, oa.opt.oo.sliceMode);
         put(baseTransparencyField, baseTransparencySlider, oa.opt.oo.baseTransparency);
         put(sliceTransparencyField, sliceTransparencySlider, oa.opt.oo.sliceTransparency);
@@ -135,6 +132,7 @@ public class Menu : MonoBehaviour
         put(timeRotateField, timeRotateSlider, oa.opt.ot4.timeRotate);
         put(timeAlignMoveField, timeAlignMoveSlider, oa.opt.ot4.timeAlignMove);
         put(timeAlignRotateField, timeAlignRotateSlider, oa.opt.ot4.timeAlignRotate);
+        put(paintWithAddButton, oa.opt.ot4.paintWithAddButton);
 
         put(fisheye, OptionsFisheye.of.fisheye);
         put(custom, OptionsFisheye.of.adjust);
@@ -142,20 +140,19 @@ public class Menu : MonoBehaviour
         put(width, OptionsFisheye.of.width);
         put(flare, OptionsFisheye.of.flare);
         put(rainbowGap, OptionsFisheye.of.rainbowGap);
+        put(threeDMazeIn3DScene, OptionsFisheye.of.threeDMazeIn3DScene);
 
-        put(glide, oa.opt.od.glide);
-
-        put(allowDiagonalMovement, core.allowDiagonalMovement);
-        put(buttonToggleModeLeft, core.leftTouchToggleMode);
-        put(buttonToggleModeRight, core.rightTouchToggleMode);
-        put(hideController, core.hideController);
-        put(horizontalInputFollowing, core.horizontalInputFollowing);
-        put(stereo, core.stereo);
-        put(iPDField, iPDSlider, core.iPD);
-        put(fovscaleField, fovscaleSlider, core.fovscale);
-        put(alternativeControlIn3D, core.alternaviveControlIn3D);
-        put(threeDMazeIn3DScene, core.threeDMazeIn3DScene);
-        put(paintWithAddButton, core.paintWithAddButton);
+        put(allowDiagonalMovement, oa.opt.oh.allowDiagonalMovement);
+        put(buttonToggleModeLeft, oa.opt.oh.leftTouchToggleMode);
+        put(buttonToggleModeRight, oa.opt.oh.rightTouchToggleMode);
+        put(showController, oa.opt.oh.showController);
+        put(showHint, oa.opt.oh.showHint); showHint.interactable = oa.opt.oh.showController;
+        put(horizontalInputFollowing, oa.opt.oh.horizontalInputFollowing);
+        put(stereo, oa.opt.oh.stereo);
+        put(iPDField, iPDSlider, oa.opt.oh.iPD);
+        put(fovscaleField, fovscaleSlider, oa.opt.oh.fovscale);
+        put(distanceField, distanceSlider, oa.opt.oh.cameraDistanceScale);
+        put(alternativeControlIn3D, oa.opt.oh.alternativeControlIn3D);
 
         this.iss = iss;
         if (iss != null)
@@ -164,10 +161,19 @@ public class Menu : MonoBehaviour
             paintColor.options.Add(new Dropdown.OptionData("(no effect)"));
             paintColor.options.Add(new Dropdown.OptionData("(paint remover)"));
             paintColor.options.Add(new Dropdown.OptionData("(random color)"));
+            paintColor.options.Add(new Dropdown.OptionData("(in order)"));
             foreach (NamedObject<Color> c in iss.getAvailableColors())
             {
                 paintColor.options.Add(new Dropdown.OptionData(c.name));
             }
+            Color c_ = iss.getPaintColor();
+            paintColor.value = iss.getAvailableColors().FindIndex(o => o.obj.Equals(c_)) + 4;
+            if (paintColor.value == 3) { paintColor.value = 0;
+                if (c_ == ISelectShape.REMOVE_COLOR) paintColor.value = 1;
+                else if (c_ == ISelectShape.RANDOM_COLOR) paintColor.value = 2;
+                else if (c_ == ISelectShape.INORDER_COLOR) paintColor.value = 3;
+            }
+            paintColor.RefreshShownValue();
 
             addShapes.options.Clear();
             addShapes.options.Add(new Dropdown.OptionData("(random block)"));
@@ -175,6 +181,9 @@ public class Menu : MonoBehaviour
             {
                 addShapes.options.Add(new Dropdown.OptionData(s.name));
             }
+            Geom.Shape s_ = iss.getSelectedShape();
+            addShapes.value = iss.getAvailableShapes().FindIndex(o => o.obj.Equals(s_)) + 1;
+            addShapes.RefreshShownValue();
         }
 
         isActivating = false;
@@ -190,22 +199,24 @@ public class Menu : MonoBehaviour
         getBool(enable, oa.opt.oc4.enable);
 
         getInt(ref oa.opt.ov4.depth, depthField, OptionsView.DEPTH_MIN, OptionsView.DEPTH_MAX);
+        oa.opt.ov4.arrow = getBool(arrow);
         getBool(texture, oa.opt.ov4.texture);
-        getDouble(ref oa.opt.ov4.retina, retinaField, false);
-        getDouble(ref oa.opt.ov4.scale, scaleField, OptionsView.SCALE_MIN, OptionsView.SCALE_MAX, false);
+        getFloat(ref oa.opt.ov4.retina, retinaField, false);
+        getFloat(ref oa.opt.ov4.scale, scaleField, OptionsView.SCALE_MIN, OptionsView.SCALE_MAX, false);
 
-        getDouble(ref oa.opt.od.transparency, transparencyField, OptionsDisplay.TRANSPARENCY_MIN, OptionsDisplay.TRANSPARENCY_MAX, true);
-        getDouble(ref oa.opt.od.lineThickness, lineThicknessField, OptionsDisplay.LINETHICKNESS_MIN, OptionsDisplay.LINETHICKNESS_MAX, true);
+        getFloat(ref oa.opt.od.transparency, transparencyField, OptionsDisplay.TRANSPARENCY_MIN, OptionsDisplay.TRANSPARENCY_MAX, true);
+        getFloat(ref oa.opt.od.lineThickness, lineThicknessField, OptionsDisplay.LINETHICKNESS_MIN, OptionsDisplay.LINETHICKNESS_MAX, true);
         oa.opt.od.usePolygon = getBool(usePolygon);
-        getDouble(ref oa.opt.od.border, borderField, OptionsDisplay.BORDER_MIN, OptionsDisplay.BORDER_MAX, true);
+        getFloat(ref oa.opt.od.border, borderField, OptionsDisplay.BORDER_MIN, OptionsDisplay.BORDER_MAX, true);
         oa.opt.od.useEdgeColor = getBool(useEdgeColor);
         oa.opt.od.hidesel = getBool(hideSel);
         oa.opt.od.invertNormals = getBool(invertNormals);
         oa.opt.od.separate = getBool(separate);
         oa.opt.od.map = getBool(map); focus.interactable = oa.opt.od.map;
         core.focusOnMap = oa.opt.od.map && getBool(focus); focus.isOn = core.focusOnMap;
-        getDouble(ref oa.opt.od.cameraDistance, cameraDistanceField, OptionsDisplay.CAMERADISTANCE_MIN, OptionsDisplay.CAMERADISTANCE_MAX, true);
+        getFloat(ref oa.opt.od.cameraDistance, cameraDistanceField, OptionsDisplay.CAMERADISTANCE_MIN, OptionsDisplay.CAMERADISTANCE_MAX, true);
         getInt(ref oa.opt.od.trainSpeed, trainSpeedField, OptionsDisplay.TRAINSPEED_MIN, OptionsDisplay.TRAINSPEED_MAX);
+        oa.opt.od.glide = getBool(glide);
 
         oa.opt.oo.inputTypeLeftAndRight = getInt(inputTypeLeftAndRight);
         oa.opt.oo.inputTypeForward = getInt(inputTypeForward);
@@ -225,25 +236,24 @@ public class Menu : MonoBehaviour
         ofTemp.fisheye = getBool(fisheye);
         ofTemp.adjust = getBool(custom);
         ofTemp.rainbow = getBool(rainbow);
-        getDouble(ref ofTemp.width, width, 0, 1, false);
-        getDouble(ref ofTemp.flare, flare, 0, 1, true);
-        getDouble(ref ofTemp.rainbowGap, rainbowGap, 0, 1, true);
+        getFloat(ref ofTemp.width, width, 0, 1, false);
+        getFloat(ref ofTemp.flare, flare, 0, 1, true);
+        getFloat(ref ofTemp.rainbowGap, rainbowGap, 0, 1, true);
+        ofTemp.threeDMazeIn3DScene = getBool(threeDMazeIn3DScene);
         OptionsFisheye.copy(OptionsFisheye.of, ofTemp);
         OptionsFisheye.recalculate();
 
-        oa.opt.od.glide = getBool(glide);
-
-        core.allowDiagonalMovement = getBool(allowDiagonalMovement);
-        core.leftTouchToggleMode = getBool(buttonToggleModeLeft);
-        core.rightTouchToggleMode = getBool(buttonToggleModeRight);
-        core.hideController = getBool(hideController);
-        core.horizontalInputFollowing = getBool(horizontalInputFollowing);
-        core.stereo = getBool(stereo);
-        getFloat(ref core.iPD, iPDField, true);
-        getFloat(ref core.fovscale, fovscaleField, true);
-        core.alternaviveControlIn3D = getBool(alternativeControlIn3D);
-        core.threeDMazeIn3DScene = getBool(threeDMazeIn3DScene);
-        core.paintWithAddButton = getBool(paintWithAddButton);
+        oa.opt.oh.allowDiagonalMovement = getBool(allowDiagonalMovement);
+        oa.opt.oh.leftTouchToggleMode = getBool(buttonToggleModeLeft);
+        oa.opt.oh.rightTouchToggleMode = getBool(buttonToggleModeRight);
+        oa.opt.oh.showController = getBool(showController);
+        oa.opt.oh.showHint = getBool(showHint);
+        oa.opt.oh.horizontalInputFollowing = getBool(horizontalInputFollowing);
+        oa.opt.oh.stereo = getBool(stereo);
+        getFloat(ref oa.opt.oh.iPD, iPDField, true);
+        getFloat(ref oa.opt.oh.fovscale, fovscaleField, false);
+        getFloat(ref oa.opt.oh.cameraDistanceScale, distanceField, false);
+        oa.opt.oh.alternativeControlIn3D = getBool(alternativeControlIn3D);
 
         core.menuCommand = core.updateOptions;
     }
@@ -253,11 +263,11 @@ public class Menu : MonoBehaviour
         OptionsAll oa = core.getOptionsAll();
         getInt(ref oa.opt.om4.dimMap, dimNext, OptionsMap.DIM_MAP_MIN, OptionsMap.DIM_MAP_MAX);
         getDimMap(oa.opt.om4.size, sizeNext);
-        getDouble(ref oa.opt.om4.density, densityNext, OptionsMap.DENSITY_MIN, OptionsMap.DIM_MAP_MAX, true);
-        getDouble(ref oa.opt.om4.twistProbability, twistProbabilityNext, OptionsMap.PROBABILITY_MIN, OptionsMap.PROBABILITY_MAX, true);
-        getDouble(ref oa.opt.om4.branchProbability, branchProbabilityNext, OptionsMap.PROBABILITY_MIN, OptionsMap.PROBABILITY_MAX, true);
+        getFloat(ref oa.opt.om4.density, densityNext, OptionsMap.DENSITY_MIN, OptionsMap.DIM_MAP_MAX, true);
+        getFloat(ref oa.opt.om4.twistProbability, twistProbabilityNext, OptionsMap.PROBABILITY_MIN, OptionsMap.PROBABILITY_MAX, true);
+        getFloat(ref oa.opt.om4.branchProbability, branchProbabilityNext, OptionsMap.PROBABILITY_MIN, OptionsMap.PROBABILITY_MAX, true);
         oa.opt.om4.allowLoops = getBool(allowLoopsNext);
-        getDouble(ref oa.opt.om4.loopCrossProbability, loopCrossProbabilityNext, OptionsMap.PROBABILITY_MIN, OptionsMap.PROBABILITY_MAX, true);
+        getFloat(ref oa.opt.om4.loopCrossProbability, loopCrossProbabilityNext, OptionsMap.PROBABILITY_MIN, OptionsMap.PROBABILITY_MAX, true);
         oa.opt.om4.allowReservedPaths = getBool(allowReservedPathsNext);
 
         if (mazeNext.text.Length > 0)
@@ -287,11 +297,12 @@ public class Menu : MonoBehaviour
         oa.opt.oo.invertYawAndPitch = getBool(invertYawAndPitch);
         oa.opt.oo.invertRoll = getBool(invertRoll);
 
-        getDouble(ref oa.opt.ot4.frameRate, frameRateField, false);
-        getDouble(ref oa.opt.ot4.timeMove, timeMoveField, false);
-        getDouble(ref oa.opt.ot4.timeRotate, timeRotateField, false);
-        getDouble(ref oa.opt.ot4.timeAlignMove, timeAlignMoveField, false);
-        getDouble(ref oa.opt.ot4.timeAlignRotate, timeAlignRotateField, false);
+        getFloat(ref oa.opt.ot4.frameRate, frameRateField, false);
+        getFloat(ref oa.opt.ot4.timeMove, timeMoveField, false);
+        getFloat(ref oa.opt.ot4.timeRotate, timeRotateField, false);
+        getFloat(ref oa.opt.ot4.timeAlignMove, timeAlignMoveField, false);
+        getFloat(ref oa.opt.ot4.timeAlignRotate, timeAlignRotateField, false);
+        oa.opt.ot4.paintWithAddButton = getBool(paintWithAddButton);
 
         // command
         core.menuCommand = core.setOptions;
@@ -300,17 +311,13 @@ public class Menu : MonoBehaviour
 
     public void doCancel()
     {
-        core.closeMenu();
-    }
-
-    public void doToggleAlignMode()
-    {
-        int n = core.getSaveType();
-        if (n == IModel.SAVE_MAZE || n == IModel.SAVE_GEOM || n == IModel.SAVE_NONE)
+        if (iss != null)
         {
-            core.alignMode = core.keepUpAndDown ? false : alignMode.isOn;
-            if (alignMode.isOn) core.command = core.align;
+            iss.setPaintMode(-paintMode.value);
+            SelectPaintColor();
+            SelectAddShapes();
         }
+        core.closeMenu();
     }
 
     public void doAlign()
@@ -321,10 +328,9 @@ public class Menu : MonoBehaviour
     public void doNewGame(int dim)
     {
         doOK();
+        OptionsAll oa = core.getOptionsAll();
         if (dim>0) {
-            OptionsAll oa = core.getOptionsAll();
-            oa.opt.om4.dimMap = dim;
-            core.dim = core.threeDMazeIn3DScene ? dim : 4;
+            core.dim = OptionsFisheye.of.threeDMazeIn3DScene ? dim : 4;
             if (dim==3) {
                 oa.opt.oo.limit3D = true;
                 oa.opt.oo.sliceDir = 1;
@@ -333,6 +339,7 @@ public class Menu : MonoBehaviour
                 oa.opt.oo.sliceDir = 0;
             }
         }
+        oa.opt.om4.dimMap = Math.Min(core.dim, oa.opt.om4.dimMap);
         core.menuCommand = core.newGame;
     }
 
@@ -367,11 +374,11 @@ public class Menu : MonoBehaviour
             if (s == "(no effect)") { c = ISelectShape.NO_EFFECT_COLOR; }
             else if (s == "(paint remover)") { c = ISelectShape.REMOVE_COLOR; }
             else if (s == "(random color)") { c = ISelectShape.RANDOM_COLOR; }
+            else if (s == "(in order)") { c = ISelectShape.INORDER_COLOR; }
             else foreach (NamedObject<Color> c_ in iss.getAvailableColors())
                 if (c_.name == s) c = c_.obj;
         }
         if (c == Color.clear) return false;
-        c *= OptionsColor.fixer;
         iss.setSelectedColor(c);
         iss.setPaintColor(c);
         return true;

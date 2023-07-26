@@ -336,7 +336,7 @@ public class Engine : IMove
     public void setOptions(OptionsColor oc, OptionsView ov, /*OptionsStereo os,*/ OptionsSeed oe, OptionsMotion ot, OptionsDisplay od)
     {
 
-        model.setOptions(oc, oe.colorSeed, ov.depth, ov.texture, od);
+        model.setOptions(oc, oe.colorSeed, ov.depth, ov.arrow, ov.texture, od);
 
         setRetina(ov.retina);
         //border = od.border;

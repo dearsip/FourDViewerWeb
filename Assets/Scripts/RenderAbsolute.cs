@@ -22,6 +22,7 @@ public class RenderAbsolute
     public bool useEdgeColor;
 
     private int depthMax;
+    private bool arrow;
     private bool[] texture;
     private float transparency;
 
@@ -49,6 +50,7 @@ public class RenderAbsolute
         this.colorizer = colorizer;
 
         depthMax = ov.depth;
+        arrow = ov.arrow;
         texture = new bool[10];
         setTexture(ov.texture);
 
@@ -77,6 +79,11 @@ public class RenderAbsolute
     public void setDepth(int depth)
     {
         depthMax = depth;
+    }
+
+    public void setArrow(bool arrow)
+    {
+        this.arrow = arrow;
     }
 
     public void setTexture(bool[] texture)
@@ -493,11 +500,11 @@ public class RenderAbsolute
         }
     }
 
-    public static Color COLOR_START = Color.gray;
+    public static Color COLOR_START = OptionsColor.DARKGRAY;
     private static Color COLOR_START_ALTERNATE = OptionsColor.RIGHTGRAY;
 
-    public static Color COLOR_FINISH = Color.yellow * OptionsColor.fixer; // the idea is, gold
-    private static Color COLOR_FINISH_ALTERNATE = OptionsColor.ORANGE * OptionsColor.fixer;
+    public static Color COLOR_FINISH = Color.yellow; // the idea is, gold
+    private static Color COLOR_FINISH_ALTERNATE = OptionsColor.ORANGE;
 
     // alternate colors are used when a start or finish mark
     // would be indistinguishable from a normal texture
@@ -526,11 +533,11 @@ public class RenderAbsolute
             color/*5*/ =/* (texture[5] && color.Equals(COLOR_FINISH)) ? COLOR_FINISH_ALTERNATE :*/ COLOR_FINISH;
         }
 
-        if (texture[0]) addTexture(p, dir, useEdgeColor || force ? color : Color.white * OptionsColor.fixer, 0.999999);
+        if (texture[0]) addTexture(p, dir, useEdgeColor || force ? color : Color.white, 0.999999);
 
         int d = colorizer.getTrace(p);
-        if (texture[1] && d >= 0) addVector(p, dir, d, color);
-        for (int i = 2; i < 10; i++)
+        if (arrow && d >= 0) addVector(p, dir, d, color);
+        for (int i = 1; i < 10; i++)
         {
 
             Color c = color;

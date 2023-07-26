@@ -1,6 +1,6 @@
 ﻿
 
-public class OptionsControl// : IValidate
+public class OptionsControl
 {
 
     // --- fields ---

@@ -173,7 +173,7 @@ public class Colorizer : IColorize
         for (DynamicArray.Iterator iTrace = new DynamicArray.Iterator(Permute.sequence(0, dimMap), new int[dimSpace], limits);
                                    iTrace.hasCurrent(); iTrace.increment())
         {
-            byTrace.set(iTrace.current(), Color.white * OptionsColor.fixer);
+            byTrace.set(iTrace.current(), Color.white);
         }
     }
 

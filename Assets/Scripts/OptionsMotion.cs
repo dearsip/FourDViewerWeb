@@ -6,28 +6,16 @@
  * Options for speed and granularity of motion.
  */
 
-public class OptionsMotion //implements IValidate
+public class OptionsMotion
 {
 
     // --- fields ---
 
-    public double frameRate; // per second
-    public double timeMove; // all times in seconds
-    public double timeRotate;
-    public double timeAlignMove;
-    public double timeAlignRotate;
-
-    // --- implementation of IValidate ---
-
-    //public void validate() //throws ValidationException
-    //{
-
-    //    if (frameRate <= 0) throw App.getException("OptionsMotion.e1");
-    //    if (timeMove <= 0) throw App.getException("OptionsMotion.e2");
-    //    if (timeRotate <= 0) throw App.getException("OptionsMotion.e3");
-    //    if (timeAlignMove <= 0) throw App.getException("OptionsMotion.e4");
-    //    if (timeAlignRotate <= 0) throw App.getException("OptionsMotion.e5");
-    //}
-
+    public float frameRate; // per second
+    public float timeMove; // all times in seconds
+    public float timeRotate;
+    public float timeAlignMove;
+    public float timeAlignRotate;
+    public bool paintWithAddButton;
 }
 

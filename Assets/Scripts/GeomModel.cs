@@ -6,13 +6,6 @@ using System.Diagnostics;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
-//import java.awt.Color;
-//import java.io.File;
-//import java.io.FileWriter;
-//import java.util.Collection;
-//import java.util.HashMap;
-//import java.util.LinkedList;
-//import java.util.Vector;
 
 /**
  * A model that lets the user move around geometric shapes.
@@ -50,6 +43,7 @@ public class GeomModel : IModel, IMove, ISelectShape
     protected double[][] axis;
     protected double[] reg1;
     protected double[] reg2;
+    protected double[] reg3;
     protected Clip.Result clipResult;
     protected IDraw currentDraw;
 
@@ -59,6 +53,7 @@ public class GeomModel : IModel, IMove, ISelectShape
     protected Geom.Shape addShape;
     private Color paintColor;
     private int paintMode; // default 0, correct
+    private int order;
 
     private List<string> topLevelInclude;
     private Dictionary<string, Color> colorNames;
@@ -110,9 +105,10 @@ public class GeomModel : IModel, IMove, ISelectShape
         for (int i = 0; i < dim; i++) axis[i] = new double[dim];
         reg1 = new double[dim];
         reg2 = new double[dim];
+        reg3 = new double[dim];
         clipResult = new Clip.Result();
 
-        paintColor = Color.red * OptionsColor.fixer; // annoying to have to set up every time
+        paintColor = Color.red; // annoying to have to set up every time
 
         clip = new Clip.CustomBoundary[2 * (dim - 1)];
         axisClip = new Clip.CustomBoundary[2 * (dim - 1)];
@@ -628,6 +624,11 @@ public class GeomModel : IModel, IMove, ISelectShape
         Color useColor;
         if (paintColor == ISelectShape.RANDOM_COLOR) useColor = pickFrom(availableColors);
         else if (paintColor == ISelectShape.REMOVE_COLOR) useColor = Color.clear;
+        else if (paintColor == ISelectShape.INORDER_COLOR)
+        {
+            useColor = availableColors[order++].obj;
+            order %= availableColors.Count;
+        }
         else useColor = paintColor;
 
         if (paintShape)
@@ -679,12 +680,12 @@ public class GeomModel : IModel, IMove, ISelectShape
         return addShape;
     }
 
-    public void setSelectedColor(Color color)
+    public virtual void setSelectedColor(Color color)
     {
         addColor = color;
     }
 
-    public void setSelectedShape(Geom.Shape shape)
+    public virtual void setSelectedShape(Geom.Shape shape)
     {
         addShape = shape;
     }
@@ -696,7 +697,7 @@ public class GeomModel : IModel, IMove, ISelectShape
         return paintColor;
     }
 
-    public void setPaintColor(Color color)
+    public virtual void setPaintColor(Color color)
     {
         paintColor = color;
     }
@@ -866,6 +867,10 @@ public class GeomModel : IModel, IMove, ISelectShape
     {
     }
 
+    public override void setArrow(bool arrow)
+    {
+    }
+
     public bool[] getDesiredTexture()
     { // also not in IModel
         return (drawInfo != null) ? drawInfo.texture : null;
@@ -885,7 +890,7 @@ public class GeomModel : IModel, IMove, ISelectShape
         this.transparency = transparency;
     }
 
-    public override void setOptions(OptionsColor oc, int seed, int depth, bool[] texture, OptionsDisplay od)
+    public override void setOptions(OptionsColor oc, int seed, int depth, bool arrow, bool[] texture, OptionsDisplay od)
     {
         setTexture(texture);
         setTransparency(od.transparency);
@@ -988,7 +993,7 @@ public class GeomModel : IModel, IMove, ISelectShape
             // prefilter by checking distance to shape against radius
             // if (Clip.outsideRadius(p1, p2, shape)) continue;
 
-            if ((Clip.clip(p1, p2, shape, clipResult) & (invertNormals ? Clip.KEEP_B : Clip.KEEP_A)) != 0)
+            if ((Clip.clip(p1, p2, shape, clipResult) & (/*invertNormals ? Clip.KEEP_B :*/ Clip.KEEP_A)) != 0)
             {
                 shapeNumber = i;
                 if (!glide || detectHits) return false;
@@ -998,12 +1003,12 @@ public class GeomModel : IModel, IMove, ISelectShape
                     // projection on hitting cell
                     Vec.sub(reg2,p1,p2);
                     double[] normal = new double[dim];
-                    Vec.copy(normal, shape.cell[invertNormals ? clipResult.ib : clipResult.ia].normal);
+                    Vec.copy(normal, shape.cell[/*invertNormals ? clipResult.ib :*/ clipResult.ia].normal);
                     foreach (double[] n in normals)
                     {
                         Vec.addScaled(normal, normal, n, -Vec.dot(normal, n) / Vec.norm2(n));
                     }
-                    double d = Math.Max((invertNormals ? clipResult.b : clipResult.a) - epsilon / Vec.norm(reg2), 0);
+                    double d = Math.Max((/*invertNormals ? clipResult.b :*/ clipResult.a) - epsilon / Vec.norm(reg2), 0);
                     Vec.scale(reg2, normal, Vec.dot(reg2, normal) / Vec.norm2(normal));
                     Vec.addScaled(p2, p2, reg2, 1 - d);
                     Vec.addScaled(p1, p1, reg2,   - d);
@@ -1039,7 +1044,8 @@ public class GeomModel : IModel, IMove, ISelectShape
     public override void render(double[] origin, double[][] axis, bool viewClip)
     {
         this.viewClip = viewClip;
-        renderer(origin, axis);
+        Vec.addScaled(reg3,origin,axis[dim-1],-cameraDistance);
+        renderer(reg3, axis);
     }
 
     protected void renderer(double[] origin, double[][] axis)
@@ -1139,7 +1145,7 @@ public class GeomModel : IModel, IMove, ISelectShape
         if (texture[0])
         {
             if (useEdgeColor) drawEdgeColor(shape, cell, 0.999999);
-            else drawTexture(shape, cell, getColor(Color.white * OptionsColor.fixer), 0.999999);
+            else drawTexture(shape, cell, getColor(Color.white), 0.999999);
         }
 
         bool selected = (shape == selectedShape) && !hideSel;
@@ -1175,8 +1181,8 @@ public class GeomModel : IModel, IMove, ISelectShape
         return hitShape == drawing ? color.Equals(COLOR_SELECTED) ? COLOR_SELECTED_ALTERNATE : COLOR_SELECTED : color;
     }
 
-    private static Color COLOR_SELECTED = Color.yellow * OptionsColor.fixer;
-    private static Color COLOR_SELECTED_ALTERNATE = Color.red * OptionsColor.fixer;
+    private static Color COLOR_SELECTED = Color.yellow;
+    private static Color COLOR_SELECTED_ALTERNATE = Color.red;
 
     private void drawEdgeColor(Geom.Shape shape, Geom.Cell cell, double scale)
     {

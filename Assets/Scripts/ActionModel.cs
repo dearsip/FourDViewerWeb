@@ -29,6 +29,10 @@ public class ActionModel : GeomModel {
 
       if (bfoot || bcompass) foot = (dim==3) ? setFoot3() : setFoot4();
       if (bcompass) compassColor = (dim==3) ? cColor3 : cColor4;
+
+      invertNormals = false;
+      useSeparation = true;
+      glide = true;
    }
 
    public void setEngine(Engine engine) {
@@ -64,6 +68,17 @@ public class ActionModel : GeomModel {
    }
 
    // --- implementation of IModel ---
+
+    public override void setOptions(OptionsColor oc, int seed, int depth, bool arrow, bool[] texture, OptionsDisplay od)
+    {
+        setTexture(texture);
+        setTransparency(od.transparency);
+        usePolygon = od.usePolygon;
+        useEdgeColor = od.useEdgeColor;
+        hideSel = od.hidesel;
+        cameraDistance = od.cameraDistance;
+    }
+
 
    public override bool getAlignMode(bool defaultAlignMode) {
       return false;

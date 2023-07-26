@@ -27,6 +27,7 @@ public interface ISelectShape
     static readonly Color NO_EFFECT_COLOR = new Color(1,0,0,0);
     static readonly Color RANDOM_COLOR = new Color(0,1,0,0);
     static readonly Color REMOVE_COLOR = new Color(0,0,1,0);
+    static readonly Color INORDER_COLOR = new Color(1,1,1,0);
 
     // ISelectPaint
     Color getPaintColor();

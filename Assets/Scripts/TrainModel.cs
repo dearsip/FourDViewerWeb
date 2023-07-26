@@ -55,7 +55,7 @@ public class TrainModel : GeomModel {
       return list;
    }
 
-    public override void setOptions(OptionsColor oc, int seed, int depth, bool[] texture, OptionsDisplay od)
+    public override void setOptions(OptionsColor oc, int seed, int depth, bool arrow, bool[] texture, OptionsDisplay od)
     {
         setTexture(texture);
         setTransparency(od.transparency);

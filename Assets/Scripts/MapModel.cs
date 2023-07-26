@@ -101,6 +101,11 @@ public class MapModel : IModel
         renderAbsolute.setDepth(depth);
     }
 
+    public override void setArrow(bool arrow)
+    {
+        renderAbsolute.setArrow(arrow);
+    }
+
     public override void setTexture(bool[] texture)
     {
         renderAbsolute.setTexture(texture);
@@ -111,16 +116,17 @@ public class MapModel : IModel
         renderAbsolute.setTransparency(transparency);
     }
 
-    public override void setOptions(OptionsColor oc, int seed, int depth, bool[] texture, OptionsDisplay od)
+    public override void setOptions(OptionsColor oc, int seed, int depth, bool arrow, bool[] texture, OptionsDisplay od)
     {
         colorizer.setOptions(oc, seed);
         renderAbsolute.setDepth(depth);
+        renderAbsolute.setArrow(arrow);
         renderAbsolute.setTexture(texture);
         renderAbsolute.setTransparency(od.transparency);
         renderAbsolute.setTransparency(od.transparency);
         renderAbsolute.useEdgeColor = od.useEdgeColor;
         renderAbsolute.usePolygon = od.usePolygon;
-        geomModel.setOptions(oc, seed, depth, texture, od);
+        geomModel.setOptions(oc, seed, depth, arrow, texture, od);
         showMap = od.map;
         glide = od.glide;
     }

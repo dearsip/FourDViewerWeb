@@ -106,4 +106,16 @@ public class BlockModel : ActionModel {
       engine.Fall(delta);
    }
 
+    public override void setSelectedColor(UnityEngine.Color color)
+    {
+    }
+
+    public override void setSelectedShape(Geom.Shape shape)
+    {
+    }
+
+    public override void setPaintColor(UnityEngine.Color color)
+    {
+    }
+
 }

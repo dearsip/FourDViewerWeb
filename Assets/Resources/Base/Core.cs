@@ -26,10 +26,10 @@ public class Core : MonoBehaviour
     private bool engineAlignMode;
     // private bool active, excluded;
     // private int[] param;
-    private double delta;
-    private double timeMove, timeRotate, timeAlignMove, timeAlignRotate;
+    private float delta;
+    private float timeMove, timeRotate, timeAlignMove, timeAlignRotate;
     // private int nMove, nRotate, nAlignMove, nAlignRotate;
-    private double dMove, dRotate, dAlignMove, dAlignRotate;
+    private float dMove, dRotate, dAlignMove, dAlignRotate;
     private bool start, started;
     private IMove target;
     public int quantity;
@@ -41,8 +41,6 @@ public class Core : MonoBehaviour
     private Align alignActive;
     public bool keepUpAndDown;
     private bool disableLeftAndRight;
-    public bool threeDMazeIn3DScene;
-    public bool paintWithAddButton;
 
     private int interval;
 
@@ -50,38 +48,27 @@ public class Core : MonoBehaviour
     public Command menuCommand;
     private Vector3 posLeft, lastPosLeft, fromPosLeft, posRight, lastPosRight, fromPosRight, dlPosLeft, dfPosLeft, dlPosRight, dfPosRight;
     private Quaternion rotLeft, lastRotLeft, fromRotLeft, rotRight, lastRotRight, fromRotRight, dlRotLeft, dfRotLeft, dlRotRight, dfRotRight, relarot;
-    private bool leftTrigger, rightTrigger, lastLeftTrigger, lastRightTrigger, leftTriggerPressed, rightTriggerPressed,
-        leftMove, rightMove, leftGrip, rightGrip, lastLeftGrip, lastRightGrip;
+    private bool leftMove, rightMove;
     private int maxTouchCount = 4;
     private bool[] operated;
     private List<int> fingerIds;
     private bool leftTouchButton, rightTouchButton;
-    public bool leftTouchToggleMode = false;
-    public bool rightTouchToggleMode = false;
-    public bool hideController = false;
-    public bool allowDiagonalMovement = true;
-    public bool horizontalInputFollowing = false;
-    public bool alternaviveControlIn3D = false;
-    private bool alt { get { return alternaviveControlIn3D && dim == 3; } }
-    public bool stereo = false;
-    public float iPD = 0.064f;
+    private bool alt { get { return opt.oh.alternativeControlIn3D && dim == 3; } }
     private enum TouchType { MoveForward1, MoveForward2, MoveLateral1, MoveLateral2, Turn1, Turn2, Spin1, Spin2, LeftTouchButton, RightTouchButton, CameraRotate, Align, Click, Remove, Add, Menu, None }
     private TouchType[] touchType;
     private bool[] touchEnded;
     private Vector2[] fromTouchPos, lastTouchPos, touchPos;
-    public Image alignButton, clickButton, removeShapeButton, addShapesButton;
+    public Image alignButton, clickButton, removeShapeButton, addShapesButton, sliceButton, strictButton, leftButton, rightButton;
     public Menu menuPanel;
     public Canvas menuCanvas, inputCanvas;
     private WebXRState xrState = WebXRState.NORMAL;
     public Camera fixedCamera, fixedCameraLeft, fixedCameraRight;
     public Transform cameraLookAt, mapPos;
     public bool focusOnMap = false;
-    private float cameraDistance;
     private readonly float cameraDistanceDefault = 0.56f;
     private Vector2 cameraRot;
     private readonly Vector2 cameraRotDefault = new Vector2(26f, 0f);
     private float verticalOffset = -0.01f;
-    public float fovscale = 1f;
     private float fNear, fFar, sfWidth, fHeight, fWidth, sNear, sFar, sHeight, sWidth;
 
     public Transform leftT, rightT;
@@ -98,7 +85,7 @@ public class Core : MonoBehaviour
     public OverlayText overlayText;
     public InputViewer IVLeft, IVRight;
     private bool skyBox = false;
-    public GameObject environment;
+    public GameObject environment, hint, lefthint1, lefthint2, rightHint1, rightHint2, threeDHint;
 
     // --- option accessors ---
 
@@ -107,45 +94,25 @@ public class Core : MonoBehaviour
     private OptionsMap om()
     {
         // omCurrent is always non-null, so can be used directly
-        return /*(dim == 3) ? oa.opt.om3 :*/ oa.opt.om4;
+        return oa.opt.om4;
     }
 
     public OptionsColor oc()
     {
         if (oa.ocCurrent != null) return oa.ocCurrent;
-        return /*(dim == 3) ? oa.opt.oc3 :*/ oa.opt.oc4;
+        return oa.opt.oc4;
     }
 
     public OptionsView ov()
     {
         if (oa.ovCurrent != null) return oa.ovCurrent;
-        return /*(dim == 3) ? oa.opt.ov3 :*/ oa.opt.ov4;
+        return oa.opt.ov4;
     }
-
-    //public OptionsStereo os()
-    //{
-    //    return oa.opt.os;
-    //}
-
-    //private OptionsKeys ok()
-    //{
-    //    return (dim == 3) ? oa.opt.ok3 : oa.opt.ok4;
-    //}
 
     private OptionsMotion ot()
     {
-        return /*(dim == 3) ? oa.opt.ot3 :*/ oa.opt.ot4;
+        return oa.opt.ot4;
     }
-
-    //public OptionsImage oi()
-    //{
-    //    return oa.opt.oi;
-    //}
-
-    //private KeyMapper keyMapper()
-    //{
-    //    return (dim == 3) ? keyMapper3 : keyMapper4;
-    //}
 
     public int getSaveType()
     {
@@ -238,7 +205,7 @@ public class Core : MonoBehaviour
             inputCanvas.enabled = false;
             fixedCameraLeft.enabled = false;
             fixedCameraRight.enabled = false;
-            stereo = false;
+            opt.oh.stereo = false;
         }
         else menuCanvas.enabled = true;
 
@@ -247,8 +214,8 @@ public class Core : MonoBehaviour
 
     public void ToggleStereo(bool b)
     {
-        stereo = b;
-        if (stereo)
+        opt.oh.stereo = b;
+        if (opt.oh.stereo)
         {
             fixedCameraLeft.enabled = true;
             fixedCameraRight.enabled = true;
@@ -282,7 +249,7 @@ public class Core : MonoBehaviour
         else { if (command == null) command = jump; }
     }
 
-    private void LeftGrip() {
+    private void doToggleLimit3D() {
         opt.oo.limit3D = !opt.oo.limit3D;
         overlayText.ShowText(opt.oo.limit3D ? "Restrict\noperation to 3D" : "Remove\n3D restriction");
         IVLeft.ToggleLimit3D(opt.oo.limit3D);
@@ -326,6 +293,7 @@ public class Core : MonoBehaviour
     }
 
     private readonly Color enabledColor = new Color(1, 1, 1, 0.25f);
+    private readonly Color inactiveColor = new Color(1, 1, 1, 0.125f);
     private readonly Color disabledColor = new Color(1, 1, 1, 0.0625f);
     private void controllerReset() {
         setKeepUpAndDown();
@@ -377,7 +345,7 @@ public class Core : MonoBehaviour
     }
 
     public void CamraReset() {
-        cameraDistance = cameraDistanceDefault;
+        opt.oh.cameraDistanceScale = 1f;
         cameraRot = cameraRotDefault;
     }
 
@@ -414,19 +382,53 @@ public class Core : MonoBehaviour
         started = started || start;
         engine.renderAbsolute(eyeVector, opt.oo, delta, !menuCanvas.enabled && started);
 
+        if (opt.oh.alternativeControlIn3D)
+        {
+            lefthint1.SetActive(false);
+            lefthint2.SetActive(false);
+            rightHint1.SetActive(false);
+            rightHint2.SetActive(false);
+            threeDHint.SetActive(true);
+        }
+        else
+        {
+            if (leftTouchButton) {
+                rightHint1.SetActive(false);
+                rightHint2.SetActive(true);
+            }
+            else {
+                rightHint1.SetActive(true);
+                rightHint2.SetActive(false);
+            }
+            if (rightTouchButton) {
+                lefthint1.SetActive(false);
+                lefthint2.SetActive(true);
+            }
+            else {
+                lefthint1.SetActive(true);
+                lefthint2.SetActive(false);
+            }
+            threeDHint.SetActive(false);
+        }
+
+        sliceButton.color = opt.oo.sliceDir > 0 ? enabledColor : inactiveColor;
+        strictButton.color = opt.oo.limit3D ? enabledColor : inactiveColor;
+        leftButton.color = !opt.oh.leftTouchToggleMode || leftTouchButton ? enabledColor : inactiveColor;
+        rightButton.color = !opt.oh.rightTouchToggleMode || rightTouchButton ? enabledColor : inactiveColor;
+
         if (xrState == WebXRState.NORMAL) {
             // fixedCamera.transform.rotation = cameraLookAt.rotation * Quaternion.Euler(cameraRot.x, 0, 0);
             // transform.rotation = cameraLookAt.rotation * Quaternion.Euler(0, -cameraRot.y, 0);
             fixedCamera.transform.rotation = (focusOnMap ? mapPos : cameraLookAt).rotation * Quaternion.Euler(cameraRot);
-            fixedCamera.transform.position = (focusOnMap ? mapPos : cameraLookAt).position + fixedCamera.transform.rotation * Vector3.back * cameraDistance;
+            fixedCamera.transform.position = (focusOnMap ? mapPos : cameraLookAt).position + fixedCamera.transform.rotation * Vector3.back * opt.oh.cameraDistanceScale * cameraDistanceDefault;
             fixedCameraLeft.transform.rotation = fixedCamera.transform.rotation;
-            fixedCameraLeft.transform.position = fixedCamera.transform.position + fixedCamera.transform.rotation * (Vector3.left * iPD * 0.5f);
+            fixedCameraLeft.transform.position = fixedCamera.transform.position + fixedCamera.transform.rotation * (Vector3.left * opt.oh.iPD * 0.5f);
             fixedCameraRight.transform.rotation = fixedCamera.transform.rotation;
-            fixedCameraRight.transform.position = fixedCamera.transform.position + fixedCamera.transform.rotation * (Vector3.right * iPD * 0.5f);
+            fixedCameraRight.transform.position = fixedCamera.transform.position + fixedCamera.transform.rotation * (Vector3.right * opt.oh.iPD * 0.5f);
 
-            fixedCamera.projectionMatrix = PerspectiveOffCenter(-fWidth * fovscale, fWidth * fovscale, -fHeight * ((fovscale - 1) * 1.9f + 1) + verticalOffset, fHeight * ((fovscale - 1) * 0.1f + 1) + verticalOffset, fNear, fFar);
-            fixedCameraLeft.projectionMatrix = PerspectiveOffCenter(-sWidth * ((fovscale - 1) * 0.1f + 1) + iPD * 0.5f * sNear / cameraDistance, sWidth * ((fovscale - 1) * 1.9f + 1) + iPD * 0.5f * sNear / cameraDistance, -sHeight * ((fovscale - 1) * 1.9f + 1) + verticalOffset, sHeight * ((fovscale - 1) * 0.1f + 1) + verticalOffset, sNear, sFar);
-            fixedCameraRight.projectionMatrix = PerspectiveOffCenter(-sWidth * ((fovscale - 1) * 1.8f + 1) - iPD * 0.5f * sNear / cameraDistance, sWidth * ((fovscale - 1) * 0.2f + 1) - iPD  * 0.5f * sNear / cameraDistance, -sHeight * ((fovscale - 1) * 1.9f + 1) + verticalOffset, sHeight * ((fovscale - 1) * 0.1f + 1) + verticalOffset, sNear, sFar);
+            fixedCamera.projectionMatrix = PerspectiveOffCenter(-fWidth * opt.oh.fovscale / opt.oh.cameraDistanceScale, fWidth * opt.oh.fovscale / opt.oh.cameraDistanceScale, (-fHeight * ((opt.oh.fovscale - 1) * 1.9f + 1) + verticalOffset) / opt.oh.cameraDistanceScale, (fHeight * ((opt.oh.fovscale - 1) * 0.1f + 1) + verticalOffset) / opt.oh.cameraDistanceScale, fNear, fFar);
+            fixedCameraLeft.projectionMatrix = PerspectiveOffCenter((-sWidth * ((opt.oh.fovscale - 1) * 0.1f + 1) + opt.oh.iPD * 0.5f * sNear  / cameraDistanceDefault) / opt.oh.cameraDistanceScale, (sWidth * ((opt.oh.fovscale - 1) * 1.9f + 1) + opt.oh.iPD * 0.5f * sNear  / cameraDistanceDefault) / opt.oh.cameraDistanceScale, (-sHeight * ((opt.oh.fovscale - 1) * 1.9f + 1) + verticalOffset) / opt.oh.cameraDistanceScale, (sHeight * ((opt.oh.fovscale - 1) * 0.1f + 1) + verticalOffset) / opt.oh.cameraDistanceScale, sNear, sFar);
+            fixedCameraRight.projectionMatrix = PerspectiveOffCenter((-sWidth * ((opt.oh.fovscale - 1) * 1.9f + 1) - opt.oh.iPD * 0.5f * sNear  / cameraDistanceDefault) / opt.oh.cameraDistanceScale, (sWidth * ((opt.oh.fovscale - 1) * 0.1f + 1) - opt.oh.iPD  * 0.5f * sNear  / cameraDistanceDefault) / opt.oh.cameraDistanceScale, (-sHeight * ((opt.oh.fovscale - 1) * 1.9f + 1) + verticalOffset) / opt.oh.cameraDistanceScale, (sHeight * ((opt.oh.fovscale - 1) * 0.1f + 1) + verticalOffset) / opt.oh.cameraDistanceScale, sNear, sFar);
         }
     }
 
@@ -451,13 +453,13 @@ public class Core : MonoBehaviour
         if (rightC.GetButtonDown(WebXRController.ButtonTypes.ButtonA) || rightC.GetButtonUp(WebXRController.ButtonTypes.ButtonA))
             RightDown();
         if (leftC.GetButtonUp(WebXRController.ButtonTypes.ButtonB))
-            openMenu();
+            doToggleLimit3D();
+        if (rightC.GetButtonDown(WebXRController.ButtonTypes.ButtonB))
+            Slice();
+        if (leftC.GetButtonDown(WebXRController.ButtonTypes.Trigger))
+            OperateAlign();
         if (rightC.GetButtonDown(WebXRController.ButtonTypes.Trigger))
             RightClick();
-        if (leftC.GetButtonDown(WebXRController.ButtonTypes.Grip))
-            LeftGrip();
-        if (rightC.GetButtonDown(WebXRController.ButtonTypes.ButtonB))
-            OperateAlign();
         if (alignTime > 0) alignTime -= Time.deltaTime;
 
         Vector2 v = rightC.GetAxis2D(WebXRController.Axis2DTypes.Thumbstick);
@@ -465,15 +467,13 @@ public class Core : MonoBehaviour
         if  (swipeDir >= 0 && v.x < -tSwipe && command == null) { command = removeShape; swipeDir = -1; }
         else if (swipeDir <= 0 && v.x > tSwipe && command == null) { command = addShapes; swipeDir = 1; }
 
-        if ((leftC.GetButtonDown(WebXRController.ButtonTypes.Trigger)) || Input.GetKeyDown(KeyCode.G)) 
-            Slice();
-
         bool update = false;
+        if (Input.GetKeyDown(KeyCode.G)) Slice();
         if (Input.GetKeyDown(KeyCode.Space)) RightClick();
         if (Input.GetKeyDown(KeyCode.M) && command == null) command = addShapes;
         if (Input.GetKeyDown(KeyCode.N) && command == null) command = removeShape;
         if (Input.GetKeyDown(KeyCode.Return)) OperateAlign();
-        if (Input.GetKeyDown(KeyCode.T)) LeftGrip();
+        if (Input.GetKeyDown(KeyCode.T)) doToggleLimit3D();
         if (Input.GetKeyDown(KeyCode.Alpha1)) { update = true; opt.ov4.texture[1] = !opt.ov4.texture[1]; }
         if (Input.GetKeyDown(KeyCode.Alpha2)) { update = true; opt.ov4.texture[2] = !opt.ov4.texture[2]; }
         if (Input.GetKeyDown(KeyCode.Alpha3)) { update = true; opt.ov4.texture[3] = !opt.ov4.texture[3]; }
@@ -484,23 +484,24 @@ public class Core : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Alpha8)) { update = true; opt.ov4.texture[8] = !opt.ov4.texture[8]; }
         if (Input.GetKeyDown(KeyCode.Alpha9)) { update = true; opt.ov4.texture[9] = !opt.ov4.texture[9]; }
         if (Input.GetKeyDown(KeyCode.Alpha0)) { update = true; opt.ov4.texture[0] = !opt.ov4.texture[0]; }
-        if (Input.GetKeyDown(KeyCode.X)) { update = true; opt.od.trainSpeed--; }
-        if (Input.GetKeyDown(KeyCode.C)) { update = true; opt.od.trainSpeed = 0; }
-        if (Input.GetKeyDown(KeyCode.V)) { update = true; opt.od.trainSpeed++; }
+        if (Input.GetKeyDown(KeyCode.X) && getSaveType() == IModel.SAVE_NONE) { update = true; opt.od.trainSpeed--; }
+        if (Input.GetKeyDown(KeyCode.C) && getSaveType() == IModel.SAVE_NONE) { update = true; opt.od.trainSpeed = 0; }
+        if (Input.GetKeyDown(KeyCode.V) && getSaveType() == IModel.SAVE_NONE) { update = true; opt.od.trainSpeed++; }
         if (Input.GetKeyDown(KeyCode.Q)) doToggleTrack();
         if (Input.GetKeyDown(KeyCode.Y)) engine.toggleFisheye();
         if (Input.GetKeyDown(KeyCode.P) && command == null) command = doPaint;
-        if (Input.GetKeyDown(KeyCode.H)) { update = true; opt.od.useEdgeColor = !opt.od.useEdgeColor; }
-        if (Input.GetKeyDown(KeyCode.B)) { update = true; opt.od.invertNormals = !opt.od.invertNormals; }
-        if (Input.GetKeyDown(KeyCode.Comma)) { update = true; opt.od.hidesel = !opt.od.hidesel; }
-        if (Input.GetKeyDown(KeyCode.Period)) { update = true; opt.od.separate = !opt.od.separate; }
+        if (Input.GetKeyDown(KeyCode.H) && opt.ov4.texture[0]) { update = true; opt.od.useEdgeColor = !opt.od.useEdgeColor; }
+        if (Input.GetKeyDown(KeyCode.B) && (getSaveType() == IModel.SAVE_GEOM || getSaveType() == IModel.SAVE_NONE)) { update = true; opt.od.invertNormals = !opt.od.invertNormals; }
+        if (Input.GetKeyDown(KeyCode.Comma) && target != engine) { update = true; opt.od.hidesel = !opt.od.hidesel; }
+        if (Input.GetKeyDown(KeyCode.Period) && (getSaveType() == IModel.SAVE_GEOM || getSaveType() == IModel.SAVE_NONE)) { update = true; opt.od.separate = !opt.od.separate; overlayText.ShowText("Separation" + (opt.od.separate ? "on" : "off")); }
         if (update) updateOptions();
     }
 
     private void OperateAlign()
     {
         if (alignMode) { if (doToggleAlignMode()) overlayText.ShowText("Align mode off"); }
-        else if (command == align || alignTime > 0) { if (doToggleAlignMode()) overlayText.ShowText("Align mode on"); }
+        else if (command == align || alignTime > 0 || Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift))
+            { if (doToggleAlignMode()) overlayText.ShowText("Align mode on"); }
         else if (doAlign()) { overlayText.ShowText("Align"); alignTime = .2f; }
     }
 
@@ -539,19 +540,19 @@ public class Core : MonoBehaviour
         else if (fromTouchPos[i].y > 0.8f) {
             if (fromTouchPos[i].x < 0.09375f) touchType[i] = TouchType.Menu;
             else if (fromTouchPos[i].x > 0.896875f) Slice();
-            else if (fromTouchPos[i].x > 0.79375f) LeftGrip(); }
+            else if (fromTouchPos[i].x > 0.79375f) doToggleLimit3D(); }
         else if (fromTouchPos[i].x < 0.09375f && fromTouchPos[i].y < 0.1875f && ButtonEnabled(TouchType.Align)) OperateAlign();
         else if (fromTouchPos[i].x < 0.09375f && fromTouchPos[i].y < 0.375f && ButtonEnabled(TouchType.Remove) && command == null) command = removeShape;
         else if (fromTouchPos[i].x < 0.3125f) {
             if (fromTouchPos[i].y < 0.375f) touchType[i] = !alt && rightTouchButton ? TouchType.MoveLateral1 : TouchType.MoveForward1;
             else if (fromTouchPos[i].y < 0.8f) touchType[i] = alt ? TouchType.MoveLateral1 : rightTouchButton ? TouchType.MoveLateral2 : TouchType.MoveForward2; }
-        else if (fromTouchPos[i].x < 0.5f && fromTouchPos[i].y < 0.16667f) { touchType[i] = TouchType.LeftTouchButton; leftTouchButton = leftTouchToggleMode ? !leftTouchButton : true; }
+        else if (fromTouchPos[i].x < 0.5f && fromTouchPos[i].y < 0.16667f) { touchType[i] = TouchType.LeftTouchButton; leftTouchButton = opt.oh.leftTouchToggleMode ? !leftTouchButton : true; }
         else if (fromTouchPos[i].x > 0.90625f && fromTouchPos[i].y < 0.1875f && ButtonEnabled(TouchType.Click)) RightClick();
         else if (fromTouchPos[i].x > 0.90625f && fromTouchPos[i].y < 0.375f && ButtonEnabled(TouchType.Add) && command == null) command = addShapes;
         else if (fromTouchPos[i].x > 0.6875f) {
             if (fromTouchPos[i].y < 0.375f) touchType[i] = !alt && leftTouchButton ? TouchType.Spin1 : TouchType.Turn1;
             else if (fromTouchPos[i].y < 0.8f) touchType[i] = alt || leftTouchButton ? TouchType.Spin2 : TouchType.Turn2; }
-        else if (fromTouchPos[i].x > 0.5f && fromTouchPos[i].y < 0.16667f) { touchType[i] = TouchType.RightTouchButton; rightTouchButton = rightTouchToggleMode ? !rightTouchButton : true; }
+        else if (fromTouchPos[i].x > 0.5f && fromTouchPos[i].y < 0.16667f) { touchType[i] = TouchType.RightTouchButton; rightTouchButton = opt.oh.rightTouchToggleMode ? !rightTouchButton : true; }
         else if (fromTouchPos[i].y < 0.8f) touchType[i] = TouchType.CameraRotate;
     }
 
@@ -584,7 +585,7 @@ public class Core : MonoBehaviour
         for (int i = 0; i < 3; i++) eyeVector[i] = reg1[i];
         Vec.normalize(eyeVector, eyeVector);
 
-        relarot = horizontalInputFollowing ? Quaternion.Euler(0, cameraRot.y, 0) : Quaternion.identity;
+        relarot = opt.oh.horizontalInputFollowing ? Quaternion.Euler(0, cameraRot.y, 0) : Quaternion.identity;
         for (int i = 0; i < maxTouchCount; i++)
         {
             reg0 = Vector3.zero;
@@ -592,16 +593,16 @@ public class Core : MonoBehaviour
             {
                 case TouchType.MoveForward1:
                     leftMove = true;
-                    dlRotLeft = Quaternion.Euler(0, 0, -2 * (float)(maxAng / limitLR) * (touchPos[i].y - lastTouchPos[i].y) * touchRotateSpeed) * dlRotLeft;
-                    dfRotLeft = Quaternion.Euler(0, 0, -(float)(limitAngForward / limit) * (touchPos[i].y - fromTouchPos[i].y) * touchRotateSpeed) * dfRotLeft;
-                    if (allowDiagonalMovement) {
+                    dlRotLeft = Quaternion.Euler(0, 0, -2 * (maxAng / limitLR) * (touchPos[i].y - lastTouchPos[i].y) * touchRotateSpeed) * dlRotLeft;
+                    dfRotLeft = Quaternion.Euler(0, 0, -(limitAngForward / limit) * (touchPos[i].y - fromTouchPos[i].y) * touchRotateSpeed) * dfRotLeft;
+                    if (opt.oh.allowDiagonalMovement) {
                         dlPosLeft += relarot * Vector3.right * (touchPos[i].x - lastTouchPos[i].x) * Screen.width / Screen.height * touchMoveSpeed;
                         dfPosLeft += relarot * Vector3.right * (touchPos[i].x - fromTouchPos[i].x) * Screen.width / Screen.height * touchMoveSpeed; }
                     break;
                 case TouchType.MoveForward2:
                 case TouchType.MoveLateral2:
                     leftMove = true;
-                    if (allowDiagonalMovement) { 
+                    if (opt.oh.allowDiagonalMovement) { 
                         reg0.x = (touchPos[i].x - lastTouchPos[i].x) * Screen.width / Screen.height;
                         reg0.z = touchPos[i].y - lastTouchPos[i].y;
                         dlPosLeft += relarot * reg0 * touchMoveSpeed;
@@ -638,27 +639,27 @@ public class Core : MonoBehaviour
                     break;
                 case TouchType.Spin1:
                     rightMove = true;
-                    reg0.x = lastTouchPos[i].y - touchPos[i].y;
-                    reg0.y = (touchPos[i].x - lastTouchPos[i].x) * Screen.width / Screen.height;
+                    reg0.x = touchPos[i].y - lastTouchPos[i].y;
+                    reg0.y = (lastTouchPos[i].x - touchPos[i].x) * Screen.width / Screen.height;
                     dlRotRight = relarot * Quaternion.AngleAxis(360 * reg0.magnitude * touchRotateSpeed, reg0) * Quaternion.Inverse(relarot) * dlRotRight;
-                    reg0.x = fromTouchPos[i].y - touchPos[i].y;
-                    reg0.y = (touchPos[i].x - fromTouchPos[i].x) * Screen.width / Screen.height;
+                    reg0.x = touchPos[i].y - fromTouchPos[i].y;
+                    reg0.y = (fromTouchPos[i].x - touchPos[i].x) * Screen.width / Screen.height;
                     dfRotRight = relarot * Quaternion.AngleAxis(360 * reg0.magnitude * touchRotateSpeed, reg0) * Quaternion.Inverse(relarot) *dfRotRight;
                     break;
                 case TouchType.Spin2:
                     rightMove = true;
-                    reg0.x = lastTouchPos[i].y - touchPos[i].y;
-                    reg0.z = (touchPos[i].x - lastTouchPos[i].x) * Screen.width / Screen.height;
+                    reg0.x = touchPos[i].y - lastTouchPos[i].y;
+                    reg0.z = (lastTouchPos[i].x - touchPos[i].x) * Screen.width / Screen.height;
                     dlRotRight = relarot * Quaternion.AngleAxis(360 * reg0.magnitude * touchRotateSpeed, reg0) * Quaternion.Inverse(relarot) * dlRotRight;
-                    reg0.x = fromTouchPos[i].y - touchPos[i].y;
-                    reg0.z = (touchPos[i].x - fromTouchPos[i].x) * Screen.width / Screen.height;
+                    reg0.x = touchPos[i].y - fromTouchPos[i].y;
+                    reg0.z = (fromTouchPos[i].x - touchPos[i].x) * Screen.width / Screen.height;
                     dfRotRight = relarot * Quaternion.AngleAxis(360 * reg0.magnitude * touchRotateSpeed, reg0) * Quaternion.Inverse(relarot) * dfRotRight;
                     break;
                 case TouchType.LeftTouchButton:
-                    if (touchEnded[i] && !leftTouchToggleMode) leftTouchButton = false;
+                    if (touchEnded[i] && !opt.oh.leftTouchToggleMode) leftTouchButton = false;
                     break;
                 case TouchType.RightTouchButton:
-                    if (touchEnded[i] && !rightTouchToggleMode) rightTouchButton = false;
+                    if (touchEnded[i] && !opt.oh.rightTouchToggleMode) rightTouchButton = false;
                     break;
                 case TouchType.CameraRotate:
                     reg0.x = cameraRot.x + 180 * (lastTouchPos[i].y - touchPos[i].y);
@@ -680,16 +681,16 @@ public class Core : MonoBehaviour
 
     private float ClampedLerp(float y) { return Mathf.Clamp01(((y - 0.5f) * lerpc + 1) * 0.5f); }
 
-    private double tAlign = 0.5; // threshold for align mode
-    private double tAlignSpin = 0.8;
-    private double limitAng = 30;
-    private double limitAngRoll = 30;
-    private double limitAngForward = 30;
-    private double maxAng = 60;
-    private double limit = 0.1; // controler Transform Unit
-    private double limitLR = 0.3; // LR Drag Unit
-    private double max = 0.2; // YP Drag Unit
-    private const double epsilon = 0.000001;
+    private float tAlign = 0.5f; // threshold for align mode
+    private float tAlignSpin = 0.8f;
+    private float limitAng = 30;
+    private float limitAngRoll = 30;
+    private float limitAngForward = 30;
+    private float maxAng = 60;
+    private float limit = 0.1f; // controler Transform Unit
+    private float limitLR = 0.3f; // LR Drag Unit
+    private float max = 0.2f; // YP Drag Unit
+    private const float epsilon = 0.000001f;
     private void control()
     {
         //nMove = (int)Math.Ceiling(fps * timeMove + epsilon);
@@ -787,7 +788,7 @@ public class Core : MonoBehaviour
                 if (command == null)
                 {
                     relarot = dfRotRight;
-                    for (int i = 0; i < 3; i++) reg0[i] = Mathf.Asin(relarot[i]) * Mathf.Sign(relarot.w) / (float)limitAng / Mathf.PI * 180;
+                    for (int i = 0; i < 3; i++) reg0[i] = Mathf.Asin(relarot[i]) * Mathf.Sign(relarot.w) / limitAng / Mathf.PI * 180;
                     if (!rightMove) reg0 = Vector3.zero;
                     keyControl(KEYMODE_SPIN);
                     if (opt.oo.limit3D || dim == 3) { reg0[0] = 0; reg0[1] = 0; }
@@ -841,7 +842,7 @@ public class Core : MonoBehaviour
                 else {
                     relarot = dfRotRight;
                     f = Mathf.Acos(relarot.w);
-                    if (f>0) f = (float)(dRotate / limitAngRoll) * Mathf.Min((float)limitAngRoll * Mathf.PI / 180, f) / f;
+                    if (f>0) f = (dRotate / limitAngRoll * .5f) * Mathf.Min(limitAngRoll * Mathf.PI / 180, f) / f;
                     relarot = Quaternion.Slerp(Quaternion.identity, relarot, f);
                 }
                 if (!rightMove) relarot = Quaternion.identity;
@@ -851,11 +852,8 @@ public class Core : MonoBehaviour
                 if (opt.oo.invertRoll) relarot = Quaternion.Inverse(relarot);
                 if (relarot.w < 1f) {
                     relarot.ToAngleAxis(out f, out reg0);
-                    //f = Math.PI / 180 * (float)dRotate * f / Mathf.Max((float)limitAng, f);
                     reg1.Set(1, 0, 0);
                     Vector3.OrthoNormalize(ref reg0, ref reg1);
-                    //for (int i = 0; i < 3; i++) relarot[i] = reg0[i] * Mathf.Sin(f);
-                    //relarot[3] = Mathf.Cos(f);
                     reg0 = relarot * reg1;
                     for (int i = 0; i < 3; i++) reg7[i] = reg0[i];
                     reg7[dim-1] = 0;
@@ -997,7 +995,7 @@ public class Core : MonoBehaviour
     }
 
     public void addShapes() {
-        if (paintWithAddButton) doPaint();
+        if (ot().paintWithAddButton) doPaint();
         else engine.addShapes(alignMode);
         command = null;
     }
@@ -1038,12 +1036,12 @@ public class Core : MonoBehaviour
     public const KeyCode KEY_TURNDOWN   = KeyCode.K;
     public const KeyCode KEY_TURNIN     = KeyCode.U;
     public const KeyCode KEY_TURNOUT    = KeyCode.O;
-    public const KeyCode KEY_SPINLEFT   = KeyCode.I;
-    public const KeyCode KEY_SPINRIGHT  = KeyCode.K;
-    public const KeyCode KEY_SPINUP     = KeyCode.L;
-    public const KeyCode KEY_SPINDOWN   = KeyCode.J;
-    public const KeyCode KEY_SPININ     = KeyCode.O;
-    public const KeyCode KEY_SPINOUT    = KeyCode.U;
+    public const KeyCode KEY_SPINLEFT   = KeyCode.K;
+    public const KeyCode KEY_SPINRIGHT  = KeyCode.I;
+    public const KeyCode KEY_SPINUP     = KeyCode.J;
+    public const KeyCode KEY_SPINDOWN   = KeyCode.L;
+    public const KeyCode KEY_SPININ     = KeyCode.U;
+    public const KeyCode KEY_SPINOUT    = KeyCode.O;
     private const int KEYMODE_SLIDE = 0;
     private const int KEYMODE_TURN = 1;
     private const int KEYMODE_SPIN = 2;
@@ -1072,7 +1070,7 @@ public class Core : MonoBehaviour
                 }
                 break;
             case (KEYMODE_SPIN):
-                if (Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift)) {
+                if (Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift) || dim == 3) {
                     if (Input.GetKey(KEY_SPINLEFT )) { start = true; reg0[0] = -1; }
                     if (Input.GetKey(KEY_SPINRIGHT)) { start = true; reg0[0] =  1; }
                     if (Input.GetKey(KEY_SPINUP   )) { start = true; reg0[1] =  1; }
@@ -1082,14 +1080,14 @@ public class Core : MonoBehaviour
                 }
                 break;
             case (KEYMODE_SPIN2):
-                if (Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift)) {
+                if (Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift) || dim == 3) {
                     Quaternion q = Quaternion.identity;
-                    if (Input.GetKey(KEY_SPINLEFT )) { start = true; q *= Quaternion.Euler(-(float)dRotate,0,0); }
-                    if (Input.GetKey(KEY_SPINRIGHT)) { start = true; q *= Quaternion.Euler( (float)dRotate,0,0); }
-                    if (Input.GetKey(KEY_SPINUP   )) { start = true; q *= Quaternion.Euler(0, (float)dRotate,0); }
-                    if (Input.GetKey(KEY_SPINDOWN )) { start = true; q *= Quaternion.Euler(0,-(float)dRotate,0); }
-                    if (Input.GetKey(KEY_SPININ   )) { start = true; q *= Quaternion.Euler(0,0, (float)dRotate); }
-                    if (Input.GetKey(KEY_SPINOUT  )) { start = true; q *= Quaternion.Euler(0,0,-(float)dRotate); }
+                    if (Input.GetKey(KEY_SPINLEFT )) { start = true; q *= Quaternion.Euler(-dRotate,0,0); }
+                    if (Input.GetKey(KEY_SPINRIGHT)) { start = true; q *= Quaternion.Euler( dRotate,0,0); }
+                    if (Input.GetKey(KEY_SPINUP   )) { start = true; q *= Quaternion.Euler(0, dRotate,0); }
+                    if (Input.GetKey(KEY_SPINDOWN )) { start = true; q *= Quaternion.Euler(0,-dRotate,0); }
+                    if (Input.GetKey(KEY_SPININ   )) { start = true; q *= Quaternion.Euler(0,0, dRotate); }
+                    if (Input.GetKey(KEY_SPINOUT  )) { start = true; q *= Quaternion.Euler(0,0,-dRotate); }
                     if (q != Quaternion.identity) relarot = q;
                 }
                 break;
@@ -1172,6 +1170,7 @@ public class Core : MonoBehaviour
     {
         var model = engine.retrieveModel() as GeomModel;
         if (model != null && model.canPaint()) model.paint(engine.getOrigin(), engine.getViewAxis());
+        command = null;
     }
 
     public void doAddShapes()
@@ -1199,12 +1198,13 @@ public class Core : MonoBehaviour
         // SteamVR_Actions.control.Activate(left);
         // SteamVR_Actions.control.Activate(right);
         menuCanvas.enabled = false;
-        inputCanvas.enabled = xrState == WebXRState.NORMAL && !hideController;
+        inputCanvas.enabled = xrState == WebXRState.NORMAL && opt.oh.showController;
+        hint.SetActive(opt.oh.showHint);
     }
 
     public void ToggleSkyBox(bool b)
     {
-        engine.objColor = b ? Color.white * OptionsColor.fixer : Color.black;
+        engine.objColor = b ? Color.white : Color.black;
         skyBox = b;
     }
 
@@ -1279,29 +1279,28 @@ public class Core : MonoBehaviour
    private static readonly string KEY_ALIGN_MODE    = "align";
 
     public void loadMazeCommand(IStore store) { this.store = store; menuCommand = loadMaze; }
-    private void loadMaze() { loadMaze(store); store = null; }
+    private void loadMaze() { try { loadMaze(store); } catch (Exception e) { Debug.LogException(e); } store = null; }
     public void loadMaze(IStore store){
-        try {
-            if ( ! store.getString(KEY_CHECK).Equals(VALUE_CHECK) ) throw new Exception("getEmpty");//App.getEmptyException();
-        } catch (Exception e) {
-            throw e;//App.getException("Core.e1");
-        }
+        if ( ! store.getString(KEY_CHECK).Equals(VALUE_CHECK) ) throw new Exception("getEmpty");
 
     // read file, but don't modify existing objects until we're sure of success
 
         int dimLoad = store.getInteger(KEY_DIM);
-        if ( ! (dimLoad == 3 || dimLoad == 4) ) throw new Exception("dimError");//App.getException("Core.e2");
+        if ( ! (dimLoad == 3 || dimLoad == 4) ) throw new Exception("dimError");
 
         OptionsMap omLoad = new OptionsMap(dimLoad);
+        OptionsMap.copy(omLoad, om());
         OptionsColor ocLoad = new OptionsColor();
+        OptionsColor.copy(ocLoad, oc());
         OptionsView ovLoad = new OptionsView();
+        OptionsView.copy(ovLoad, ov());
         OptionsSeed oeLoad = new OptionsSeed();
 
         store.getObject(KEY_OPTIONS_MAP,omLoad);
         store.getObject(KEY_OPTIONS_COLOR,ocLoad);
         store.getObject(KEY_OPTIONS_VIEW,ovLoad);
         store.getObject(KEY_OPTIONS_SEED,oeLoad);
-        if ( ! oeLoad.isSpecified() ) throw new Exception("seedError");//App.getException("Core.e3");
+        if ( ! oeLoad.isSpecified() ) throw new Exception("seedError");
         bool alignModeLoad = store.getBool(KEY_ALIGN_MODE);
 
     // ok, we know enough ... even if the engine parameters turn out to be invalid,
@@ -1390,6 +1389,7 @@ public class Core : MonoBehaviour
         controllerReset();
 
         alignMode = model.getAlignMode(alignMode);
+        menuPanel.Activate(oa, engine.retrieveModel() as ISelectShape);
     }
 
     public static GeomModel buildModel(Context c) //throws Exception

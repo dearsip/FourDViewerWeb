@@ -178,7 +178,7 @@ public class ShootModel : ActionModel {
          } catch (Exception) {}
          shape.setNoUserMove();
          // shape.systemMove = true;
-         shape.setShapeColor(Color.white*OptionsColor.fixer);
+         shape.setShapeColor(Color.white);
          shape.place(center,axis);
          Vec.copy(reg3,axis[dim-1]);
          Vec.scale(reg3,reg3,0.5);

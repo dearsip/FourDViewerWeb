@@ -116,7 +116,7 @@ public class PropertyFile
             PropertyStore store = new PropertyStore(p);
             storable(store);
         } catch (Exception e) {
-            Debug.Log(e);
+            Debug.LogError(e);
         }
     }
 
@@ -166,6 +166,7 @@ opt.oc4.enable[9]=False
 opt.oc4.enable[10]=True
 opt.oc4.enable[11]=False
 opt.ov4.depth=5
+opt.ov4.arrow=False
 opt.ov4.texture[0]=False
 opt.ov4.texture[1]=False
 opt.ov4.texture[2]=False
@@ -189,6 +190,7 @@ opt.od.separate=True
 opt.od.map=False
 opt.od.cameraDistance=0
 opt.od.trainSpeed=0
+opt.od.glide=True
 opt.oo.inputTypeLeftAndRight=1
 opt.oo.inputTypeForward=1
 opt.oo.inputTypeYawAndPitch=1
@@ -205,10 +207,21 @@ opt.oo.sliceTransparency=1
 opt.oo.sliceDir=0
 opt.ot4.frameRate=70
 opt.ot4.timeMove=1
-opt.ot4.timeRotate=0.8
+opt.ot4.timeRotate=1
 opt.ot4.timeAlignMove=2
 opt.ot4.timeAlignRotate=2
+opt.ot4.paintWithAddButton=False
+opt.oh.allowDiagonalMovement=True
+opt.oh.alternativeControlIn3D=False
+opt.oh.leftTouchToggleMode=False
+opt.oh.rightTouchToggleMode=False
+opt.oh.showController=True
+opt.oh.showHint=False
+opt.oh.horizontalInputFollowing=False
+opt.oh.stereo=False
+opt.oh.iPD=0.064
+opt.oh.fovscale=1
+opt.oh.cameraDistanceScale=1
 dim=4
-opt.od.glide=True
 ";
 }
