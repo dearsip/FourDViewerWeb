@@ -41,7 +41,7 @@ public class OptionsDisplay
     public const float BORDER_MIN = -1;
     public const float BORDER_MAX = 1;
     public const int CAMERADISTANCE_MIN = 0;
-    public const int CAMERADISTANCE_MAX = 1;
+    public const int CAMERADISTANCE_MAX = 100;
     public const int TRAINSPEED_MIN = -5;
     public const int TRAINSPEED_MAX = 5;
 }

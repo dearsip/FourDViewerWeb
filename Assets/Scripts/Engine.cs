@@ -636,7 +636,6 @@ public class Engine : IMove
                 Vec.copy(origin, reg3);
                 Vec.copy(reg3, ((GeomModel)model).getHitShape().cell[clipResult.ia].normal);
                 Vec.normalize(reg3, reg3);
-                Debug.Log("reg3[1] = " + reg3[1]);
                 if (Math.Abs(reg3[1]) > 0.7) fall = 0;
             }
             else
@@ -784,7 +783,6 @@ public class Engine : IMove
             renderPolygon(bufRelative, objCrossMapPoly, 4, oo.sliceDir);
         }
 
-        //renderDisplay();
         bufRelative.sort(eyeVector);
         convert(eyeVector, oo);
     }

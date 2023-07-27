@@ -23,7 +23,7 @@ public class OverlayText : MonoBehaviour
     void Update()
     {
         transform.position = Vector3.Lerp(transform.position, head.transform.position + head.forward * offsetForward + head.up * offsetUp, 6.0f * Time.deltaTime);
-        transform.rotation = Quaternion.Slerp(transform.rotation, offsetRotate*head.transform.rotation, 12.0f * Time.deltaTime);
+        transform.rotation = Quaternion.Slerp(transform.rotation, head.transform.rotation*offsetRotate, 12.0f * Time.deltaTime);
         if (canvasGroup.alpha > 0) 
         { 
             if (lastTime > 0) lastTime -= Time.deltaTime;

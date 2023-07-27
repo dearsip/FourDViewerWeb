@@ -40,7 +40,6 @@ public class Core : MonoBehaviour
     private double tActive;
     private Align alignActive;
     public bool keepUpAndDown;
-    private bool disableLeftAndRight;
 
     private int interval;
 
@@ -229,6 +228,23 @@ public class Core : MonoBehaviour
         }
     }
 
+    private readonly Rect leftRect = new Rect(0, 0, 0.5f, 1);
+    private readonly Rect rightRect = new Rect(0.5f, 0, 0.5f, 1);
+    public void ToggleCross(bool b)
+    {
+        opt.oh.cross = b;
+        if (opt.oh.cross)
+        {
+            fixedCameraLeft.rect = rightRect;
+            fixedCameraRight.rect = leftRect;
+        }
+        else
+        {
+            fixedCameraLeft.rect = leftRect;
+            fixedCameraRight.rect = rightRect;
+        }
+    }
+
     private void LeftDown() {
         posLeft = fromPosLeft = leftT.localPosition;
         rotLeft = fromRotLeft = leftT.localRotation;
@@ -251,7 +267,7 @@ public class Core : MonoBehaviour
 
     private void doToggleLimit3D() {
         opt.oo.limit3D = !opt.oo.limit3D;
-        overlayText.ShowText(opt.oo.limit3D ? "Restrict\noperation to 3D" : "Remove\n3D restriction");
+        overlayText.ShowText(opt.oo.limit3D ? "Restrict\noperations to 3D" : "Removr\n3D restrictions");
         IVLeft.ToggleLimit3D(opt.oo.limit3D);
         IVRight.ToggleLimit3D(opt.oo.limit3D);
     }
@@ -493,7 +509,7 @@ public class Core : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.H) && opt.ov4.texture[0]) { update = true; opt.od.useEdgeColor = !opt.od.useEdgeColor; }
         if (Input.GetKeyDown(KeyCode.B) && (getSaveType() == IModel.SAVE_GEOM || getSaveType() == IModel.SAVE_NONE)) { update = true; opt.od.invertNormals = !opt.od.invertNormals; }
         if (Input.GetKeyDown(KeyCode.Comma) && target != engine) { update = true; opt.od.hidesel = !opt.od.hidesel; }
-        if (Input.GetKeyDown(KeyCode.Period) && (getSaveType() == IModel.SAVE_GEOM || getSaveType() == IModel.SAVE_NONE)) { update = true; opt.od.separate = !opt.od.separate; overlayText.ShowText("Separation" + (opt.od.separate ? "on" : "off")); }
+        if (Input.GetKeyDown(KeyCode.Period) && (getSaveType() == IModel.SAVE_GEOM || getSaveType() == IModel.SAVE_NONE)) { update = true; opt.od.separate = !opt.od.separate; overlayText.ShowText("Separation " + (opt.od.separate ? "on" : "off")); }
         if (update) updateOptions();
     }
 
@@ -564,12 +580,11 @@ public class Core : MonoBehaviour
         relarot = Quaternion.Inverse(transform.rotation);
         lastPosLeft = posLeft; lastPosRight = posRight;
         lastRotLeft = rotLeft; lastRotRight = rotRight;
-        // posLeft = pose.GetLocalPosition(left); posRight = pose.GetLocalPosition(right);
-        // rotLeft = pose.GetLocalRotation(left); rotRight = pose.GetLocalRotation(right);
         posLeft = leftT.localPosition; posRight = rightT.localPosition;
         rotLeft = leftT.localRotation; rotRight = rightT.localRotation;
         dlPosLeft = relarot * (posLeft - lastPosLeft); dlPosRight = relarot * (posRight - lastPosRight);
         dfPosLeft = relarot * (posLeft - fromPosLeft); dfPosRight = relarot * (posRight - fromPosRight);
+        if (!opt.oh.allowDiagonalMovement) { dlPosLeft = Vector3.zero; dfPosLeft = Vector3.zero; }
         Quaternion lRel = Quaternion.Inverse(fromRotLeft);
         dlRotLeft = lRel * rotLeft * Quaternion.Inverse(lRel * lastRotLeft);
         dlRotRight = relarot * rotRight * Quaternion.Inverse(relarot * lastRotRight);
@@ -578,10 +593,7 @@ public class Core : MonoBehaviour
 
         leftMove = leftC.GetButton(WebXRController.ButtonTypes.ButtonA);
         rightMove = rightC.GetButton(WebXRController.ButtonTypes.ButtonA);
-        reg1 = relarot * 
-               (transform.position - head.position);
-               //(transform.position - ((headsetOnHead.GetState(SteamVR_Input_Sources.Head)) ?
-                //player.hmdTransform.position : fixedCamera.transform.position));
+        reg1 = relarot * ((focusOnMap ? mapPos : cameraLookAt).position - head.position);
         for (int i = 0; i < 3; i++) eyeVector[i] = reg1[i];
         Vec.normalize(eyeVector, eyeVector);
 
@@ -602,7 +614,7 @@ public class Core : MonoBehaviour
                 case TouchType.MoveForward2:
                 case TouchType.MoveLateral2:
                     leftMove = true;
-                    if (opt.oh.allowDiagonalMovement) { 
+                    if (touchType[i] == TouchType.MoveLateral2 || opt.oh.allowDiagonalMovement) { 
                         reg0.x = (touchPos[i].x - lastTouchPos[i].x) * Screen.width / Screen.height;
                         reg0.z = touchPos[i].y - lastTouchPos[i].y;
                         dlPosLeft += relarot * reg0 * touchMoveSpeed;
@@ -742,7 +754,6 @@ public class Core : MonoBehaviour
             if (!leftMove) Vec.zero(reg3);
             keyControl(KEYMODE_SLIDE);
             if (opt.oo.limit3D || dim == 3) reg3[2] = 0;
-            if (disableLeftAndRight) for (int i=0; i<reg3.Length-1; i++) reg3[i] = 0;
             if (opt.oo.invertLeftAndRight) for (int i=0; i<reg3.Length-1; i++) reg3[i] = -reg3[i];
             if (opt.oo.invertForward) reg3[reg3.Length-1] = -reg3[reg3.Length-1];
 

@@ -6,7 +6,7 @@ public class OptionsTouch
     // --- fields ---
     
     public float iPD, fovscale, cameraDistanceScale;
-    public bool allowDiagonalMovement, alternativeControlIn3D, leftTouchToggleMode, rightTouchToggleMode, showController, showHint, stereo, horizontalInputFollowing;
+    public bool allowDiagonalMovement, alternativeControlIn3D, leftTouchToggleMode, rightTouchToggleMode, showController, showHint, stereo, cross, horizontalInputFollowing;
 
     // --- construction ---
 
@@ -28,17 +28,7 @@ public class OptionsTouch
         dest.showController = src.showController;
         dest.showHint = src.showHint;
         dest.stereo = src.stereo;
+        dest.cross = src.cross;
         dest.horizontalInputFollowing = src.horizontalInputFollowing;
     }
-
-    public const double TRANSPARENCY_MIN = 0;
-    public const double TRANSPARENCY_MAX = 1;
-    public const double LINETHICKNESS_MIN = 0.001;
-    public const double LINETHICKNESS_MAX = 0.01;
-    public const double BORDER_MIN = -1;
-    public const double BORDER_MAX = 1;
-    public const int CAMERADISTANCE_MIN = 0;
-    public const int CAMERADISTANCE_MAX = 1;
-    public const int TRAINSPEED_MIN = -5;
-    public const int TRAINSPEED_MAX = 5;
 }

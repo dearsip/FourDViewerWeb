@@ -103,7 +103,7 @@ public class PolygonBuffer : IDraw
 
     public void sort(double[] eyeVector)
     {
-        double[] sum = new double[dim-1];
+        double[] sum = new double[dim];
         for (int i = 0; i < size; i++)
         {
             Vec.copy(sum, polygons[i].vertex[0]);

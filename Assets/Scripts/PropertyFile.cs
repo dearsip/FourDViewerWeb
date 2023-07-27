@@ -219,6 +219,7 @@ opt.oh.showController=True
 opt.oh.showHint=False
 opt.oh.horizontalInputFollowing=False
 opt.oh.stereo=False
+opt.oh.cross=True
 opt.oh.iPD=0.064
 opt.oh.fovscale=1
 opt.oh.cameraDistanceScale=1

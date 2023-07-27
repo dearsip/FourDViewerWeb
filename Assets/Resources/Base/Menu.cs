@@ -29,14 +29,14 @@ public class Menu : MonoBehaviour
     public Slider dimSlider, sizeSlider, densitySlider, twistProbabilitySlider, branchProbabilitySlider, loopCrossProbabilitySlider,
         dimSameParallelSlider, dimSamePerpendicularSlider, depthSlider, retinaSlider, scaleSlider, trainSpeedSlider, cameraDistanceSlider,
         transparencySlider, lineThicknessSlider, borderSlider, baseTransparencySlider, sliceTransparencySlider, 
-        frameRateSlider, timeMoveSlider, timeRotateSlider, timeAlignMoveSlider, timeAlignRotateSlider, iPDSlider, fovscaleSlider, distanceSlider;
+        frameRateSlider, timeMoveSlider, timeRotateSlider, timeAlignMoveSlider, timeAlignRotateSlider, widthSlider, flareSlider, rainbowGapSlider,iPDSlider, fovscaleSlider, distanceSlider;
     public InputField dimCurrent, dimNext, sizeCurrent, sizeNext, densityCurrent, densityNext, twistPobabilityCurrent, twistProbabilityNext,
         branchProbabilityCurrent, branchProbabilityNext, loopCrossProbabilityCurrent, loopCrossProbabilityNext, dimSameParallelField,
         dimSamePerpendicularField, mazeCurrent, mazeNext, colorCurrent, colorNext, depthField, retinaField, scaleField, trainSpeedField, cameraDistanceField,
         transparencyField, lineThicknessField, borderField, baseTransparencyField, sliceTransparencyField, 
         frameRateField, timeMoveField, timeRotateField, timeAlignMoveField, timeAlignRotateField, width, flare, rainbowGap, iPDField, fovscaleField, distanceField, paintColorField, quantityField;
     public Toggle allowLoopsCurrent, allowLoopsNext, allowReservedPathsCurrent, allowReservedPathsNext, arrow, usePolygon, useEdgeColor, hideSel, invertNormals, separate, map, focus, invertLeftAndRight, invertForward,
-        invertYawAndPitch, invertRoll, sliceMode, limit3D, keepUpAndDown, fisheye, custom, rainbow, glide, allowDiagonalMovement, buttonToggleModeLeft, buttonToggleModeRight, showController, showHint,horizontalInputFollowing, stereo, alternativeControlIn3D, threeDMazeIn3DScene, paintWithAddButton;
+        invertYawAndPitch, invertRoll, sliceMode, limit3D, keepUpAndDown, fisheye, custom, rainbow, glide, allowDiagonalMovement, buttonToggleModeLeft, buttonToggleModeRight, showController, showHint,horizontalInputFollowing, stereo, cross, alternativeControlIn3D, threeDMazeIn3DScene, paintWithAddButton;
     public Toggle[] enable, texture;
     public Dropdown colorMode, inputTypeLeftAndRight, inputTypeForward, inputTypeYawAndPitch, inputTypeRoll, paintColor, addShapes, paintMode;
     public Material defaultMat, alternativeMat;
@@ -137,9 +137,9 @@ public class Menu : MonoBehaviour
         put(fisheye, OptionsFisheye.of.fisheye);
         put(custom, OptionsFisheye.of.adjust);
         put(rainbow, OptionsFisheye.of.rainbow);
-        put(width, OptionsFisheye.of.width);
-        put(flare, OptionsFisheye.of.flare);
-        put(rainbowGap, OptionsFisheye.of.rainbowGap);
+        put(width, widthSlider, OptionsFisheye.of.width);
+        put(flare, flareSlider, OptionsFisheye.of.flare);
+        put(rainbowGap, rainbowGapSlider, OptionsFisheye.of.rainbowGap);
         put(threeDMazeIn3DScene, OptionsFisheye.of.threeDMazeIn3DScene);
 
         put(allowDiagonalMovement, oa.opt.oh.allowDiagonalMovement);
@@ -149,6 +149,7 @@ public class Menu : MonoBehaviour
         put(showHint, oa.opt.oh.showHint); showHint.interactable = oa.opt.oh.showController;
         put(horizontalInputFollowing, oa.opt.oh.horizontalInputFollowing);
         put(stereo, oa.opt.oh.stereo);
+        put(cross, oa.opt.oh.cross);
         put(iPDField, iPDSlider, oa.opt.oh.iPD);
         put(fovscaleField, fovscaleSlider, oa.opt.oh.fovscale);
         put(distanceField, distanceSlider, oa.opt.oh.cameraDistanceScale);
@@ -250,6 +251,7 @@ public class Menu : MonoBehaviour
         oa.opt.oh.showHint = getBool(showHint);
         oa.opt.oh.horizontalInputFollowing = getBool(horizontalInputFollowing);
         oa.opt.oh.stereo = getBool(stereo);
+        oa.opt.oh.cross = getBool(cross);
         getFloat(ref oa.opt.oh.iPD, iPDField, true);
         getFloat(ref oa.opt.oh.fovscale, fovscaleField, false);
         getFloat(ref oa.opt.oh.cameraDistanceScale, distanceField, false);
