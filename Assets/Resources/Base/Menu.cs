@@ -27,7 +27,7 @@ public class Menu : MonoBehaviour
     private Vector3 defaultScale;
 
     public Slider dimSlider, sizeSlider, densitySlider, twistProbabilitySlider, branchProbabilitySlider, loopCrossProbabilitySlider,
-        dimSameParallelSlider, dimSamePerpendicularSlider, depthSlider, retinaSlider, scaleSlider, trainSpeedSlider, cameraDistanceSlider,
+        dimSameParallelSlider, dimSamePerpendicularSlider, depthSlider, retinaSlider, scaleSlider, trainSpeedSlider, mapDistanceSlider, cameraDistanceSlider,
         transparencySlider, lineThicknessSlider, borderSlider, baseTransparencySlider, sliceTransparencySlider, 
         frameRateSlider, timeMoveSlider, timeRotateSlider, timeAlignMoveSlider, timeAlignRotateSlider, widthSlider, flareSlider, rainbowGapSlider,iPDSlider, fovscaleSlider, distanceSlider;
     public InputField dimCurrent, dimNext, sizeCurrent, sizeNext, densityCurrent, densityNext, twistPobabilityCurrent, twistProbabilityNext,
@@ -35,8 +35,8 @@ public class Menu : MonoBehaviour
         dimSamePerpendicularField, mazeCurrent, mazeNext, colorCurrent, colorNext, depthField, retinaField, scaleField, trainSpeedField, cameraDistanceField,
         transparencyField, lineThicknessField, borderField, baseTransparencyField, sliceTransparencyField, 
         frameRateField, timeMoveField, timeRotateField, timeAlignMoveField, timeAlignRotateField, width, flare, rainbowGap, iPDField, fovscaleField, distanceField, paintColorField, quantityField;
-    public Toggle allowLoopsCurrent, allowLoopsNext, allowReservedPathsCurrent, allowReservedPathsNext, arrow, usePolygon, useEdgeColor, hideSel, invertNormals, separate, map, focus, invertLeftAndRight, invertForward,
-        invertYawAndPitch, invertRoll, sliceMode, limit3D, keepUpAndDown, fisheye, custom, rainbow, glide, allowDiagonalMovement, buttonToggleModeLeft, buttonToggleModeRight, showController, showHint,horizontalInputFollowing, stereo, cross, alternativeControlIn3D, threeDMazeIn3DScene, paintWithAddButton;
+    public Toggle allowLoopsCurrent, allowLoopsNext, allowReservedPathsCurrent, allowReservedPathsNext, arrow, usePolygon, useEdgeColor, hideSel, invertNormals, separate, map, focus, glass, invertLeftAndRight, invertForward,
+        invertYawAndPitch, invertRoll, sliceMode, limit3D, keepUpAndDown, fisheye, custom, rainbow, glide, allowDiagonalMovement, buttonToggleModeLeft, buttonToggleModeRight, showController, showHint,horizontalInputFollowing, stereo, cross, invertX, invertY, alternativeControlIn3D, threeDMazeIn3DScene, paintWithAddButton;
     public Toggle[] enable, texture;
     public Dropdown colorMode, inputTypeLeftAndRight, inputTypeForward, inputTypeYawAndPitch, inputTypeRoll, paintColor, addShapes, paintMode;
     public Material defaultMat, alternativeMat;
@@ -107,8 +107,10 @@ public class Menu : MonoBehaviour
         put(hideSel, oa.opt.od.hidesel);
         put(invertNormals, oa.opt.od.invertNormals);
         put(separate, oa.opt.od.separate);
-        put(map, oa.opt.od.map); focus.interactable = oa.opt.od.map;
+        put(map, oa.opt.od.map); focus.interactable = oa.opt.od.map; glass.interactable = oa.opt.od.map;
         put(focus, core.focusOnMap);
+        put(glass, oa.opt.od.glass);
+        put(mapDistanceSlider, oa.opt.od.mapDistance);
         put(cameraDistanceField, cameraDistanceSlider, oa.opt.od.cameraDistance);
         put(trainSpeedField, trainSpeedSlider, oa.opt.od.trainSpeed);
         put(glide, oa.opt.od.glide);
@@ -150,6 +152,8 @@ public class Menu : MonoBehaviour
         put(horizontalInputFollowing, oa.opt.oh.horizontalInputFollowing);
         put(stereo, oa.opt.oh.stereo);
         put(cross, oa.opt.oh.cross);
+        put(invertX, oa.opt.oh.invertX);
+        put(invertY, oa.opt.oh.invertY);
         put(iPDField, iPDSlider, oa.opt.oh.iPD);
         put(fovscaleField, fovscaleSlider, oa.opt.oh.fovscale);
         put(distanceField, distanceSlider, oa.opt.oh.cameraDistanceScale);
@@ -213,8 +217,10 @@ public class Menu : MonoBehaviour
         oa.opt.od.hidesel = getBool(hideSel);
         oa.opt.od.invertNormals = getBool(invertNormals);
         oa.opt.od.separate = getBool(separate);
-        oa.opt.od.map = getBool(map); focus.interactable = oa.opt.od.map;
+        oa.opt.od.map = getBool(map); focus.interactable = oa.opt.od.map; glass.interactable = oa.opt.od.map;
         core.focusOnMap = oa.opt.od.map && getBool(focus); focus.isOn = core.focusOnMap;
+        oa.opt.od.glass = getBool(glass); glass.isOn = oa.opt.od.glass;
+        oa.opt.od.mapDistance = mapDistanceSlider.value;
         getFloat(ref oa.opt.od.cameraDistance, cameraDistanceField, OptionsDisplay.CAMERADISTANCE_MIN, OptionsDisplay.CAMERADISTANCE_MAX, true);
         getInt(ref oa.opt.od.trainSpeed, trainSpeedField, OptionsDisplay.TRAINSPEED_MIN, OptionsDisplay.TRAINSPEED_MAX);
         oa.opt.od.glide = getBool(glide);
@@ -252,6 +258,8 @@ public class Menu : MonoBehaviour
         oa.opt.oh.horizontalInputFollowing = getBool(horizontalInputFollowing);
         oa.opt.oh.stereo = getBool(stereo);
         oa.opt.oh.cross = getBool(cross);
+        oa.opt.oh.invertX = getBool(invertX);
+        oa.opt.oh.invertY = getBool(invertY);
         getFloat(ref oa.opt.oh.iPD, iPDField, true);
         getFloat(ref oa.opt.oh.fovscale, fovscaleField, false);
         getFloat(ref oa.opt.oh.cameraDistanceScale, distanceField, false);
@@ -333,6 +341,7 @@ public class Menu : MonoBehaviour
         OptionsAll oa = core.getOptionsAll();
         if (dim>0) {
             core.dim = OptionsFisheye.of.threeDMazeIn3DScene ? dim : 4;
+            oa.opt.om4.dimMap = dim;
             if (dim==3) {
                 oa.opt.oo.limit3D = true;
                 oa.opt.oo.sliceDir = 1;
@@ -459,6 +468,11 @@ public class Menu : MonoBehaviour
         inputField.text = value.ToString();
     }
 
+    private void put(Slider slider, float value)
+    {
+        slider.value = (float)value;
+    }
+
     private void put(Slider slider, double value)
     {
         slider.value = (float)value;
@@ -556,9 +570,7 @@ public class Menu : MonoBehaviour
                 for (int i = 0; i < dest.Length; i++) dest[i] = j;
                 return;
             }
-            int[] n = new int[dest.Length];
-            for (int i = 0; i < n.Length; i++) n[i] = int.Parse(reg[i].Trim());
-            for (int i = 0; i < n.Length; i++) dest[i] = n[i];
+            for (int i = 0; i < dest.Length; i++) dest[i] = int.Parse(reg[i].Trim());
         } catch ( Exception e) { Debug.LogException(e); }
     }
 

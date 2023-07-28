@@ -19,11 +19,10 @@ public class Engine : IMove
     private bool win;
     private bool keepUpAndDown;
     private bool glide;
+    private float mapDistance;
 
     private Clip.Result clipResult;
     private double fall;
-    //private double height;
-    //private double gravity;
     private const double gdef = 18;
     private const double hdef = 7.5;
 
@@ -32,7 +31,6 @@ public class Engine : IMove
 
     private PolygonBuffer bufAbsolute;
     private PolygonBuffer bufRelative;
-    //private PolygonBuffer[] bufDisplay;
 
     private RenderRelative renderRelative;
 
@@ -170,11 +168,6 @@ public class Engine : IMove
         cols = new List<Color>();
 
         fall = 0;
-        //gravity = gdef / ot.frameRate / ot.frameRate;
-        //height = hdef / ot.frameRate;
-
-        //if (render) renderAbsolute();
-        // else we are loading a saved game, and will render later
     }
 
     private void initPlayer()
@@ -190,6 +183,7 @@ public class Engine : IMove
             win = false;
             //RenderRelative();
         }
+        model.ResetTrace();
     }
 
     public void restartGame()
@@ -300,55 +294,16 @@ public class Engine : IMove
         updateRetina();
     }
 
-    //public void setScale(double scale)
-    //{
-    //    for (int i = 0; i < display.Length; i++) display[i].setScale(scale);
-    //}
-
-    //public void setScreenWidth(double screenWidth)
-    //{
-    //    for (int i = 0; i < display.Length; i++) display[i].setScreenWidth(screenWidth);
-    //}
-
-    //public void setScreenDistance(double screenDistance)
-    //{
-    //    for (int i = 0; i < display.Length; i++) display[i].setScreenDistance(screenDistance);
-    //}
-
-    //public void setEyeSpacing(double eyeSpacing)
-    //{
-    //    for (int i = 0; i < display.Length; i++) display[i].setEyeSpacing(eyeSpacing);
-    //}
-
-    //public void setTiltVertical(double tiltVertical)
-    //{
-    //    for (int i = 0; i < display.Length; i++) display[i].setTiltVertical(tiltVertical);
-    //}
-
-    //public void setTiltHorizontal(double tiltHorizontal)
-    //{
-    //    for (int i = 0; i < display.Length; i++) display[i].setTiltHorizontal(tiltHorizontal);
-    //}
-
-    // these last two option-setting functions are not invoked via the controller,
-    // so they need to end with an explicit re-render call
-
-    public void setOptions(OptionsColor oc, OptionsView ov, /*OptionsStereo os,*/ OptionsSeed oe, OptionsMotion ot, OptionsDisplay od)
+    public void setOptions(OptionsColor oc, OptionsView ov, OptionsSeed oe, OptionsMotion ot, OptionsDisplay od)
     {
 
         model.setOptions(oc, oe.colorSeed, ov.depth, ov.arrow, ov.texture, od);
 
         setRetina(ov.retina);
-        //border = od.border;
 
-        //setDisplay(dimSpaceCache, ov.scale, /*os,*/ false);
-
-        //gravity = gdef / ot.frameRate / ot.frameRate;
-        //height = hdef / ot.frameRate;
-
-        //renderAbsolute(); // not always necessary, but who cares, it's fast enough
         width = od.lineThickness;
         glide = od.glide;
+        mapDistance = od.mapDistance;
     }
 
     public void setKeepUpAndDown(bool b) {
@@ -676,23 +631,37 @@ public class Engine : IMove
         renderObject(buf, obj, objColor);
     }
 
+    private void renderObject(PolygonBuffer buf, double[][] obj, Color color, double d)
+    {
+        for (int i = 0; i < obj.Length; i += 2)
+        {
+            Dir.apply(0, obj[i], d);
+            Dir.apply(0, obj[i+1], d);
+            buf.add(obj[i], obj[i + 1], color);
+            Dir.apply(1, obj[i], d);
+            Dir.apply(1, obj[i+1], d);
+        }
+    }
+
     private void renderObject(PolygonBuffer buf, double[][] obj, Color color)
     {
-        //for (int i = 0; i < obj.Length; i += 3)
-        //{
-        //    Polygon poly = buf.getNext();
-
-        //    poly.vertex = new double[3][];
-        //    for (int j = 0; j < 3; j++)
-        //    {
-        //        poly.vertex[j] = new double[3];
-        //        Vec.copy(poly.vertex[j], obj[i + j]);
-        //    }
-        //    poly.color = color;
-        //}
         for (int i = 0; i < obj.Length; i += 2)
         {
             buf.add(obj[i], obj[i + 1], color);
+        }
+    }
+
+    private void renderPolygon(PolygonBuffer buf, double[][] obj, int n, Color color, double d)
+    {
+        color.a = 0f;
+        Polygon poly = new Polygon();
+        poly.vertex = new double[n][];
+        for (int i = 0; i < obj.Length; i += n)
+        {
+            for (int j = 0; j < n; j++) { poly.vertex[j] = obj[i + j]; poly.vertex[j][0] += d; }
+            poly.color = color;
+            buf.add(poly);
+            for (int j = 0; j < n; j++) { poly.vertex[j][0] -= d; }
         }
     }
 
@@ -700,6 +669,7 @@ public class Engine : IMove
     {
         renderPolygon(buf, obj, n, objColor);
     }
+
     private void renderPolygon(PolygonBuffer buf, double[][] obj, int n, Color color)
     {
         color.a = 0f;
@@ -779,8 +749,8 @@ public class Engine : IMove
         if (getSaveType() == IModel.SAVE_MAZE  && ((MapModel)model).showMap)
         {
             bufRelative.add(((MapModel)model).bufRelative);
-            renderObject(bufRelative, objCrossMap);
-            renderPolygon(bufRelative, objCrossMapPoly, 4, oo.sliceDir);
+            renderObject(bufRelative, objCrossMap, objColor, -mapDistance + 3);
+            renderPolygon(bufRelative, objCrossMapPoly, 4, objColor, -mapDistance + 3);
         }
 
         bufRelative.sort(eyeVector);
@@ -877,15 +847,6 @@ public class Engine : IMove
         reg3[j] = 0;
         Vec.copy(sraxis[j], axis[i]); // incorrect in j != i case but it's the last thing we do
     }
-
-    //private void renderDisplay()
-    //{
-    //    for (int i = 0; i < display.Length; i++)
-    //    {
-    //        display[i].run();
-    //    }
-    //    displayInterface.nextFrame();
-    //}
 
     private double width = 0.005;
     private float t2 = 1f;

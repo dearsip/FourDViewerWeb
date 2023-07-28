@@ -674,9 +674,9 @@ public class Core : MonoBehaviour
                     if (touchEnded[i] && !opt.oh.rightTouchToggleMode) rightTouchButton = false;
                     break;
                 case TouchType.CameraRotate:
-                    reg0.x = cameraRot.x + 180 * (lastTouchPos[i].y - touchPos[i].y);
+                    reg0.x = cameraRot.x + 180 * (lastTouchPos[i].y - touchPos[i].y) * (opt.oh.invertY ? -1 : 1);
                     if (Mathf.Abs(reg0.x) < 90) cameraRot.x = reg0.x;
-                    cameraRot.y += 180 * (touchPos[i].x - lastTouchPos[i].x) * Screen.width / Screen.height;
+                    cameraRot.y += 180 * (touchPos[i].x - lastTouchPos[i].x) * Screen.width / Screen.height * (opt.oh.invertX ? -1 : 1);
                     cameraRot.y = cameraRot.y % 360;
                     break;
                 case TouchType.Menu:
@@ -1115,42 +1115,8 @@ public class Core : MonoBehaviour
         interval = (int)Math.Ceiling(1000 / frameRate);
     }
 
-    public void setOptionsMotion(/*OptionsKeysConfig okc,*/ OptionsMotion ot)
+    public void setOptionsMotion(OptionsMotion ot)
     {
-
-        //for (int i = 0; i < 6; i++)
-        //{
-        //    param[i] = okc.param[i];
-        //}
-
-        // the frame rate and command times are all positive,
-        // so the number of steps will always be at least 1 ...
-
-        //if (engine.getSaveType() == IModel.SAVE_ACTION
-        // || engine.getSaveType() == IModel.SAVE_BLOCK
-        // || engine.getSaveType() == IModel.SAVE_SHOOT)
-        //{
-        //    nMove = (int)Math.Ceiling(ot.frameRate * 0.5);
-        //    nRotate = (int)Math.Ceiling(ot.frameRate * 0.5);
-        //    nAlignMove = (int)Math.Ceiling(ot.frameRate * 0.5);
-        //    nAlignRotate = (int)Math.Ceiling(ot.frameRate * 0.5);
-        //}
-        //else
-        //{
-            //nMove = (int)Math.Ceiling(ot.frameRate * ot.timeMove);
-            //nRotate = (int)Math.Ceiling(ot.frameRate * ot.timeRotate);
-            //nAlignMove = (int)Math.Ceiling(ot.frameRate * ot.timeAlignMove);
-            //nAlignRotate = (int)Math.Ceiling(ot.frameRate * ot.timeAlignRotate);
-        //}
-
-        // ... therefore, the distances will never exceed 1,
-        // and the angles will never exceed 90 degrees
-
-        //dMove = 1 / (double)nMove;
-        //dRotate = 90 / (double)nRotate;
-        //dAlignMove = 1 / (double)nAlignMove;
-        //dAlignRotate = 90 / (double)nAlignRotate;
-
         timeMove =  ot.timeMove;
         timeRotate =  ot.timeRotate;
         timeAlignMove =  ot.timeAlignMove;
@@ -1162,6 +1128,7 @@ public class Core : MonoBehaviour
         engine.setOptions(oc(), ov(), oa.oeCurrent, ot(), oa.opt.od);
         IVLeft.ToggleLimit3D(opt.oo.limit3D);
         IVRight.ToggleLimit3D(opt.oo.limit3D);
+        mapPos.localPosition = Vector3.left * opt.od.mapDistance;
     }
 
     public void setOptions()

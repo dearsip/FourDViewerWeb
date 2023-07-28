@@ -1032,6 +1032,8 @@ public class GeomModel : IModel, IMove, ISelectShape
 
     public override bool dead() { return false; }
 
+  public override void ResetTrace() { }
+
     public override void setBuffer(PolygonBuffer buf)
     {
         this.buf = buf;

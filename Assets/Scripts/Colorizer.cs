@@ -241,4 +241,9 @@ public class Colorizer : IColorize
         return trace.get(p);
     }
 
+    public void ResetTrace()
+    {
+        trace = new DynamicArray.OfDir(dimSpace, limits);
+        generateByTrace();
+    }
 }

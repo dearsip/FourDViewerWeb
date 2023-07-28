@@ -6,8 +6,8 @@ public class OptionsDisplay
     // --- fields ---
     
     public float transparency, lineThickness, cameraDistance;
-    public float border;
-    public bool usePolygon, useEdgeColor, hidesel, invertNormals, separate, map, glide;
+    public float border, mapDistance;
+    public bool usePolygon, useEdgeColor, hidesel, invertNormals, separate, map, glass, glide;
     public int trainSpeed;
 
     // --- construction ---
@@ -29,6 +29,8 @@ public class OptionsDisplay
         dest.invertNormals = src.invertNormals;
         dest.separate = src.separate;
         dest.map = src.map;
+        dest.glass = src.glass;
+        dest.mapDistance = src.mapDistance;
         dest.cameraDistance = src.cameraDistance;
         dest.trainSpeed = src.trainSpeed;
         dest.glide = src.glide;

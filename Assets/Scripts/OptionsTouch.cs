@@ -6,7 +6,7 @@ public class OptionsTouch
     // --- fields ---
     
     public float iPD, fovscale, cameraDistanceScale;
-    public bool allowDiagonalMovement, alternativeControlIn3D, leftTouchToggleMode, rightTouchToggleMode, showController, showHint, stereo, cross, horizontalInputFollowing;
+    public bool allowDiagonalMovement, alternativeControlIn3D, leftTouchToggleMode, rightTouchToggleMode, showController, showHint, stereo, cross, invertX, invertY, horizontalInputFollowing;
 
     // --- construction ---
 
@@ -29,6 +29,8 @@ public class OptionsTouch
         dest.showHint = src.showHint;
         dest.stereo = src.stereo;
         dest.cross = src.cross;
+        dest.invertX = src.invertX;
+        dest.invertY = src.invertY;
         dest.horizontalInputFollowing = src.horizontalInputFollowing;
     }
 }

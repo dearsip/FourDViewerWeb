@@ -553,6 +553,11 @@ public class RenderAbsolute
         }
     }
 
+    public void ResetTrace()
+    {
+        colorizer.ResetTrace();
+    }
+
     // --- processing ---
 
     private void build(int[] p, int depth, int dirPrev)
@@ -605,8 +610,10 @@ public class RenderAbsolute
         Vec.copy(this.origin, origin);
 
         int dir = Grid.toCell(reg3, reg4, origin);
-        if (colorizer.getTrace(reg3) == -1) mapModel.addShape(reg3);
+        bool b = false;
+        if (colorizer.getTrace(reg3) == -1) b = true;
         colorizer.setTrace(reg3);
+        if (b) mapModel.addShape(reg3);
         if (dir == Dir.DIR_NONE)
         {
 

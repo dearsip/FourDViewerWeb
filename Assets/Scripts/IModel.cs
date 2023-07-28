@@ -30,6 +30,8 @@ public abstract class IModel
     public abstract void animate(double delta);
     public abstract void render(double[] origin, double[][] axis, bool viewClip);
 
+    public abstract void ResetTrace();
+
     public const int SAVE_NONE = 0;
     public const int SAVE_MAZE = 1;
     public const int SAVE_GEOM = 2;
