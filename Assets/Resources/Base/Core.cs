@@ -59,11 +59,10 @@ public class Core : MonoBehaviour
     private Vector2[] fromTouchPos, lastTouchPos, touchPos;
     public Image alignButton, clickButton, removeShapeButton, addShapesButton, sliceButton, strictButton, leftButton, rightButton;
     public Menu menuPanel;
-    public Canvas menuCanvas, inputCanvas;
+    public Canvas menuCanvas, inputCanvas, touchCanvas;
     private WebXRState xrState = WebXRState.NORMAL;
     public Camera fixedCamera, fixedCameraLeft, fixedCameraRight;
     public Transform cameraLookAt, mapPos;
-    public bool focusOnMap = false;
     private readonly float cameraDistanceDefault = 0.56f;
     private Vector2 cameraRot;
     private readonly Vector2 cameraRotDefault = new Vector2(26f, 0f);
@@ -83,7 +82,6 @@ public class Core : MonoBehaviour
 
     public OverlayText overlayText;
     public InputViewer IVLeft, IVRight;
-    private bool skyBox = false;
     public GameObject environment, hint, lefthint1, lefthint2, rightHint1, rightHint2, threeDHint;
 
     // --- option accessors ---
@@ -141,12 +139,13 @@ public class Core : MonoBehaviour
         optDefault = ScriptableObject.CreateInstance<Options>();
         opt = ScriptableObject.CreateInstance<Options>();
         doInit();
-        // dim and rest of oa are initialized when new game started
+        menuPanel.optDefault = optDefault;
 
         oa = new OptionsAll();
         oa.opt = opt;
         oa.omCurrent = new OptionsMap(0); // blank for copying into
         oa.oeNext = new OptionsSeed();
+        menuPanel.oa = oa;
 
         eyeVector = new double[3];
         mesh = new Mesh();
@@ -208,7 +207,7 @@ public class Core : MonoBehaviour
         }
         else menuCanvas.enabled = true;
 
-        environment.SetActive(xrState != WebXRState.AR && !skyBox);
+        environment.SetActive(xrState != WebXRState.AR && !opt.od.toggleSkyBox);
     }
 
     public void ToggleStereo(bool b)
@@ -277,13 +276,18 @@ public class Core : MonoBehaviour
         if (xrState != WebXRState.NORMAL) return;
         menuCanvas.enabled = true;
         inputCanvas.enabled = false;
-        menuPanel.Activate(oa, engine.retrieveModel() as ISelectShape);
+        menuPanel.Activate(engine.retrieveModel() as ISelectShape);
     }
 
-    public Slider size;
     public void changeSize() {
-        float f = Mathf.Pow(2,size.value-1)*0.15f;
-        transform.localScale = new Vector3(f,f,f);
+        float f = Mathf.Pow(2,opt.od.size-1)*0.15f;
+        transform.localScale = Vector3.one * f;
+    }
+
+    public void ToggleShowInput() {
+        touchCanvas.enabled = opt.oo.showInput;
+        IVLeft.enabled = opt.oo.showInput;
+        IVRight.enabled = opt.oo.showInput;
     }
 
     public void newGame()
@@ -435,23 +439,23 @@ public class Core : MonoBehaviour
         if (xrState == WebXRState.NORMAL) {
             // fixedCamera.transform.rotation = cameraLookAt.rotation * Quaternion.Euler(cameraRot.x, 0, 0);
             // transform.rotation = cameraLookAt.rotation * Quaternion.Euler(0, -cameraRot.y, 0);
-            fixedCamera.transform.rotation = (focusOnMap ? mapPos : cameraLookAt).rotation * Quaternion.Euler(cameraRot);
-            fixedCamera.transform.position = (focusOnMap ? mapPos : cameraLookAt).position + fixedCamera.transform.rotation * Vector3.back * opt.oh.cameraDistanceScale * cameraDistanceDefault;
+            fixedCamera.transform.rotation = (opt.od.map && opt.od.focus ? mapPos : cameraLookAt).rotation * Quaternion.Euler(cameraRot);
+            fixedCamera.transform.position = (opt.od.map && opt.od.focus ? mapPos : cameraLookAt).position + fixedCamera.transform.rotation * Vector3.back * opt.oh.cameraDistanceScale * cameraDistanceDefault;
             fixedCameraLeft.transform.rotation = fixedCamera.transform.rotation;
             fixedCameraLeft.transform.position = fixedCamera.transform.position + fixedCamera.transform.rotation * (Vector3.left * opt.oh.iPD * 0.5f);
             fixedCameraRight.transform.rotation = fixedCamera.transform.rotation;
             fixedCameraRight.transform.position = fixedCamera.transform.position + fixedCamera.transform.rotation * (Vector3.right * opt.oh.iPD * 0.5f);
 
             fixedCamera.projectionMatrix = PerspectiveOffCenter(-fWidth * opt.oh.fovscale / opt.oh.cameraDistanceScale, fWidth * opt.oh.fovscale / opt.oh.cameraDistanceScale, (-fHeight * ((opt.oh.fovscale - 1) * 1.9f + 1) + verticalOffset) / opt.oh.cameraDistanceScale, (fHeight * ((opt.oh.fovscale - 1) * 0.1f + 1) + verticalOffset) / opt.oh.cameraDistanceScale, fNear, fFar);
-            fixedCameraLeft.projectionMatrix = PerspectiveOffCenter((-sWidth * ((opt.oh.fovscale - 1) * 0.1f + 1) + opt.oh.iPD * 0.5f * sNear  / cameraDistanceDefault) / opt.oh.cameraDistanceScale, (sWidth * ((opt.oh.fovscale - 1) * 1.9f + 1) + opt.oh.iPD * 0.5f * sNear  / cameraDistanceDefault) / opt.oh.cameraDistanceScale, (-sHeight * ((opt.oh.fovscale - 1) * 1.9f + 1) + verticalOffset) / opt.oh.cameraDistanceScale, (sHeight * ((opt.oh.fovscale - 1) * 0.1f + 1) + verticalOffset) / opt.oh.cameraDistanceScale, sNear, sFar);
-            fixedCameraRight.projectionMatrix = PerspectiveOffCenter((-sWidth * ((opt.oh.fovscale - 1) * 1.9f + 1) - opt.oh.iPD * 0.5f * sNear  / cameraDistanceDefault) / opt.oh.cameraDistanceScale, (sWidth * ((opt.oh.fovscale - 1) * 0.1f + 1) - opt.oh.iPD  * 0.5f * sNear  / cameraDistanceDefault) / opt.oh.cameraDistanceScale, (-sHeight * ((opt.oh.fovscale - 1) * 1.9f + 1) + verticalOffset) / opt.oh.cameraDistanceScale, (sHeight * ((opt.oh.fovscale - 1) * 0.1f + 1) + verticalOffset) / opt.oh.cameraDistanceScale, sNear, sFar);
+            fixedCameraLeft.projectionMatrix = PerspectiveOffCenter((-sWidth * ((opt.oh.fovscale - 1) * (opt.oh.cross ? 0.1f : 1.9f) + 1) + opt.oh.iPD * 0.5f * sNear  / cameraDistanceDefault) / opt.oh.cameraDistanceScale, (sWidth * ((opt.oh.fovscale - 1) * (opt.oh.cross ? 1.9f : 0.1f) + 1) + opt.oh.iPD * 0.5f * sNear  / cameraDistanceDefault) / opt.oh.cameraDistanceScale, (-sHeight * ((opt.oh.fovscale - 1) * 1.9f + 1) + verticalOffset) / opt.oh.cameraDistanceScale, (sHeight * ((opt.oh.fovscale - 1) * 0.1f + 1) + verticalOffset) / opt.oh.cameraDistanceScale, sNear, sFar);
+            fixedCameraRight.projectionMatrix = PerspectiveOffCenter((-sWidth * ((opt.oh.fovscale - 1) * (opt.oh.cross ? 1.9f : 0.1f) + 1) - opt.oh.iPD * 0.5f * sNear  / cameraDistanceDefault) / opt.oh.cameraDistanceScale, (sWidth * ((opt.oh.fovscale - 1) * (opt.oh.cross ? 0.1f : 1.9f) + 1) - opt.oh.iPD  * 0.5f * sNear  / cameraDistanceDefault) / opt.oh.cameraDistanceScale, (-sHeight * ((opt.oh.fovscale - 1) * 1.9f + 1) + verticalOffset) / opt.oh.cameraDistanceScale, (sHeight * ((opt.oh.fovscale - 1) * 0.1f + 1) + verticalOffset) / opt.oh.cameraDistanceScale, sNear, sFar);
         }
     }
 
     private void Slice()
     {
         opt.oo.sliceDir = (opt.oo.sliceDir + 1) % ((opt.oo.sliceMode) ? 4 : 2);
-        overlayText.ShowText("Slice mode change");
+        overlayText.ShowText("Slice " + (opt.oo.sliceDir == 0 ? "off" : !opt.oo.sliceMode ? "on" : opt.oo.sliceDir == 1 ? "Z" : opt.oo.sliceDir == 2 ? "X" : "Y"));
     }
 
     public void ToggleMenu()
@@ -518,7 +522,7 @@ public class Core : MonoBehaviour
         if (alignMode) { if (doToggleAlignMode()) overlayText.ShowText("Align mode off"); }
         else if (command == align || alignTime > 0 || Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift))
             { if (doToggleAlignMode()) overlayText.ShowText("Align mode on"); }
-        else if (doAlign()) { overlayText.ShowText("Align"); alignTime = .2f; }
+        else if (doAlign()) { overlayText.ShowText("Align"); alignTime = .3f; }
     }
 
     private void TouchInputFrame()
@@ -593,7 +597,7 @@ public class Core : MonoBehaviour
 
         leftMove = leftC.GetButton(WebXRController.ButtonTypes.ButtonA);
         rightMove = rightC.GetButton(WebXRController.ButtonTypes.ButtonA);
-        reg1 = relarot * ((focusOnMap ? mapPos : cameraLookAt).position - head.position);
+        reg1 = relarot * ((opt.od.map && opt.od.focus ? mapPos : cameraLookAt).position - head.position);
         for (int i = 0; i < 3; i++) eyeVector[i] = reg1[i];
         Vec.normalize(eyeVector, eyeVector);
 
@@ -1110,11 +1114,6 @@ public class Core : MonoBehaviour
         return oa;
     }
 
-    public void setFrameRate(double frameRate)
-    {
-        interval = (int)Math.Ceiling(1000 / frameRate);
-    }
-
     public void setOptionsMotion(OptionsMotion ot)
     {
         timeMove =  ot.timeMove;
@@ -1129,13 +1128,15 @@ public class Core : MonoBehaviour
         IVLeft.ToggleLimit3D(opt.oo.limit3D);
         IVRight.ToggleLimit3D(opt.oo.limit3D);
         mapPos.localPosition = Vector3.left * opt.od.mapDistance;
+        changeSize();
+        ToggleShowInput();
+        menuPanel.doToggleSkybox();
     }
 
     public void setOptions()
     {
         engine.setOptions(oc(), ov(), oa.oeCurrent, ot(), oa.opt.od);
         setOptionsMotion(oa.opt.ot4);
-        setFrameRate(oa.opt.ot4.frameRate);
     }
 
     private void setKeepUpAndDown() {
@@ -1180,10 +1181,9 @@ public class Core : MonoBehaviour
         hint.SetActive(opt.oh.showHint);
     }
 
-    public void ToggleSkyBox(bool b)
+    public void ToggleSkyBox()
     {
-        engine.objColor = b ? Color.white : Color.black;
-        skyBox = b;
+        engine.objColor = opt.od.toggleSkyBox ? Color.white : Color.black;
     }
 
     public void doQuit()
@@ -1367,7 +1367,7 @@ public class Core : MonoBehaviour
         controllerReset();
 
         alignMode = model.getAlignMode(alignMode);
-        menuPanel.Activate(oa, engine.retrieveModel() as ISelectShape);
+        menuPanel.Activate(engine.retrieveModel() as ISelectShape);
     }
 
     public static GeomModel buildModel(Context c) //throws Exception

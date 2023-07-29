@@ -320,6 +320,16 @@ public class MapModel : IModel
         map.save(store, om);
     }
 
-    public override void ResetTrace() { renderAbsolute.ResetTrace(); }
+    public override void ResetTrace()
+    {
+        renderAbsolute.ResetTrace(); 
+        for (int i = 0; i < count; i++)
+        {
+            geomModel.shapes[i] = null;
+            geomModel.clipUnits[i].setBoundaries(null);
+            geomModel.clearSeparators(i);
+        }
+        count = 0;
+    }
 }
 

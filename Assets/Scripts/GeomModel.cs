@@ -21,7 +21,7 @@ public class GeomModel : IModel, IMove, ISelectShape
     private List<IScenery> scenery;
     private bool[] texture;
     protected PolygonBuffer buf;
-    protected Clip.Draw[] clipUnits;
+    public Clip.Draw[] clipUnits;
     private bool[][] inFront;
     private Geom.Separator[][] separators;
     protected bool usePolygon;
@@ -182,7 +182,7 @@ public class GeomModel : IModel, IMove, ISelectShape
         }
     }
 
-    protected void clearSeparators(int i)
+    public void clearSeparators(int i)
     {
         // not worth checking for removed shapes
         for (int j = 0; j < i; j++) separators[j][i] = null;

@@ -11,32 +11,29 @@ using WebXR;
 public class Menu : MonoBehaviour
 {
     public Core core;
+    public OptionsAll oa;
     public ISelectShape iss;
-    private Options optDefault;
-    private OptionsAll oaResult;
+    public Options optDefault;
     private bool isActivating;
     public Canvas canvas;
+    public int tab { get; set; } = 7;
+    public static readonly int NTAB = 8;
 
     [SerializeField] WebXRController leftC;
     private bool leftMButton, rightMButton, lastLeftMButton, lastRightMButton;
 
-    public Transform parent;
-    public Transform head;
-    private Vector3 defaultPosition;
-    private Quaternion defaultRotation;
-    private Vector3 defaultScale;
 
     public Slider dimSlider, sizeSlider, densitySlider, twistProbabilitySlider, branchProbabilitySlider, loopCrossProbabilitySlider,
         dimSameParallelSlider, dimSamePerpendicularSlider, depthSlider, retinaSlider, scaleSlider, trainSpeedSlider, mapDistanceSlider, cameraDistanceSlider,
-        transparencySlider, lineThicknessSlider, borderSlider, baseTransparencySlider, sliceTransparencySlider, 
-        frameRateSlider, timeMoveSlider, timeRotateSlider, timeAlignMoveSlider, timeAlignRotateSlider, widthSlider, flareSlider, rainbowGapSlider,iPDSlider, fovscaleSlider, distanceSlider;
+        transparencySlider, lineThicknessSlider, borderSlider, retinaSizeSlider, baseTransparencySlider, sliceTransparencySlider, 
+        timeMoveSlider, timeRotateSlider, timeAlignMoveSlider, timeAlignRotateSlider, widthSlider, flareSlider, rainbowGapSlider,iPDSlider, fovscaleSlider, distanceSlider;
     public InputField dimCurrent, dimNext, sizeCurrent, sizeNext, densityCurrent, densityNext, twistPobabilityCurrent, twistProbabilityNext,
         branchProbabilityCurrent, branchProbabilityNext, loopCrossProbabilityCurrent, loopCrossProbabilityNext, dimSameParallelField,
         dimSamePerpendicularField, mazeCurrent, mazeNext, colorCurrent, colorNext, depthField, retinaField, scaleField, trainSpeedField, cameraDistanceField,
-        transparencyField, lineThicknessField, borderField, baseTransparencyField, sliceTransparencyField, 
-        frameRateField, timeMoveField, timeRotateField, timeAlignMoveField, timeAlignRotateField, width, flare, rainbowGap, iPDField, fovscaleField, distanceField, paintColorField, quantityField;
+        transparencyField, lineThicknessField, borderField, retinaSizeField, baseTransparencyField, sliceTransparencyField, 
+        timeMoveField, timeRotateField, timeAlignMoveField, timeAlignRotateField, width, flare, rainbowGap, iPDField, fovscaleField, distanceField, paintColorField, quantityField;
     public Toggle allowLoopsCurrent, allowLoopsNext, allowReservedPathsCurrent, allowReservedPathsNext, arrow, usePolygon, useEdgeColor, hideSel, invertNormals, separate, map, focus, glass, invertLeftAndRight, invertForward,
-        invertYawAndPitch, invertRoll, sliceMode, limit3D, keepUpAndDown, fisheye, custom, rainbow, glide, allowDiagonalMovement, buttonToggleModeLeft, buttonToggleModeRight, showController, showHint,horizontalInputFollowing, stereo, cross, invertX, invertY, alternativeControlIn3D, threeDMazeIn3DScene, paintWithAddButton;
+        invertYawAndPitch, invertRoll, sliceMode, limit3D, showInput, keepUpAndDown, fisheye, custom, rainbow, glide, allowDiagonalMovement, buttonToggleModeLeft, buttonToggleModeRight, showController, showHint,horizontalInputFollowing, stereo, cross, invertX, invertY, alternativeControlIn3D, threeDMazeIn3DScene, paintWithAddButton;
     public Toggle[] enable, texture;
     public Dropdown colorMode, inputTypeLeftAndRight, inputTypeForward, inputTypeYawAndPitch, inputTypeRoll, paintColor, addShapes, paintMode;
     public Material defaultMat, alternativeMat;
@@ -45,9 +42,6 @@ public class Menu : MonoBehaviour
 
     private void Start()
     {
-        defaultPosition = transform.localPosition;
-        defaultRotation = transform.localRotation;
-        defaultScale = transform.localScale;
         canvas.enabled = false;
     }
 
@@ -64,7 +58,7 @@ public class Menu : MonoBehaviour
         lastLeftMButton = leftMButton;
         lastRightMButton = rightMButton;
     }
-    public void Activate(OptionsAll oa, ISelectShape iss)
+    public void Activate(ISelectShape iss)
     {
         isActivating = true;
 
@@ -87,6 +81,7 @@ public class Menu : MonoBehaviour
 
         put(colorMode, oa.opt.oc4.colorMode);
         put(dimSameParallelField, dimSameParallelSlider, oa.opt.oc4.dimSameParallel);
+
         put(dimSamePerpendicularField, dimSamePerpendicularSlider, oa.opt.oc4.dimSamePerpendicular);
         put(enable, oa.opt.oc4.enable);
 
@@ -103,12 +98,14 @@ public class Menu : MonoBehaviour
         put(lineThicknessField, lineThicknessSlider, oa.opt.od.lineThickness);
         put(usePolygon, oa.opt.od.usePolygon);
         put(borderField, borderSlider, oa.opt.od.border);
+        put(borderField, retinaSizeSlider, oa.opt.od.size);
         put(useEdgeColor, oa.opt.od.useEdgeColor);
         put(hideSel, oa.opt.od.hidesel);
         put(invertNormals, oa.opt.od.invertNormals);
+        put(skyboxToggle, oa.opt.od.toggleSkyBox);
         put(separate, oa.opt.od.separate);
         put(map, oa.opt.od.map); focus.interactable = oa.opt.od.map; glass.interactable = oa.opt.od.map;
-        put(focus, core.focusOnMap);
+        put(focus, oa.opt.od.focus);
         put(glass, oa.opt.od.glass);
         put(mapDistanceSlider, oa.opt.od.mapDistance);
         put(cameraDistanceField, cameraDistanceSlider, oa.opt.od.cameraDistance);
@@ -127,9 +124,8 @@ public class Menu : MonoBehaviour
         put(baseTransparencyField, baseTransparencySlider, oa.opt.oo.baseTransparency);
         put(sliceTransparencyField, sliceTransparencySlider, oa.opt.oo.sliceTransparency);
         put(limit3D, oa.opt.oo.limit3D);
+        put(showInput, oa.opt.oo.showInput);
         put(keepUpAndDown, oa.opt.oo.keepUpAndDown);
-
-        put(frameRateField, frameRateSlider, oa.opt.ot4.frameRate);
         put(timeMoveField, timeMoveSlider, oa.opt.ot4.timeMove);
         put(timeRotateField, timeRotateSlider, oa.opt.ot4.timeRotate);
         put(timeAlignMoveField, timeAlignMoveSlider, oa.opt.ot4.timeAlignMove);
@@ -159,9 +155,9 @@ public class Menu : MonoBehaviour
         put(distanceField, distanceSlider, oa.opt.oh.cameraDistanceScale);
         put(alternativeControlIn3D, oa.opt.oh.alternativeControlIn3D);
 
-        this.iss = iss;
         if (iss != null)
         {
+            this.iss = iss;
             paintColor.options.Clear();
             paintColor.options.Add(new Dropdown.OptionData("(no effect)"));
             paintColor.options.Add(new Dropdown.OptionData("(paint remover)"));
@@ -197,7 +193,6 @@ public class Menu : MonoBehaviour
     public void doUpdate()
     {
         if (isActivating) return;
-        OptionsAll oa = core.getOptionsAll();
         oa.opt.oc4.colorMode = getInt(colorMode);
         getInt(ref oa.opt.oc4.dimSameParallel, dimSameParallelField, OptionsColor.DIM_SAME_MIN, OptionsColor.DIM_SAME_MAX);
         getInt(ref oa.opt.oc4.dimSamePerpendicular, dimSamePerpendicularField, OptionsColor.DIM_SAME_MIN, OptionsColor.DIM_SAME_MAX);
@@ -213,12 +208,14 @@ public class Menu : MonoBehaviour
         getFloat(ref oa.opt.od.lineThickness, lineThicknessField, OptionsDisplay.LINETHICKNESS_MIN, OptionsDisplay.LINETHICKNESS_MAX, true);
         oa.opt.od.usePolygon = getBool(usePolygon);
         getFloat(ref oa.opt.od.border, borderField, OptionsDisplay.BORDER_MIN, OptionsDisplay.BORDER_MAX, true);
+        getFloat(ref oa.opt.od.size, retinaSizeField, false);
         oa.opt.od.useEdgeColor = getBool(useEdgeColor);
         oa.opt.od.hidesel = getBool(hideSel);
         oa.opt.od.invertNormals = getBool(invertNormals);
+        oa.opt.od.toggleSkyBox = getBool(skyboxToggle);
         oa.opt.od.separate = getBool(separate);
         oa.opt.od.map = getBool(map); focus.interactable = oa.opt.od.map; glass.interactable = oa.opt.od.map;
-        core.focusOnMap = oa.opt.od.map && getBool(focus); focus.isOn = core.focusOnMap;
+        oa.opt.od.focus = getBool(focus); focus.isOn = oa.opt.od.focus;
         oa.opt.od.glass = getBool(glass); glass.isOn = oa.opt.od.glass;
         oa.opt.od.mapDistance = mapDistanceSlider.value;
         getFloat(ref oa.opt.od.cameraDistance, cameraDistanceField, OptionsDisplay.CAMERADISTANCE_MIN, OptionsDisplay.CAMERADISTANCE_MAX, true);
@@ -237,6 +234,7 @@ public class Menu : MonoBehaviour
         getFloat(ref oa.opt.oo.baseTransparency, baseTransparencyField, true);
         getFloat(ref oa.opt.oo.sliceTransparency, sliceTransparencyField, true);
         oa.opt.oo.limit3D = getBool(limit3D);
+        oa.opt.oo.showInput = getBool(showInput);
         oa.opt.oo.keepUpAndDown = getBool(keepUpAndDown);
 
         OptionsFisheye ofTemp = new OptionsFisheye();
@@ -270,7 +268,6 @@ public class Menu : MonoBehaviour
 
     public void doOK()
     {
-        OptionsAll oa = core.getOptionsAll();
         getInt(ref oa.opt.om4.dimMap, dimNext, OptionsMap.DIM_MAP_MIN, OptionsMap.DIM_MAP_MAX);
         getDimMap(oa.opt.om4.size, sizeNext);
         getFloat(ref oa.opt.om4.density, densityNext, OptionsMap.DENSITY_MIN, OptionsMap.DIM_MAP_MAX, true);
@@ -307,7 +304,6 @@ public class Menu : MonoBehaviour
         oa.opt.oo.invertYawAndPitch = getBool(invertYawAndPitch);
         oa.opt.oo.invertRoll = getBool(invertRoll);
 
-        getFloat(ref oa.opt.ot4.frameRate, frameRateField, false);
         getFloat(ref oa.opt.ot4.timeMove, timeMoveField, false);
         getFloat(ref oa.opt.ot4.timeRotate, timeRotateField, false);
         getFloat(ref oa.opt.ot4.timeAlignMove, timeAlignMoveField, false);
@@ -338,7 +334,6 @@ public class Menu : MonoBehaviour
     public void doNewGame(int dim)
     {
         doOK();
-        OptionsAll oa = core.getOptionsAll();
         if (dim>0) {
             core.dim = OptionsFisheye.of.threeDMazeIn3DScene ? dim : 4;
             oa.opt.om4.dimMap = dim;
@@ -364,7 +359,7 @@ public class Menu : MonoBehaviour
 
     public void doToggleSkybox()
     {
-        if (skyboxToggle.isOn) {
+        if (oa.opt.od.toggleSkyBox) {
             environment.SetActive(false);
             RenderSettings.skybox = alternativeMat;
         }
@@ -373,7 +368,7 @@ public class Menu : MonoBehaviour
             environment.SetActive(true);
             RenderSettings.skybox = defaultMat;
         }
-        core.ToggleSkyBox(skyboxToggle.isOn);
+        core.ToggleSkyBox();
     }
 
     private bool SelectPaintColor()
@@ -429,6 +424,32 @@ public class Menu : MonoBehaviour
     }
 
     public void doChangeScene() { SceneManager.LoadScene("New Scene"); }
+
+    public void doReset(bool all)
+    {
+        if (all)
+        {
+            for (int i = 0; i < NTAB; i++) doReset(i);
+        }
+        else doReset(tab);
+        Activate(null);
+        core.menuCommand = core.updateOptions;
+    }
+
+    private void doReset(int tab)
+    {
+        switch (tab)
+        {
+            case 0: OptionsMap.copy(oa.opt.om4, optDefault.om4); break;
+            case 1: OptionsColor.copy(oa.opt.oc4, optDefault.oc4); break;
+            case 2: OptionsView.copy(oa.opt.ov4, optDefault.ov4); break;
+            case 3: OptionsDisplay.copy(oa.opt.od, optDefault.od); break;
+            case 4: OptionsControl.copy(oa.opt.oo, optDefault.oo); break;
+            case 5: OptionsMotion.copy(oa.opt.ot4, optDefault.ot4); break;
+            case 6: OptionsFisheye.copy(OptionsFisheye.of, OptionsFisheye.ofDefault); break;
+            case 7: OptionsTouch.copy(oa.opt.oh, optDefault.oh); break;
+        }
+    }
 
     private void put(InputField inputField, Slider slider, float value)
     {

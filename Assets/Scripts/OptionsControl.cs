@@ -6,7 +6,7 @@ public class OptionsControl
     // --- fields ---
 
     public int inputTypeLeftAndRight, inputTypeForward, inputTypeYawAndPitch, inputTypeRoll;
-    public bool invertLeftAndRight, invertForward, invertYawAndPitch, invertRoll, sliceMode, limit3D, keepUpAndDown;
+    public bool invertLeftAndRight, invertForward, invertYawAndPitch, invertRoll, sliceMode, limit3D, showInput, keepUpAndDown;
     public float baseTransparency, sliceTransparency;
     public int sliceDir; // x direction (for intuitive switching)
 
@@ -37,6 +37,7 @@ public class OptionsControl
         dest.baseTransparency = src.baseTransparency;
         dest.sliceTransparency = src.sliceTransparency;
         dest.limit3D = src.limit3D;
+        dest.showInput = src.showInput;
         dest.keepUpAndDown = src.keepUpAndDown;
         dest.sliceDir = src.sliceDir;
     }
