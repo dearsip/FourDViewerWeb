@@ -3,69 +3,50 @@ using UnityEngine;
 using System.IO;
 using System.Collections.Generic;
 using System.Collections;
+using SimpleFileBrowser;
 using UnityEngine.Networking;
+using Ruccho.BlobIO;
 
 public class PropertyFile
 {
+    public enum SaveType { EXPORT_MAZE, EXPORT_PROPERTIES, SAVE_PROPERTIES }
     public delegate void Loader(IStore store);
     public delegate void Saver(IStore store);
     public static bool isMaze;
-    private static IEnumerator testProperties(string file) //throws IOException 
+    private static IEnumerator testProperties(string file, bool path) //throws IOException 
     {
         string text;
+        if (!path) text = file;
+        else {
 #if UNITY_EDITOR
-        yield return text = File.ReadAllText(file);
+            yield return text = File.ReadAllText(Path.IsPathRooted(file) ? file : FileItem.Combine(Application.streamingAssetsPath, file));
 #else
-        using (UnityWebRequest www = UnityWebRequest.Get(file))
-        {
-            yield return www.SendWebRequest();
-            if (www.result == UnityWebRequest.Result.Success) text = www.downloadHandler.text;
-            else { Debug.Log(www.error); yield break; }
-        }
-#endif
-        isMaze = text[0] == '#';
-    }
-
-    // https://stackoverflow.com/questions/485659/can-net-load-and-parse-a-properties-file-equivalent-to-java-properties-class
-    // modified for maze properties
-    private static IEnumerator loadProperties(string file, Dictionary<string, string> dict){
-        if (file == "default.properties") loadDefault(dict);
-        else
-        {
-            string text;
-#if UNITY_EDITOR
-            yield return text = File.ReadAllText(file);
-#else
-            using (UnityWebRequest www = UnityWebRequest.Get(file))
+            using (UnityWebRequest www = UnityWebRequest.Get(file.Substring(0,4) == "http" ? file : FileItem.Combine(Application.streamingAssetsPath, file)))
             {
                 yield return www.SendWebRequest();
                 if (www.result == UnityWebRequest.Result.Success) text = www.downloadHandler.text;
                 else { Debug.Log(www.error); yield break; }
             }
 #endif
-            foreach (string line in text.Replace("\r\n","\n").Split(new[]{'\n','\r'}))
-        // string str = "";
-        // switch (file) {
-            // case "default.properties":
-                // str = default_; break;
-        // }
-        // foreach (string line in str.Split(new string[] { "\r\n" }, StringSplitOptions.None))
-            {
-                if ((!String.IsNullOrEmpty(line)) &&
-                    (!line.StartsWith("#")) &&
-                    (line.Contains("=")))
-                {
-                    int index = line.IndexOf('=');
-                    string key = line.Substring(0, index).Trim();
-                    string value = line.Substring(index + 1).Trim();
-                    dict.Add(key, value);
-                }
-            }
         }
+        isMaze = text[0] == '#';
     }
 
-    private static void loadDefault(Dictionary<string, string> dict) {
-        foreach (string line in default_.Replace("\r\n","\n").Split(new[]{'\n','\r'}))
+    // https://stackoverflow.com/questions/485659/can-net-load-and-parse-a-properties-file-equivalent-to-java-properties-class
+    // modified for maze properties
+    private static IEnumerator loadProperties(string file, Dictionary<string, string> dict){
+        string text;
+#if UNITY_EDITOR
+        yield return text = File.ReadAllText(Path.IsPathRooted(file) ? file : FileItem.Combine(Application.streamingAssetsPath, file));
+#else
+        using (UnityWebRequest www = UnityWebRequest.Get(file.Substring(0,4) == "http" ? file : FileItem.Combine(Application.streamingAssetsPath, file)))
+        {
+            yield return www.SendWebRequest();
+            if (www.result == UnityWebRequest.Result.Success) text = www.downloadHandler.text;
+            else { Debug.Log(www.error); yield break; }
+        }
+#endif
+        foreach (string line in text.Replace("\r\n","\n").Split(new[]{'\n','\r'}))
         {
             if ((!String.IsNullOrEmpty(line)) &&
                 (!line.StartsWith("#")) &&
@@ -79,22 +60,47 @@ public class PropertyFile
         }
     }
 
-    private static void storeProperties(string file, Dictionary<string, string> p) {
-        try {
-            using (StreamWriter sw = new StreamWriter(file))
-            {
-                sw.WriteLine("#"+DateTime.Now.ToString("ddd MMM dd HH:mm:ss K yyyy"));
-                foreach(KeyValuePair<string, string> c in p) sw.WriteLine(c.Key+"="+c.Value);
-            }
-        }
-        catch (Exception t)
+    private static void loadImmidiate(string text, Dictionary<string, string> dict) {
+        foreach (string line in text.Replace("\r\n","\n").Split(new[]{'\n','\r'}))
         {
-          Debug.Log(t);
+            if ((!String.IsNullOrEmpty(line)) &&
+                (!line.StartsWith("#")) &&
+                (line.Contains("=")))
+            {
+                int index = line.IndexOf('=');
+                string key = line.Substring(0, index).Trim();
+                string value = line.Substring(index + 1).Trim();
+                dict.Add(key, value);
+            }
         }
     }
 
-    public static IEnumerator test(string file) {
-        yield return testProperties(file);
+    private static void storeProperties(Dictionary<string, string> p, SaveType saveType) {
+        string file = string.Empty;
+        try {
+            file += "#"+DateTime.Now.ToString("ddd MMM dd HH:mm:ss K yyyy")+"\r\n";
+            foreach(KeyValuePair<string, string> c in p) file += c.Key+"="+c.Value+"\r\n";
+        }
+        catch (Exception t)
+        {
+          Debug.LogException(t);
+        }
+        switch (saveType)
+        {
+            case SaveType.EXPORT_MAZE:
+                BlobIO.MakeDownloadText(file, "maze_" + DateTime.Now.ToString("yyyyMMddHHmmss"));
+                break;
+            case SaveType.EXPORT_PROPERTIES:
+                BlobIO.MakeDownloadText(file, "properties_" + DateTime.Now.ToString("yyyyMMddHHmmss"));
+                break;
+            case SaveType.SAVE_PROPERTIES:
+                UnityEngine.PlayerPrefs.SetString(Core.fileCurrent, file);
+                break;
+        }
+    }
+
+    public static IEnumerator test(string file, bool path) {
+        yield return testProperties(file, path);
     }
 
     public static IEnumerator load(string file, Loader storable) {
@@ -104,40 +110,39 @@ public class PropertyFile
             PropertyStore store = new PropertyStore(p);
             storable(store);
         } catch (Exception e) {
-            Debug.Log(e);
-            //throw App.getException("PropertyFile.e2",new Object[] { file.getName(), e.getMessage() });
+            Debug.LogException(e);
         }
     }
 
-    public static void loadDefault(Loader storable) {
+    public static void loadImmidiate(string text, Loader storable) {
         Dictionary<string, string> p = new Dictionary<string, string>();
-        loadDefault(p);
+        loadImmidiate(text, p);
         try {
             PropertyStore store = new PropertyStore(p);
             storable(store);
         } catch (Exception e) {
-            Debug.LogError(e);
+            Debug.LogException(e);
         }
     }
 
-    public static void save(string file, Saver storable) {
+    public static void save(Saver storable, SaveType saveType) {
         Dictionary<string, string> p = new Dictionary<string, string>();
 
         try {
             PropertyStore store = new PropertyStore(p);
             storable(store);
         } catch (Exception e) {
-            Debug.Log(e);
+            Debug.LogException(e);
         }
 
         try {
-            storeProperties(file,p);
+            storeProperties(p, saveType);
         } catch (IOException e) {
-            Debug.Log(e);
+            Debug.LogException(e);
         }
     }
 
-    private static readonly string default_ = @"
+    public static readonly string default_ = @"
 #土 7 30 18:12:22 +09:00 2022
 opt.om4.dimMap=4
 opt.om4.size[0]=3
@@ -187,6 +192,7 @@ opt.od.size=1
 opt.od.useEdgeColor=True
 opt.od.hidesel=False
 opt.od.invertNormals=False
+opt.od.toggleSkyBox=False
 opt.od.separate=True
 opt.od.map=False
 opt.od.glass=True
@@ -216,6 +222,13 @@ opt.ot4.timeRotate=1
 opt.ot4.timeAlignMove=2
 opt.ot4.timeAlignRotate=2
 opt.ot4.paintWithAddButton=False
+opt.of.fisheye=False
+opt.of.adjust=True
+opt.of.rainbow=False
+opt.of.width=0.75
+opt.of.flare=0.33
+opt.of.rainbowGap=0.5
+opt.of.threeDMazeIn3DScene=False
 opt.oh.allowDiagonalMovement=True
 opt.oh.alternativeControlIn3D=False
 opt.oh.leftTouchToggleMode=False
@@ -230,6 +243,6 @@ opt.oh.invertY=False
 opt.oh.iPD=0.064
 opt.oh.fovscale=1
 opt.oh.cameraDistanceScale=1
-dim=4
+tab=7
 ";
 }

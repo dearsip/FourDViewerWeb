@@ -39,6 +39,7 @@ public class Menu : MonoBehaviour
     public Material defaultMat, alternativeMat;
     public GameObject environment;
     public Toggle skyboxToggle;
+    public GameObject[] panels;
 
     private void Start()
     {
@@ -48,7 +49,7 @@ public class Menu : MonoBehaviour
     private void CloseMenu() {
         if (canvas.enabled)
         {
-            doCancel();
+            doOK();
         }
     }
 
@@ -61,6 +62,7 @@ public class Menu : MonoBehaviour
     public void Activate(ISelectShape iss)
     {
         isActivating = true;
+        for (int i = 0; i < NTAB; i++) panels[i].SetActive(i == tab);
 
         put(dimCurrent, oa.omCurrent.dimMap);
         put(dimNext, dimSlider, oa.opt.om4.dimMap);
@@ -132,13 +134,13 @@ public class Menu : MonoBehaviour
         put(timeAlignRotateField, timeAlignRotateSlider, oa.opt.ot4.timeAlignRotate);
         put(paintWithAddButton, oa.opt.ot4.paintWithAddButton);
 
-        put(fisheye, OptionsFisheye.of.fisheye);
-        put(custom, OptionsFisheye.of.adjust);
-        put(rainbow, OptionsFisheye.of.rainbow);
-        put(width, widthSlider, OptionsFisheye.of.width);
-        put(flare, flareSlider, OptionsFisheye.of.flare);
-        put(rainbowGap, rainbowGapSlider, OptionsFisheye.of.rainbowGap);
-        put(threeDMazeIn3DScene, OptionsFisheye.of.threeDMazeIn3DScene);
+        put(fisheye, oa.opt.of.fisheye);
+        put(custom, oa.opt.of.adjust);
+        put(rainbow, oa.opt.of.rainbow);
+        put(width, widthSlider, oa.opt.of.width);
+        put(flare, flareSlider, oa.opt.of.flare);
+        put(rainbowGap, rainbowGapSlider, oa.opt.of.rainbowGap);
+        put(threeDMazeIn3DScene, oa.opt.of.threeDMazeIn3DScene);
 
         put(allowDiagonalMovement, oa.opt.oh.allowDiagonalMovement);
         put(buttonToggleModeLeft, oa.opt.oh.leftTouchToggleMode);
@@ -213,55 +215,33 @@ public class Menu : MonoBehaviour
         oa.opt.od.hidesel = getBool(hideSel);
         oa.opt.od.invertNormals = getBool(invertNormals);
         oa.opt.od.toggleSkyBox = getBool(skyboxToggle);
-        oa.opt.od.separate = getBool(separate);
         oa.opt.od.map = getBool(map); focus.interactable = oa.opt.od.map; glass.interactable = oa.opt.od.map;
         oa.opt.od.focus = getBool(focus); focus.isOn = oa.opt.od.focus;
         oa.opt.od.glass = getBool(glass); glass.isOn = oa.opt.od.glass;
         oa.opt.od.mapDistance = mapDistanceSlider.value;
         getFloat(ref oa.opt.od.cameraDistance, cameraDistanceField, OptionsDisplay.CAMERADISTANCE_MIN, OptionsDisplay.CAMERADISTANCE_MAX, true);
         getInt(ref oa.opt.od.trainSpeed, trainSpeedField, OptionsDisplay.TRAINSPEED_MIN, OptionsDisplay.TRAINSPEED_MAX);
-        oa.opt.od.glide = getBool(glide);
 
-        oa.opt.oo.inputTypeLeftAndRight = getInt(inputTypeLeftAndRight);
-        oa.opt.oo.inputTypeForward = getInt(inputTypeForward);
-        oa.opt.oo.inputTypeYawAndPitch = getInt(inputTypeYawAndPitch);
-        oa.opt.oo.inputTypeRoll = getInt(inputTypeRoll);
-        oa.opt.oo.invertLeftAndRight = getBool(invertLeftAndRight);
-        oa.opt.oo.invertForward = getBool(invertForward);
-        oa.opt.oo.invertYawAndPitch = getBool(invertYawAndPitch);
-        oa.opt.oo.invertRoll = getBool(invertRoll);
-        oa.opt.oo.sliceMode = getBool(sliceMode);
         getFloat(ref oa.opt.oo.baseTransparency, baseTransparencyField, true);
         getFloat(ref oa.opt.oo.sliceTransparency, sliceTransparencyField, true);
-        oa.opt.oo.limit3D = getBool(limit3D);
         oa.opt.oo.showInput = getBool(showInput);
-        oa.opt.oo.keepUpAndDown = getBool(keepUpAndDown);
 
-        OptionsFisheye ofTemp = new OptionsFisheye();
-        ofTemp.fisheye = getBool(fisheye);
-        ofTemp.adjust = getBool(custom);
-        ofTemp.rainbow = getBool(rainbow);
-        getFloat(ref ofTemp.width, width, 0, 1, false);
-        getFloat(ref ofTemp.flare, flare, 0, 1, true);
-        getFloat(ref ofTemp.rainbowGap, rainbowGap, 0, 1, true);
-        ofTemp.threeDMazeIn3DScene = getBool(threeDMazeIn3DScene);
-        OptionsFisheye.copy(OptionsFisheye.of, ofTemp);
-        OptionsFisheye.recalculate();
+        oa.opt.of.fisheye = getBool(fisheye);
+        oa.opt.of.adjust = getBool(custom);
+        oa.opt.of.rainbow = getBool(rainbow);
+        getFloat(ref oa.opt.of.width, width, 0, 1, false);
+        getFloat(ref oa.opt.of.flare, flare, 0, 1, true);
+        getFloat(ref oa.opt.of.rainbowGap, rainbowGap, 0, 1, true);
+        oa.opt.of.threeDMazeIn3DScene = getBool(threeDMazeIn3DScene);
+        oa.opt.of.recalculate();
 
-        oa.opt.oh.allowDiagonalMovement = getBool(allowDiagonalMovement);
-        oa.opt.oh.leftTouchToggleMode = getBool(buttonToggleModeLeft);
-        oa.opt.oh.rightTouchToggleMode = getBool(buttonToggleModeRight);
-        oa.opt.oh.showController = getBool(showController);
-        oa.opt.oh.showHint = getBool(showHint);
-        oa.opt.oh.horizontalInputFollowing = getBool(horizontalInputFollowing);
-        oa.opt.oh.stereo = getBool(stereo);
-        oa.opt.oh.cross = getBool(cross);
         oa.opt.oh.invertX = getBool(invertX);
         oa.opt.oh.invertY = getBool(invertY);
+        oa.opt.oh.stereo = getBool(stereo);
+        oa.opt.oh.cross = getBool(cross);
         getFloat(ref oa.opt.oh.iPD, iPDField, true);
         getFloat(ref oa.opt.oh.fovscale, fovscaleField, false);
         getFloat(ref oa.opt.oh.cameraDistanceScale, distanceField, false);
-        oa.opt.oh.alternativeControlIn3D = getBool(alternativeControlIn3D);
 
         core.menuCommand = core.updateOptions;
     }
@@ -295,6 +275,9 @@ public class Menu : MonoBehaviour
         }
         else oa.oeNext.colorSeedSpecified = false;
 
+        oa.opt.od.separate = getBool(separate);
+        oa.opt.od.glide = getBool(glide);
+
         oa.opt.oo.inputTypeLeftAndRight = getInt(inputTypeLeftAndRight);
         oa.opt.oo.inputTypeForward = getInt(inputTypeForward);
         oa.opt.oo.inputTypeYawAndPitch = getInt(inputTypeYawAndPitch);
@@ -303,12 +286,25 @@ public class Menu : MonoBehaviour
         oa.opt.oo.invertForward = getBool(invertForward);
         oa.opt.oo.invertYawAndPitch = getBool(invertYawAndPitch);
         oa.opt.oo.invertRoll = getBool(invertRoll);
+        oa.opt.oo.limit3D = getBool(limit3D);
+        oa.opt.oo.keepUpAndDown = getBool(keepUpAndDown);
+        oa.opt.oo.sliceMode = getBool(sliceMode);
 
         getFloat(ref oa.opt.ot4.timeMove, timeMoveField, false);
         getFloat(ref oa.opt.ot4.timeRotate, timeRotateField, false);
         getFloat(ref oa.opt.ot4.timeAlignMove, timeAlignMoveField, false);
         getFloat(ref oa.opt.ot4.timeAlignRotate, timeAlignRotateField, false);
         oa.opt.ot4.paintWithAddButton = getBool(paintWithAddButton);
+
+        oa.opt.oh.allowDiagonalMovement = getBool(allowDiagonalMovement);
+        oa.opt.oh.leftTouchToggleMode = getBool(buttonToggleModeLeft);
+        oa.opt.oh.rightTouchToggleMode = getBool(buttonToggleModeRight);
+        oa.opt.oh.showController = getBool(showController);
+        oa.opt.oh.showHint = getBool(showHint);
+        oa.opt.oh.horizontalInputFollowing = getBool(horizontalInputFollowing);
+        oa.opt.oh.alternativeControlIn3D = getBool(alternativeControlIn3D);
+
+        PropertyFile.save(core.save, PropertyFile.SaveType.SAVE_PROPERTIES);
 
         // command
         core.menuCommand = core.setOptions;
@@ -334,18 +330,7 @@ public class Menu : MonoBehaviour
     public void doNewGame(int dim)
     {
         doOK();
-        if (dim>0) {
-            core.dim = OptionsFisheye.of.threeDMazeIn3DScene ? dim : 4;
-            oa.opt.om4.dimMap = dim;
-            if (dim==3) {
-                oa.opt.oo.limit3D = true;
-                oa.opt.oo.sliceDir = 1;
-            } else {
-                oa.opt.oo.limit3D = false;
-                oa.opt.oo.sliceDir = 0;
-            }
-        }
-        oa.opt.om4.dimMap = Math.Min(core.dim, oa.opt.om4.dimMap);
+        core.dimNext = dim;
         core.menuCommand = core.newGame;
     }
 
@@ -446,7 +431,7 @@ public class Menu : MonoBehaviour
             case 3: OptionsDisplay.copy(oa.opt.od, optDefault.od); break;
             case 4: OptionsControl.copy(oa.opt.oo, optDefault.oo); break;
             case 5: OptionsMotion.copy(oa.opt.ot4, optDefault.ot4); break;
-            case 6: OptionsFisheye.copy(OptionsFisheye.of, OptionsFisheye.ofDefault); break;
+            case 6: OptionsFisheye.copy(oa.opt.of, optDefault.of); break;
             case 7: OptionsTouch.copy(oa.opt.oh, optDefault.oh); break;
         }
     }

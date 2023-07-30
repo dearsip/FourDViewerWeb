@@ -2,6 +2,7 @@
 using System.Reflection;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class PropertyStore : IStore {
@@ -43,7 +44,7 @@ public class PropertyStore : IStore {
     }
 
     private string getNullableProperty(string key) {
-        return p[key];
+        return p.ContainsKey(key) ? p[key] : null;
     }
 
     private string ArrayKey(string key, int i) {
@@ -161,9 +162,9 @@ public class PropertyStore : IStore {
         */
     private void getStruct(string key, object o) {
 
-        FieldInfo[] field = o.GetType().GetFields();
+        List<FieldInfo> field = o.GetType().GetFields().ToList().FindAll(f => !f.IsStatic);
 
-        for (int i=0; i<field.Length; i++) {
+        for (int i=0; i<field.Count; i++) {
 
             if ( field[i].IsInitOnly 
               || field[i].IsLiteral ) continue; // ignore globals and constants
@@ -257,9 +258,9 @@ public class PropertyStore : IStore {
         */
     private void putStruct(string key, object o) {
 
-        FieldInfo[] field = o.GetType().GetFields();
+        List<FieldInfo> field = o.GetType().GetFields().ToList().FindAll(f => !f.IsStatic);
 
-        for (int i=0; i<field.Length; i++) {
+        for (int i=0; i<field.Count; i++) {
 
             if ( field[i].IsInitOnly 
               || field[i].IsLiteral ) continue; // ignore globals and constants

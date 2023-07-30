@@ -27,6 +27,7 @@ public class Engine : IMove
     private const double hdef = 7.5;
 
     private double[][] sraxis;
+    private bool fisheye;
     private double nonFisheyeRetina; // have to cache this up here for fisheye
 
     private PolygonBuffer bufAbsolute;
@@ -104,7 +105,7 @@ public class Engine : IMove
 
     // --- games ---
 
-    public void newGame(int dimSpace, IModel model, OptionsView ov, /*OptionsStereo os,*/ OptionsMotion ot, bool render)
+    public void newGame(int dimSpace, IModel model, OptionsView ov, OptionsMotion ot, bool render)
     {
 
         this.dim = dimSpace;
@@ -192,15 +193,9 @@ public class Engine : IMove
         //renderAbsolute();
     }
 
-    public void toggleFisheye()
-    {
-        OptionsFisheye.of.fisheye = !OptionsFisheye.of.fisheye;
-        updateRetina();
-    }
-
     private double getRetina()
     {
-        return OptionsFisheye.of.fisheye ? 1 : nonFisheyeRetina;
+        return fisheye ? 1 : nonFisheyeRetina;
     }
 
     private void updateRetina()
@@ -616,12 +611,13 @@ public class Engine : IMove
 
     // --- rendering ---
 
-    public void renderAbsolute(double[] eyeVector, OptionsControl oo, double delta, bool animate)
+    public void renderAbsolute(double[] eyeVector, OptionsControl oo, OptionsFisheye of, double delta, bool animate)
     {
+        fisheye = of.fisheye;
         try {
             if (animate) model.animate(delta);
-            model.render(origin, axis, !OptionsFisheye.of.fisheye);
-            RenderRelative(eyeVector, oo);
+            model.render(origin, axis, !of.fisheye);
+            RenderRelative(eyeVector, oo, of);
         }catch(Exception e) {Debug.LogException(e);};
     }
 
@@ -716,12 +712,12 @@ public class Engine : IMove
         }
     }
 
-    private void RenderRelative(double[] eyeVector, OptionsControl oo)
+    private void RenderRelative(double[] eyeVector, OptionsControl oo, OptionsFisheye of)
     {
-        if (OptionsFisheye.of.fisheye)
+        if (of.fisheye)
         {
             renderPrepare();
-            if (OptionsFisheye.of.rainbow && dim == 4)
+            if (of.rainbow && dim == 4)
             {
                 renderRainbow();
             }

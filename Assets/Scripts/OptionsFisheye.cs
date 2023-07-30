@@ -1,6 +1,7 @@
 ﻿/*
  * OptionsFisheye.java
  */
+ using UnityEngine;
 
 /**
  * Options for fisheye mode.  These are static for now, but
@@ -35,16 +36,6 @@ public class OptionsFisheye
         dest.threeDMazeIn3DScene = src.threeDMazeIn3DScene;
     }
 
-    // --- implementation of IValidate ---
-
-    //public void validate() throws ValidationException
-    //{
-
-    //      if (width <= 0 || width > 1) throw App.getException("OptionsFisheye.e1");
-    //      if (flare <  0 || flare > 1) throw App.getException("OptionsFisheye.e2");
-    //      if (rainbowGap < 0 || rainbowGap > 1) throw App.getException("OptionsFisheye.e3");
-    //}
-
     // --- constants ---
 
     // unadjusted
@@ -59,22 +50,8 @@ public class OptionsFisheye
 
     // --- instance ---
 
-    public static OptionsFisheye of = new OptionsFisheye();
-    public static OptionsFisheye ofDefault = new OptionsFisheye();
-
-    static OptionsFisheye()
+    public OptionsFisheye()
     {
-        of.fisheye = false;
-        of.adjust = true;
-        of.rainbow = false;
-        of.width = AD_WIDTH;
-        of.flare = AD_FLARE;
-        of.rainbowGap = AD_RGAP;
-        of.threeDMazeIn3DScene = false;
-
-        copy(ofDefault, of);
-
-        recalculate();
     }
 
     // --- calculated properties ---
@@ -86,12 +63,12 @@ public class OptionsFisheye
     public static float scale2b;
     public static float rdist;
 
-    public static void recalculate()
+    public void recalculate()
     {
 
-        float w = of.adjust ? of.width : UA_WIDTH;
-        float f = of.adjust ? of.flare : UA_FLARE;
-        float g = of.adjust ? of.rainbowGap : UA_RGAP;
+        float w = adjust ? width : UA_WIDTH;
+        float f = adjust ? flare : UA_FLARE;
+        float g = adjust ? rainbowGap : UA_RGAP;
 
         float s = 1 + 2 * w;
         // work in coordinates with center cell size 2

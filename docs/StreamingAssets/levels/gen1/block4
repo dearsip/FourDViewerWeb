@@ -1,14 +1,5 @@
-// library---------------------------------
-
-[[0 1] [0 1] [0 1] [0 1]] rect "block4" def
-
-// ----------------------------------------
-
-nomat
-
-blue 3 true 0 1 grid4
-
-blue 15 true -2 5 grid4
+"library" include
+"levels/lib/mygrid4" include
 
 [0.5 0.5 0.5 -2.5] [X+ Y+ Z+ W+] viewinfo
 

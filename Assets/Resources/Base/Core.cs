@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 using System.IO;
+using System.Linq;
 using SimpleFileBrowser;
 using UnityEngine.UI;
 using WebXR;
+using Ruccho.BlobIO;
 
 [RequireComponent(typeof(MeshRenderer))]
 [RequireComponent(typeof(MeshFilter))]
@@ -14,9 +16,9 @@ public class Core : MonoBehaviour
     public delegate void Command();
     private Options optDefault;
     private Options opt; // the next three are used only during load
-    public int dim;
-    private string gameDirectory;
+    public int dim, dimNext;
     private string reloadFile;
+    private bool reloadFileIsPath;
 
     private OptionsAll oa;
     private Engine engine;
@@ -24,11 +26,8 @@ public class Core : MonoBehaviour
     private Mesh mesh;
 
     private bool engineAlignMode;
-    // private bool active, excluded;
-    // private int[] param;
     private float delta;
     private float timeMove, timeRotate, timeAlignMove, timeAlignRotate;
-    // private int nMove, nRotate, nAlignMove, nAlignRotate;
     private float dMove, dRotate, dAlignMove, dAlignRotate;
     private bool start, started;
     private IMove target;
@@ -122,8 +121,8 @@ public class Core : MonoBehaviour
 
       store.putInteger(KEY_DIM,dim);
       store.putObject(KEY_OPTIONS_MAP,oa.omCurrent);
-      store.putObject(KEY_OPTIONS_COLOR,oc()); // ocCurrent may be null
-      store.putObject(KEY_OPTIONS_VIEW,ov());  // ditto
+      store.putObject(KEY_OPTIONS_COLOR,oc());
+      store.putObject(KEY_OPTIONS_VIEW,ov());
       store.putObject(KEY_OPTIONS_SEED,oa.oeCurrent);
       store.putBool(KEY_ALIGN_MODE,alignMode);
 
@@ -199,6 +198,7 @@ public class Core : MonoBehaviour
         xrState = state;
         if (xrState != WebXRState.NORMAL)
         {
+            menuPanel.doOK();
             menuCanvas.enabled = false;
             inputCanvas.enabled = false;
             fixedCameraLeft.enabled = false;
@@ -210,9 +210,8 @@ public class Core : MonoBehaviour
         environment.SetActive(xrState != WebXRState.AR && !opt.od.toggleSkyBox);
     }
 
-    public void ToggleStereo(bool b)
+    public void ToggleStereo()
     {
-        opt.oh.stereo = b;
         if (opt.oh.stereo)
         {
             fixedCameraLeft.enabled = true;
@@ -229,9 +228,8 @@ public class Core : MonoBehaviour
 
     private readonly Rect leftRect = new Rect(0, 0, 0.5f, 1);
     private readonly Rect rightRect = new Rect(0.5f, 0, 0.5f, 1);
-    public void ToggleCross(bool b)
+    public void ToggleCross()
     {
-        opt.oh.cross = b;
         if (opt.oh.cross)
         {
             fixedCameraLeft.rect = rightRect;
@@ -265,8 +263,9 @@ public class Core : MonoBehaviour
     }
 
     private void doToggleLimit3D() {
+        if (dim == 3) return;
         opt.oo.limit3D = !opt.oo.limit3D;
-        overlayText.ShowText(opt.oo.limit3D ? "Restrict\noperations to 3D" : "Removr\n3D restrictions");
+        overlayText.ShowText(opt.oo.limit3D ? "Restrict\noperations to 3D" : "Remove\n3D restrictions");
         IVLeft.ToggleLimit3D(opt.oo.limit3D);
         IVRight.ToggleLimit3D(opt.oo.limit3D);
     }
@@ -293,12 +292,24 @@ public class Core : MonoBehaviour
     public void newGame()
     {
         setOptions();
-        newGame(0);
+        newGame(dimNext);
     }
 
     private void newGame(int dim)
     {
-        if (dim != 0) this.dim = dim; // allow zero to mean "keep the same"
+        if (!opt.of.threeDMazeIn3DScene) this.dim = 4;
+        if (dim>0) {
+            if (opt.of.threeDMazeIn3DScene) this.dim = dim;
+            opt.om4.dimMap = dim;
+            if (dim==3) {
+                opt.oo.limit3D = true;
+                opt.oo.sliceDir = 1;
+            } else {
+                opt.oo.limit3D = false;
+                opt.oo.sliceDir = 0;
+            }
+        }
+        // allow zero to mean "keep the same"
 
         OptionsMap.copy(oa.omCurrent, om());
         oa.ocCurrent = null; // use standard colors for dimension
@@ -335,6 +346,12 @@ public class Core : MonoBehaviour
 
         reg7 = new double[dim];
         reg8 = new double[dim];
+
+        if (dim == 3)
+        {
+            opt.oo.sliceDir = 0;
+            opt.oo.limit3D = false;
+        }
     }
 
     private bool ButtonEnabled(TouchType t)
@@ -400,7 +417,7 @@ public class Core : MonoBehaviour
         menuCommand = null;
         control();
         started = started || start;
-        engine.renderAbsolute(eyeVector, opt.oo, delta, !menuCanvas.enabled && started);
+        engine.renderAbsolute(eyeVector, opt.oo, opt.of, delta, !menuCanvas.enabled && started);
 
         if (opt.oh.alternativeControlIn3D)
         {
@@ -437,8 +454,6 @@ public class Core : MonoBehaviour
         rightButton.color = !opt.oh.rightTouchToggleMode || rightTouchButton ? enabledColor : inactiveColor;
 
         if (xrState == WebXRState.NORMAL) {
-            // fixedCamera.transform.rotation = cameraLookAt.rotation * Quaternion.Euler(cameraRot.x, 0, 0);
-            // transform.rotation = cameraLookAt.rotation * Quaternion.Euler(0, -cameraRot.y, 0);
             fixedCamera.transform.rotation = (opt.od.map && opt.od.focus ? mapPos : cameraLookAt).rotation * Quaternion.Euler(cameraRot);
             fixedCamera.transform.position = (opt.od.map && opt.od.focus ? mapPos : cameraLookAt).position + fixedCamera.transform.rotation * Vector3.back * opt.oh.cameraDistanceScale * cameraDistanceDefault;
             fixedCameraLeft.transform.rotation = fixedCamera.transform.rotation;
@@ -446,14 +461,30 @@ public class Core : MonoBehaviour
             fixedCameraRight.transform.rotation = fixedCamera.transform.rotation;
             fixedCameraRight.transform.position = fixedCamera.transform.position + fixedCamera.transform.rotation * (Vector3.right * opt.oh.iPD * 0.5f);
 
-            fixedCamera.projectionMatrix = PerspectiveOffCenter(-fWidth * opt.oh.fovscale / opt.oh.cameraDistanceScale, fWidth * opt.oh.fovscale / opt.oh.cameraDistanceScale, (-fHeight * ((opt.oh.fovscale - 1) * 1.9f + 1) + verticalOffset) / opt.oh.cameraDistanceScale, (fHeight * ((opt.oh.fovscale - 1) * 0.1f + 1) + verticalOffset) / opt.oh.cameraDistanceScale, fNear, fFar);
-            fixedCameraLeft.projectionMatrix = PerspectiveOffCenter((-sWidth * ((opt.oh.fovscale - 1) * (opt.oh.cross ? 0.1f : 1.9f) + 1) + opt.oh.iPD * 0.5f * sNear  / cameraDistanceDefault) / opt.oh.cameraDistanceScale, (sWidth * ((opt.oh.fovscale - 1) * (opt.oh.cross ? 1.9f : 0.1f) + 1) + opt.oh.iPD * 0.5f * sNear  / cameraDistanceDefault) / opt.oh.cameraDistanceScale, (-sHeight * ((opt.oh.fovscale - 1) * 1.9f + 1) + verticalOffset) / opt.oh.cameraDistanceScale, (sHeight * ((opt.oh.fovscale - 1) * 0.1f + 1) + verticalOffset) / opt.oh.cameraDistanceScale, sNear, sFar);
-            fixedCameraRight.projectionMatrix = PerspectiveOffCenter((-sWidth * ((opt.oh.fovscale - 1) * (opt.oh.cross ? 1.9f : 0.1f) + 1) - opt.oh.iPD * 0.5f * sNear  / cameraDistanceDefault) / opt.oh.cameraDistanceScale, (sWidth * ((opt.oh.fovscale - 1) * (opt.oh.cross ? 0.1f : 1.9f) + 1) - opt.oh.iPD  * 0.5f * sNear  / cameraDistanceDefault) / opt.oh.cameraDistanceScale, (-sHeight * ((opt.oh.fovscale - 1) * 1.9f + 1) + verticalOffset) / opt.oh.cameraDistanceScale, (sHeight * ((opt.oh.fovscale - 1) * 0.1f + 1) + verticalOffset) / opt.oh.cameraDistanceScale, sNear, sFar);
+            fixedCamera.projectionMatrix = PerspectiveOffCenter(
+                -fWidth * opt.oh.fovscale / opt.oh.cameraDistanceScale,
+                fWidth * opt.oh.fovscale / opt.oh.cameraDistanceScale,
+                (-fHeight * ((opt.oh.fovscale - 1) * 1.9f + 1) + verticalOffset) / opt.oh.cameraDistanceScale,
+                (fHeight * ((opt.oh.fovscale - 1) * 0.1f + 1) + verticalOffset) / opt.oh.cameraDistanceScale,
+                fNear, fFar);
+            fixedCameraLeft.projectionMatrix = PerspectiveOffCenter((
+                -sWidth * ((opt.oh.fovscale - 1) * (opt.oh.cross ? 0.1f : 1.9f) + 1) + opt.oh.iPD * 0.5f * sNear  / cameraDistanceDefault) / opt.oh.cameraDistanceScale,
+                (sWidth * ((opt.oh.fovscale - 1) * (opt.oh.cross ? 1.9f : 0.1f) + 1) + opt.oh.iPD * 0.5f * sNear  / cameraDistanceDefault) / opt.oh.cameraDistanceScale,
+                (-sHeight * ((opt.oh.fovscale - 1) * 1.9f + 1) + verticalOffset) / opt.oh.cameraDistanceScale,
+                (sHeight * ((opt.oh.fovscale - 1) * 0.1f + 1) + verticalOffset) / opt.oh.cameraDistanceScale,
+                sNear, sFar);
+            fixedCameraRight.projectionMatrix = PerspectiveOffCenter((
+                -sWidth * ((opt.oh.fovscale - 1) * (opt.oh.cross ? 1.9f : 0.1f) + 1) - opt.oh.iPD * 0.5f * sNear  / cameraDistanceDefault) / opt.oh.cameraDistanceScale,
+                (sWidth * ((opt.oh.fovscale - 1) * (opt.oh.cross ? 0.1f : 1.9f) + 1) - opt.oh.iPD  * 0.5f * sNear  / cameraDistanceDefault) / opt.oh.cameraDistanceScale,
+                (-sHeight * ((opt.oh.fovscale - 1) * 1.9f + 1) + verticalOffset) / opt.oh.cameraDistanceScale,
+                (sHeight * ((opt.oh.fovscale - 1) * 0.1f + 1) + verticalOffset) / opt.oh.cameraDistanceScale,
+                sNear, sFar);
         }
     }
 
     private void Slice()
     {
+        if (dim == 3) return;
         opt.oo.sliceDir = (opt.oo.sliceDir + 1) % ((opt.oo.sliceMode) ? 4 : 2);
         overlayText.ShowText("Slice " + (opt.oo.sliceDir == 0 ? "off" : !opt.oo.sliceMode ? "on" : opt.oo.sliceDir == 1 ? "Z" : opt.oo.sliceDir == 2 ? "X" : "Y"));
     }
@@ -461,7 +492,7 @@ public class Core : MonoBehaviour
     public void ToggleMenu()
     {
         if (menuCanvas.enabled == false) openMenu();
-        else menuPanel.doCancel();
+        else menuPanel.doOK();
     }
 
     private int swipeDir = 0;
@@ -508,7 +539,7 @@ public class Core : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.C) && getSaveType() == IModel.SAVE_NONE) { update = true; opt.od.trainSpeed = 0; }
         if (Input.GetKeyDown(KeyCode.V) && getSaveType() == IModel.SAVE_NONE) { update = true; opt.od.trainSpeed++; }
         if (Input.GetKeyDown(KeyCode.Q)) doToggleTrack();
-        if (Input.GetKeyDown(KeyCode.Y)) engine.toggleFisheye();
+        if (Input.GetKeyDown(KeyCode.Y)) { update = true; opt.of.fisheye = !opt.of.fisheye; }
         if (Input.GetKeyDown(KeyCode.P) && command == null) command = doPaint;
         if (Input.GetKeyDown(KeyCode.H) && opt.ov4.texture[0]) { update = true; opt.od.useEdgeColor = !opt.od.useEdgeColor; }
         if (Input.GetKeyDown(KeyCode.B) && (getSaveType() == IModel.SAVE_GEOM || getSaveType() == IModel.SAVE_NONE)) { update = true; opt.od.invertNormals = !opt.od.invertNormals; }
@@ -709,16 +740,6 @@ public class Core : MonoBehaviour
     private const float epsilon = 0.000001f;
     private void control()
     {
-        //nMove = (int)Math.Ceiling(fps * timeMove + epsilon);
-        //nRotate = (int)Math.Ceiling(fps * timeRotate + epsilon);
-        //nAlignMove = (int)Math.Ceiling(fps * timeAlignMove + epsilon);
-        //nAlignRotate = (int)Math.Ceiling(fps * timeAlignRotate + epsilon);
-
-        //dMove = 1 / (double)nMove;
-        //dRotate = 90 / (double)nRotate;
-        //dAlignMove = 1 / (double)nAlignMove;
-        //dAlignRotate = 90 / (double)nAlignRotate;
-
         if (!isPlatformer()) {
             dMove = delta / timeMove;
             dRotate = 90 * delta / timeRotate;
@@ -879,31 +900,15 @@ public class Core : MonoBehaviour
                     target.rotateAngle(reg8, reg7);
                 }
             }
-
-            //if (leftTrigger)
-            //{
-            //}
-            //if (rightTrigger)
-            //{
-
-            //}
         }
 
         // update state
 
-        // the click command is exclusive, so if the target changed,
-        // no update needed.
         if (target == saveTarget
              && !target.update(saveOrigin, saveAxis, engine.getOrigin()))
         { // bonk
 
             target.restore(saveOrigin, saveAxis);
-
-            //if (commandActive != null)
-            //{
-            //    commandActive = null;
-            //    alignActive = null; // not a big deal but let's do it
-            //}
 
             if (alignMode && !target.isAligned())
             {
@@ -1131,6 +1136,8 @@ public class Core : MonoBehaviour
         changeSize();
         ToggleShowInput();
         menuPanel.doToggleSkybox();
+        ToggleStereo();
+        ToggleCross();
     }
 
     public void setOptions()
@@ -1172,10 +1179,6 @@ public class Core : MonoBehaviour
 
     public void closeMenu()
     {
-        // leftL.enabled = false;
-        // rightL.enabled = false;
-        // SteamVR_Actions.control.Activate(left);
-        // SteamVR_Actions.control.Activate(right);
         menuCanvas.enabled = false;
         inputCanvas.enabled = xrState == WebXRState.NORMAL && opt.oh.showController;
         hint.SetActive(opt.oh.showHint);
@@ -1184,20 +1187,6 @@ public class Core : MonoBehaviour
     public void ToggleSkyBox()
     {
         engine.objColor = opt.od.toggleSkyBox ? Color.white : Color.black;
-    }
-
-    public void doQuit()
-    {
-        try {
-            PropertyFile.save(FileItem.Combine(Application.persistentDataPath, fileCurrent),save);
-        } catch (Exception e) {
-            Debug.LogException(e);
-        }
-#if UNITY_EDITOR
-        UnityEditor.EditorApplication.isPlaying = false;
-#elif UNITY_STANDALONE
-        Application.Quit();
-#endif
     }
 
     public void doLoad()
@@ -1215,7 +1204,8 @@ public class Core : MonoBehaviour
         Debug.Log("LoadFile " + (FileBrowser.Success ? "successful: " + Path.GetFileName(FileBrowser.Result[0]) : "failed"));
 
         if (FileBrowser.Success) {
-            reloadFile = FileItem.Combine(Application.streamingAssetsPath, FileBrowser.Result[0]);
+            reloadFile = FileBrowser.Result[0];
+            reloadFileIsPath = true;
             Debug.Log("Load: " + Path.GetFileName(reloadFile));
             yield return LoadCoroutine();
         }
@@ -1223,14 +1213,24 @@ public class Core : MonoBehaviour
 
     IEnumerator LoadCoroutine()
     {
-        yield return PropertyFile.test(reloadFile);
+        yield return PropertyFile.test(reloadFile, reloadFileIsPath);
         if (PropertyFile.isMaze) yield return doLoadMaze();
         else yield return doLoadGeom();
     }
 
+    public void doLoadLocal()
+    {
+        BlobIO.MakeUpload((f) =>
+        {
+            Debug.Log($"Uploaded file: \"{f.Filename}\"");
+            reloadFile = System.Text.Encoding.UTF8.GetString(f.Data);
+            reloadFileIsPath = false;
+            StartCoroutine(LoadCoroutine());
+        });
+    }
+
     private IEnumerator doLoadMaze()
     {
-        Debug.Log("Load: " + Path.GetFileName(reloadFile));
         yield return PropertyFile.load(reloadFile, loadMazeCommand);
     }
 
@@ -1239,15 +1239,15 @@ public class Core : MonoBehaviour
         // read file
 
         context = DefaultContext.create();
-        Debug.Log("Load: " + Path.GetFileName(reloadFile));
         context.libDirs.Add("data" + Path.DirectorySeparatorChar + "lib");
-        yield return Language.include(context, reloadFile);
+        yield return Language.include(context, reloadFile, reloadFileIsPath);
         menuCommand = loadGeom;
     }
    private static readonly string VALUE_CHECK       = "Maze";
 
    private static readonly string KEY_CHECK         = "game";
    private static readonly string KEY_DIM           = "dim";
+   private static readonly string KEY_TAB           = "tab";
    private static readonly string KEY_OPTIONS_MAP   = "om";
    private static readonly string KEY_OPTIONS_COLOR = "oc";
    private static readonly string KEY_OPTIONS_VIEW  = "ov";
@@ -1257,7 +1257,14 @@ public class Core : MonoBehaviour
    private static readonly string KEY_ALIGN_MODE    = "align";
 
     public void loadMazeCommand(IStore store) { this.store = store; menuCommand = loadMaze; }
-    private void loadMaze() { try { loadMaze(store); } catch (Exception e) { Debug.LogException(e); } store = null; }
+    private void loadMaze()
+    {
+        try { loadMaze(store); } catch (Exception e) { Debug.LogException(e); }
+        store = null;
+        menuPanel.Activate(null);
+        updateOptions();
+    }
+
     public void loadMaze(IStore store){
         if ( ! store.getString(KEY_CHECK).Equals(VALUE_CHECK) ) throw new Exception("getEmpty");
 
@@ -1319,13 +1326,10 @@ public class Core : MonoBehaviour
             if (t is LanguageException)
             {
                 LanguageException e = (LanguageException)t;
-                //t = e.getCause();
                 s = Path.GetFileName(e.getFile()) + "\n" + e.getDetail();
                 Debug.LogException(new Exception(s));
             }
             else Debug.LogException(t);
-            //t.printStackTrace();
-            //JOptionPane.showMessageDialog(this, s + t.getClass().getName() + "\n" + t.getMessage(), App.getString("Maze.s25"), JOptionPane.ERROR_MESSAGE);
         }
         finally { context = null; }
     }
@@ -1333,13 +1337,10 @@ public class Core : MonoBehaviour
     {
 
         // build the model
-        //Debug.Log("try");
         GeomModel model = buildModel(c);
         // run this before changing anything since it can fail
-        //Debug.Log("complete");
         // switch to geom
 
-        // if (model.getDimension() == 3) throw new Exception("The system does not support 3D scene");
         dim = model.getDimension();
 
         // no need to modify omCurrent, just leave it with previous maze values
@@ -1370,7 +1371,7 @@ public class Core : MonoBehaviour
         menuPanel.Activate(engine.retrieveModel() as ISelectShape);
     }
 
-    public static GeomModel buildModel(Context c) //throws Exception
+    public static GeomModel buildModel(Context c)
     {
 
         DimensionAccumulator da = new DimensionAccumulator();
@@ -1463,13 +1464,10 @@ public class Core : MonoBehaviour
 
         Geom.ShapeInterface[] list = slist.ToArray();
 
-        //Geom.Shape[] shapes = (Geom.Shape[])slist.ToArray();
         Geom.Shape[] shapes = new Geom.Shape[slist.Count];
         for (int i = 0; i < slist.Count; i++) shapes[i] = (Geom.Shape)slist[i];
-        //Train[] trains = (Train[])tlist.toArray(new Train[tlist.size()]);
         Train[] trains = new Train[tlist.Count];
         for (int i = 0; i < tlist.Count; i++) trains[i] = tlist[i];
-        //Enemy[] enemies = (Enemy[])elist.toArray(new Enemy[elist.size()]);
         Enemy[] enemies = new Enemy[elist.Count];
         for (int i = 0; i < elist.Count; i++) enemies[i] = elist[i];
 
@@ -1538,32 +1536,26 @@ public class Core : MonoBehaviour
     }
 
     public void doReload(int delta) {
-        if (reloadFile == null) return;
+        if (!reloadFileIsPath || reloadFile == null) return;
 
-        if (delta != 0) {
-            string file = FileItem.Retrieve(reloadFile);
-            string[] f = Array.ConvertAll<FileItem, string>(FileItem.Find(FileItem.GetParent(file)).children.FindAll(x => !x.isDirectory).ToArray(), f => f.path);
-            // Array.Sort(f);
+        if (delta != 0 && FileItem.Exists(reloadFile)) {
+            string[] f = Array.ConvertAll<FileItem, string>(FileItem.Find(FileItem.GetParent(reloadFile)).children.FindAll(x => !x.isDirectory).ToArray(), f => f.path);
 
-            // results of listFiles have same parent directory so names are sufficient
-            // (and probably faster for sorting)
-
-            int i = Array.IndexOf(f,file);
+            int i = Array.IndexOf(f,reloadFile);
             if (i != -1) {
                 i += delta;
-                if (i >= 0 && i < f.Length) file = f[i];
+                if (i >= 0 && i < f.Length) reloadFile = f[i];
                 else return; // we're at the end, don't do a reload
             }
-            // else not found, fall through and report that error
-            reloadFile = FileItem.Combine(Application.streamingAssetsPath, file);
         }
+        Debug.Log("Load: " + Path.GetFileName(reloadFile));
         StartCoroutine(LoadCoroutine());
     }
 
     private bool doInit() {
         try {
-            PropertyFile.loadDefault(delegate(IStore store) { loadDefault(store); });
-            if (File.Exists(FileItem.Combine(Application.persistentDataPath, fileCurrent))) PropertyFile.load(FileItem.Combine(Application.persistentDataPath, fileCurrent), load);
+            PropertyFile.loadImmidiate(PropertyFile.default_, delegate(IStore store) { loadDefault(store); });
+            if (PlayerPrefs.HasKey(fileCurrent)) { PropertyFile.loadImmidiate(PlayerPrefs.GetString(fileCurrent), load); }
         } catch (Exception e) {
             Debug.LogException(e);
             return false;
@@ -1571,13 +1563,33 @@ public class Core : MonoBehaviour
         return true;
     }
 
-   private static string nameDefault = "default.properties";
-   private static string fileCurrent = "current.properties";
+    public void doLoadLocalProperties()
+    {
+        BlobIO.MakeUpload((f) =>
+        {
+            Debug.Log($"Uploaded file: \"{f.Filename}\"");
+            string s = System.Text.Encoding.UTF8.GetString(f.Data);
+            PropertyFile.loadImmidiate(s, doLoadLocalPropertiesCommand);
+        });
+    }
+    public void doLoadLocalPropertiesCommand(IStore store) { this.store = store; menuCommand = load; }
+    private void load()
+    {
+        try { load(store); } catch (Exception e) { Debug.LogException(e); }
+        store = null;
+        menuPanel.Activate(null);
+        updateOptions();
+    }
+
+    public void doSaveLocalProperties()
+    {
+        PropertyFile.save(save, PropertyFile.SaveType.EXPORT_PROPERTIES);
+    }
+
+   public static string nameDefault = "default.properties";
+   public static string fileCurrent = "current.properties";
 
    private static readonly String KEY_OPTIONS = "opt";
-   private static readonly String KEY_BOUNDS  = "bounds";
-   private static readonly String KEY_GAME_DIRECTORY  = "dir.game";
-   private static readonly String KEY_IMAGE_DIRECTORY = "dir.image";
    private static readonly String KEY_VERSION = "version";
    private static readonly String KEY_FISHEYE = "opt.of"; // not part of opt (yet)
 
@@ -1587,67 +1599,319 @@ public class Core : MonoBehaviour
     public void loadDefault(IStore store) {
         store.getObject(KEY_OPTIONS,optDefault);
 
-        if (File.Exists(FileItem.Combine(Application.persistentDataPath, fileCurrent))) return;
-
         store.getObject(KEY_OPTIONS,opt);
-        dim = 4;
-        gameDirectory  = null;
+        dim = 3;
     }
 
-    public void load(IStore store) {
-
+    public void load(IStore store)
+    {
         store.getObject(KEY_OPTIONS,opt);
         dim = store.getInteger(KEY_DIM);
-        //if ( ! (dim == 3 || dim == 4) ) throw App.getException("Maze.e1");
-        //gameDirectory  = store.getString(KEY_GAME_DIRECTORY );
+        if ( ! (dim == 3 || dim == 4) ) throw new Exception("Internal error: Invalid number of space dimensions.");
 
-        //int? temp = store.getNullableInteger(KEY_VERSION);
-        //int version = (temp == null) ? 1 : temp.Value;
-
-        //if (version >= 2) {
-            //store.getObject(KEY_FISHEYE,OptionsFisheye.of);
-            //OptionsFisheye.recalculate();
-        //}
+        opt.of.recalculate();
+        if (!menuCanvas.enabled) menuPanel.tab = store.getInteger(KEY_TAB);
     }
-    private void doSave() {
+
+    public void doSave() {
 
         int saveType = getSaveType();
-        if (!(saveType == IModel.SAVE_NONE || saveType == IModel.SAVE_GEOM)) { // train model
+        if (saveType == IModel.SAVE_NONE || saveType == IModel.SAVE_SHOOT) {
             return;
         }
 
-        // JFileChooser chooser = new JFileChooser(getGameDirectory());
-        // String title = App.getString("Maze.s16");
-        // chooser.setDialogTitle(title);
-        // int result = chooser.showSaveDialog(this);
-        // if (result != JFileChooser.APPROVE_OPTION) return;
-
-        // gameDirectory = chooser.getCurrentDirectory();
-        // File file = chooser.getSelectedFile();
-        // if (file.exists() && ! confirmOverwrite(file,title)) return;
-
-        // try {
-            // if (saveType == IModel.SAVE_MAZE) {
-                // PropertyFile.save(file,core);
-            // } else {
-                // doSaveGeom(file);
-                // // this handles exceptions internally, but no harm in having an extra layer here
-            // }
-        // } catch (Exception e) {
-            // JOptionPane.showMessageDialog(this,e.getMessage(),App.getString("Maze.s17"),JOptionPane.ERROR_MESSAGE);
-        // }
+        try {
+            if (saveType == IModel.SAVE_MAZE) {
+                PropertyFile.save(saveMaze, PropertyFile.SaveType.EXPORT_MAZE);
+            } else {
+                doSaveGeom();
+                // this handles exceptions internally, but no harm in having an extra layer here
+            }
+        } catch (Exception e) {
+            Debug.LogException(e);
+        }
     }
+
+    private void doSaveGeom() {
+        try {
+            saveGeom();
+        } catch (Exception e) {
+            Debug.LogException(e);
+        }
+    }
+
     public void save(IStore store) {
 
         store.putObject(KEY_OPTIONS,oa.opt);
         store.putInteger(KEY_DIM,dim);
-        //store.putString(KEY_GAME_DIRECTORY, gameDirectory);
+        store.putInteger(KEY_TAB,menuPanel.tab);
 
-        //store.putInteger(KEY_VERSION,2);
-
-        //// version 2
-        //store.putObject(KEY_FISHEYE,OptionsFisheye.of);
+        store.putInteger(KEY_VERSION,-1);
     }
+
+    private void saveGeom() {
+        TokenFile t = new TokenFile();
+        GeomModel model = (GeomModel)engine.retrieveModel();
+        writeModel(t,model,engine.getOrigin(),engine.getAxisArray());
+        BlobIO.MakeDownloadText(t.w,(
+            getSaveType() == IModel.SAVE_GEOM ? "geom_" : 
+            getSaveType() == IModel.SAVE_ACTION ? "action_" : "block_")
+            + DateTime.Now.ToString("yyyyMMddHHmmss"));
+    }
+
+    public static void writeIntVec(IToken t, int[] d) {
+        t.putSymbol("[");
+        for (int i=0; i<d.Length; i++) {
+            t.putInteger(d[i]);
+        }
+        t.putSymbol("]");
+    }
+
+    public static void writeVec(IToken t, double[] d) {
+        t.putSymbol("[");
+        for (int i=0; i<d.Length; i++) {
+            t.putDouble(d[i]);
+        }
+        t.putSymbol("]");
+    }
+
+    private static readonly String[] unitPos = new String[] { "X+", "Y+", "Z+", "W+" };
+    private static readonly String[] unitNeg = new String[] { "X-", "Y-", "Z-", "W-" };
+
+    public static void writeAxis(IToken t, double[] d) {
+
+        // we don't want approximations here.  if we're in align mode,
+        // we'll snap to the axes, so they'll be exact.
+        // also note, we want both [1 0 0] and [1 0 0 0] to map to X+.
+
+        int count = 0;
+        int index = 0;
+        double value = 0;
+
+        for (int i=0; i<d.Length; i++) {
+            if (d[i] != 0) {
+                count++;
+                index = i;
+                value = d[i];
+            }
+        }
+
+        if (count == 1 && Math.Abs(value) == 1) {
+            String[] unit = (value == 1) ? unitPos : unitNeg;
+            t.putWord(unit[index]);
+        } else {
+            writeVec(t,d);
+        }
+    }
+
+    public static void writeAxisArray(IToken t, double[][] axis) {
+        t.putSymbol("[");
+        for (int i=0; i<axis.Length; i++) {
+            if (i != 0) t.space();
+            writeAxis(t,axis[i]);
+        }
+        t.putSymbol("]");
+    }
+
+    public static string format(Color color, Dictionary<string, Color> colorNames) {
+        if (color == Color.clear) return "null";
+        string s = string.Empty;
+        if (!colorNames.ContainsValue(color)) {
+            s = "#" + ColorUtility.ToHtmlStringRGB(color);
+            colorNames.Add(s,color);
+            // sure, why not cache it
+        }
+        else s = colorNames.FirstOrDefault(x => x.Value == color).Key;
+        return s;
+    }
+
+    public static void writeVertices(IToken t, double[][] vertex) {
+        for (int i=0; i<vertex.Length; i++) {
+            writeVec(t,vertex[i]);
+            t.newLine();
+        }
+    }
+
+    /**
+        * @param colorNames The color name dictionary, or null if you don't want colors.
+        */
+    public static void writeEdges(IToken t, Geom.Edge[] edge, Dictionary<string,Color> colorNames) {
+        for (int i=0; i<edge.Length; i++) {
+            t.putInteger(edge[i].iv1);
+            t.putInteger(edge[i].iv2);
+            if (colorNames != null && edge[i].color != null) {
+                t.putWord(format(edge[i].color,colorNames)).putWord("cedge");
+            } else {
+                t.putWord("edge");
+            }
+            t.newLine();
+        }
+    }
+
+    public static void writeTexture(IToken t, int face, Geom.Texture texture, Dictionary<string,Color> colorNames) {
+        t.putInteger(face).newLine();
+        t.putSymbol("[").newLine();
+        writeVertices(t,texture.vertex);
+        t.putSymbol("]").putSymbol("[").newLine();
+        writeEdges(t,texture.edge,colorNames);
+        t.putSymbol("]").newLine();
+        t.putWord("texture").putWord("PROJ_NONE").putWord("null").putWord("facetexture").newLine();
+    }
+
+    public static void writeShapeDef(IToken t, Geom.Shape shape, String name, Dictionary<string,Color> colorNames) {
+        t.putSymbol("[").newLine();
+        writeVertices(t,shape.vertex);
+        t.putSymbol("]").putSymbol("[").newLine();
+        writeEdges(t,shape.edge,/* colorNames = */ null); // colors handled later
+        t.putSymbol("]").putSymbol("[").newLine();
+        for (int i=0; i<shape.cell.Length; i++) {
+            writeIntVec(t,shape.cell[i].ie);
+            t.space();
+            if (shape.cell[i].normal != null) {
+                writeVec(t,shape.cell[i].normal);
+                t.space();
+            } else {
+                t.putWord("null");
+            }
+            t.putWord("face").newLine();
+        }
+        t.putSymbol("]").newLine();
+        t.putWord("shape");
+        if ( ! Vec.exactlyEquals(shape.aligncenter,shape.shapecenter) ) {
+            // default is exactly equal, so this is a reasonable test
+            t.space();
+            writeVec(t,shape.aligncenter);
+            t.space().putWord("aligncenter");
+        }
+
+        bool first = true; // avoid newline here, usually not needed
+
+        for (int i=0; i<shape.cell.Length; i++) {
+            if (shape.cell[i].customTexture is Geom.Texture) {
+
+                if (first) { t.newLine(); first = false; }
+                writeTexture(t,i,(Geom.Texture) shape.cell[i].customTexture,colorNames);
+            }
+        }
+
+        ShapeColor.writeColors(t,new ShapeColor.NullState(),shape,colorNames,first);
+
+        t.putString(name).putWord("def").newLine();
+    }
+
+    public static String getNextName(Dictionary<string,Geom.Shape> map, String prefix) {
+        for (int i=1; ; i++) { // terminates since map is finite
+            String name = prefix + i;
+            if ( ! map.ContainsKey(name) ) return name;
+            // not efficient to scan values, but oh well
+        }
+    }
+
+    public static void writeModel(IToken t, GeomModel model, double[] origin, double[][] axis)
+    {
+
+    // includes
+
+        foreach (string s in model.retrieveTopLevelInclude()) {
+            t.putString(s).putWord("include").newLine();
+        }
+        // note, we want to include all the same files,
+        // not just the ones containing shapes that were used,
+        // both because it's easier
+        // and because we want to have the same the UI shapes.
+
+        t.newLine();
+
+    // blockinfo
+
+        if (model.getSaveType() == IModel.SAVE_BLOCK) {
+            t.putWord("blockinfo").newLine().newLine();
+        }
+
+    // finishinfo
+
+        if (model.getSaveType() == IModel.SAVE_ACTION) {
+            writeIntVec(t,((ActionModel)model).retrieveFinish());
+            t.space().putWord("finishinfo").newLine().newLine();
+        }
+
+    // footinfo
+
+        if (model.getSaveType() == IModel.SAVE_ACTION
+        || model.getSaveType() == IModel.SAVE_BLOCK) {
+            t.putInteger(((ActionModel)model).retrieveFoot()).space().putWord("footinfo").newLine().newLine();
+        }
+
+    // viewinfo
+
+        writeVec(t,origin);
+        t.space();
+        writeAxisArray(t,axis);
+        t.space().putWord("viewinfo").newLine();
+
+    // drawinfo
+
+        bool[] texture = model.retrieveTexture();
+        t.putSymbol("[");
+        for (int i=0; i<texture.Length; i++) {
+            t.putInteger(texture[i] ? 1 : 0);
+        }
+        t.putSymbol("]").space().putBoolean(model.retrieveUseEdgeColor()).putWord("drawinfo").newLine();
+
+        t.newLine();
+
+    // shape definitions
+
+        Geom.Shape[] shapes = model.retrieveShapes();
+        Dictionary<string,Color> colorNames = new Dictionary<string, Color>(model.retrieveColorNames());
+        Dictionary<string,Geom.Shape> idealNames = new Dictionary<string, Geom.Shape>(model.retrieveIdealNames());
+
+        // we modify these, so we have to make copies so that second saves
+        // will work correctly.  actually colorNames is harmless, but it's
+        // still good form.
+
+        // note, it's entirely possible that the context dictionary listed
+        // the same color or shape under different names.  in that case,
+        // which one you get here is random (determined by hash map order).
+        // it's also possible the dictionary will list different shapes
+        // that have the same ideal, and the same thing happens in that case.
+
+        for (int i=0; i<shapes.Length; i++) {
+            Geom.Shape shape = shapes[i];
+            if (shape == null) continue;
+
+            if (idealNames.ContainsValue(shape.ideal)) continue; // got it
+
+            String name = getNextName(idealNames,"shape");
+            idealNames.Add(name,shape.ideal);
+
+            writeShapeDef(t,shape.ideal,name,colorNames);
+
+            t.newLine();
+        }
+
+    // shapes
+
+        for (int i=0; i<shapes.Length; i++) {
+            Geom.Shape shape = shapes[i];
+            if (shape == null) continue;
+
+            t.putWord(idealNames.FirstOrDefault(x => x.Value == shape.ideal).Key).space();
+            writeVec(t,shape.aligncenter);
+            t.space();
+            writeAxisArray(t,shape.axis);
+            t.space().putWord("place").newLine();
+
+            if (shape.isNoUserMove) {
+                t.putWord("nomove").newLine();
+            }
+
+            ShapeColor.writeColors(t,new ShapeColor.ShapeState(shape.ideal),shape,colorNames,/* first = */ false);
+
+            t.newLine();
+        }
+    }
+
     private static Matrix4x4 PerspectiveOffCenter(float left, float right, float bottom, float top, float near, float far)
     {
         float x = 2.0f * near / (right - left);

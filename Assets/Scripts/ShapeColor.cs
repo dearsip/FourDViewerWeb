@@ -53,14 +53,13 @@ public class ShapeColor {
 
 // --- helpers ---
 
-   public static void increment(Dictionary<Color, object> map, Color c) {
-      object o = map[c];
-      int count = (o == null) ? 0 : (int) o;
-      map.Add(c,++count);
+   public static void increment(Dictionary<Color, int> map, Color c) {
+      if (map.ContainsKey(c)) map[c]++;
+      else map.Add(c,1);
    }
 
    public static Color getDominantColor(Geom.Shape shape) {
-      Dictionary<Color, object> map = new Dictionary<Color, object>(); // Color -> Integer
+      Dictionary<Color, int> map = new Dictionary<Color, int>(); // Color -> Integer
 
       for (int i=0; i<shape.cell.Length; i++) {
          increment(map,shape.cell[i].color);
@@ -69,11 +68,11 @@ public class ShapeColor {
       int max = 0; // entries will always be at least 1
       Color c = Color.clear;
 
-      foreach (KeyValuePair<Color, object> me in map) {
-         int count = (int) me.Value;
+      foreach (KeyValuePair<Color, int> me in map) {
+         int count = me.Value;
          if (count > max) {
             max = count;
-            c = (Color) me.Key; // can be null
+            c = me.Key; // can be null
          }
       }
 
@@ -104,111 +103,109 @@ public class ShapeColor {
    }
 
    public class Record {
-      public int face;
+      public int cell;
       public Color color; // not strictly necessary, but I like it
       public double weight; // 0-1 for fraction of edges that have the face color
    }
 
-   //public static class RecordComparator : Comparator {
-      //public int compare(Object o1, Object o2) {
-         //double d = ((Record) o1).weight - ((Record) o2).weight;
-         //if (d == 0) return 0;
-         //return (d > 0) ? 1 : -1;
-      //}
-   //}
+   public class RecordComparator : IComparer<Record>
+   {
+      public int Compare(Record o1, Record o2) {
+         double d = o1.weight - o2.weight;
+         if (d == 0) return 0;
+         return (d > 0) ? 1 : -1;
+      }
+   }
 
    //public static RecordComparator recordComparator = new RecordComparator();
 
 //// --- generate ---
 
-   //public static void writeColors(IToken t, State base, Geom.Shape shape, HashMap colorNames, boolean first) throws IOException {
+   public static IComparer<Record> recordComparator = new RecordComparator();
+   public static void writeColors(IToken t, State base_, Geom.Shape shape, Dictionary<string,Color> colorNames, bool first)
+   {
 
-   //// decide whether to use shapecolor
+   // decide whether to use shapecolor
 
-      //Color shapeColor = getDominantColor(shape);
-      //ColorState cs = new ColorState(shapeColor);
+      Color shapeColor = getDominantColor(shape);
+      ColorState cs = new ColorState(shapeColor);
 
-      //int nb = countFaceChanges(base,shape);
-      //int nc = countFaceChanges(cs,  shape);
+      int nb = countFaceChanges(base_,shape);
+      int nc = countFaceChanges(cs,  shape);
 
-      //if (nc+1 < nb) { // only use if it *reduces* the line count
+      if (nc+1 < nb) { // only use if it *reduces* the line count
 
-         //if (first) { t.newLine(); first = false; }
-         //t.putWord(Core.format(shapeColor,colorNames)).putWord("shapecolor").newLine();
+         if (first) { t.newLine(); first = false; }
+         t.putWord(Core.format(shapeColor,colorNames)).putWord("shapecolor").newLine();
 
-         //base = cs;
-      //}
+         base_ = cs;
+      }
 
-      //// actually this may not reduce the line count, because the
-      //// wrong choice will generate a bunch of edgecolor commands.
-      //// not sure what we can do about that.  but, for the
-      //// single-colored shapes that we usually see, it works fine.
+      // actually this may not reduce the line count, because the
+      // wrong choice will generate a bunch of edgecolor commands.
+      // not sure what we can do about that.  but, for the
+      // single-colored shapes that we usually see, it works fine.
 
-      //// Q: is it possible that a non-dominant color would work better?
-      //// A: no.  when a color occupies k faces out of n, the other
-      ////    n-k faces are a different color, so we need n-k+1 commands.
+      // Q: is it possible that a non-dominant color would work better?
+      // A: no.  when a color occupies k faces out of n, the other
+      //    n-k faces are a different color, so we need n-k+1 commands.
 
-   //// generate facecolor commands
+   // generate facecolor commands
 
-      //// it seems like the "same edge color" relation turns the faces
-      //// into a graph (a DAG), so we could use the graph structure to
-      //// compute the right command order, but ...
-      //// 1. graph calculations are hard
-      //// 2. in 4D, the intersection of two faces isn't a single edge
-      //// 3. the cedge command can make cyclic graphs
-      //// 4. same for the new edgecolor command that I added for save
+      // it seems like the "same edge color" relation turns the faces
+      // into a graph (a DAG), so we could use the graph structure to
+      // compute the right command order, but ...
+      // 1. graph calculations are hard
+      // 2. in 4D, the intersection of two faces isn't a single edge
+      // 3. the cedge command can make cyclic graphs
+      // 4. same for the new edgecolor command that I added for save
 
-      //LinkedList list = new LinkedList();
+      List<Record> list = new List<Record>();
 
-      //for (int i=0; i<shape.face.length; i++) {
-         //if ( ! equals(shape.face[i].color,base.faceColor(i)) ) {
+      for (int i=0; i<shape.cell.Length; i++) {
+         if ( ! equals(shape.cell[i].color,base_.faceColor(i)) ) {
 
-            //Record r = new Record();
-            //r.face = i;
-            //r.color = shape.face[i].color;
-            //r.weight = getWeight(shape,i);
+            Record r = new Record();
+            r.cell = i;
+            r.color = shape.cell[i].color;
+            r.weight = getWeight(shape,i);
 
-            //list.add(r);
-         //}
-      //}
+            list.Add(r);
+         }
+      }
 
-      //Record[] array = (Record[]) list.toArray(new Record[list.size()]);
-      //Arrays.sort(array,recordComparator);
+      list.Sort(recordComparator);
 
-      //for (int i=0; i<array.length; i++) {
-         //Record r = array[i];
+      foreach (Record r in list) {
+         if (first) { t.newLine(); first = false; }
+         t.putInteger(r.cell).putWord(Core.format(r.color,colorNames)).putWord("facecolor").newLine();
+      }
 
-         //if (first) { t.newLine(); first = false; }
-         //t.putInteger(r.face).putWord(Core.format(r.color,colorNames)).putWord("facecolor").newLine();
-      //}
+   // generate edgecolor commands
 
-   //// generate edgecolor commands
+      Color[] ec = new Color[shape.edge.Length];
 
-      //Color[] ec = new Color[shape.edge.length];
+      for (int i=0; i<shape.edge.Length; i++) {
+         ec[i] = base_.edgeColor(i);
+      }
 
-      //for (int i=0; i<shape.edge.length; i++) {
-         //ec[i] = base.edgeColor(i);
-      //}
+      foreach (Record r in list) {
+         // apply cellcolor to edges, as in Geom.Shape.updateEdgeColor
+         int[] ie = shape.cell[r.cell].ie;
+         for (int j=0; j<ie.Length; j++) ec[ie[j]] = r.color;
+      }
 
-      //for (int i=0; i<array.length; i++) {
-         //Record r = array[i];
+      // here ec has the new base_ state, but it's not worth
+      // setting that up, we can just generate the commands
 
-         //// apply facecolor to edges, as in Geom.Shape.updateEdgeColor
-         //int[] ie = shape.face[r.face].ie;
-         //for (int j=0; j<ie.length; j++) ec[ie[j]] = r.color;
-      //}
+      for (int i=0; i<shape.edge.Length; i++) {
+         if ( ! equals(shape.edge[i].color,ec[i]) ) {
 
-      //// here ec has the new base state, but it's not worth
-      //// setting that up, we can just generate the commands
-
-      //for (int i=0; i<shape.edge.length; i++) {
-         //if ( ! equals(shape.edge[i].color,ec[i]) ) {
-
-            //if (first) { t.newLine(); first = false; }
-            //t.putInteger(i).putWord(Core.format(shape.edge[i].color,colorNames)).putWord("edgecolor").newLine();
-         //}
-      //}
-   //}
+            if (first) { t.newLine(); first = false; }
+            t.putInteger(i).putWord(Core.format(shape.edge[i].color,colorNames)).putWord("edgecolor").newLine();
+         }
+      }
+   }
 
 }
 

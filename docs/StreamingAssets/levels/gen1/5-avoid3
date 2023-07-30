@@ -1,30 +1,6 @@
-// library --------------------------------
-
-[[0 1] [0 1] [0 1]] rect "block3" def
-
-// sky3 -----------------------------------
-
-16 0 meshring3 "mesh" def
-
-mesh brown 0 heightconst null horizon
-mesh brown 12 0.4 heightpower null horizon
-
-mesh
-[magenta #800080 null null cyan #008080] colorblend
-[0 1.2 1.2 1.56 1.56 2.09 2.09 3]
-yellow
-[0 0.333 0.667 1]
-5 index sky
-
-mesh yellow 3 sun
-
-// ----------------------------------------
-
-nomat
-
-blue 3 true 0 1 grid3
-
-blue 15 true -2 5 grid3
+"library" include
+"sky3" include
+"levels/lib/mygrid3" include
 
 [0.5 3.5 0.5] [X+ Y+ Z+] viewinfo
 

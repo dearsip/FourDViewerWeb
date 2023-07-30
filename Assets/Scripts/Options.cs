@@ -18,6 +18,7 @@ public class Options : ScriptableObject
     public OptionsDisplay od;
     public OptionsControl oo;
     public OptionsMotion ot4;
+    public OptionsFisheye of;
     public OptionsTouch oh;
 
     // --- construction ---
@@ -30,6 +31,7 @@ public class Options : ScriptableObject
         od = new OptionsDisplay();
         oo = new OptionsControl();
         ot4 = new OptionsMotion();
+        of = new OptionsFisheye();
         oh = new OptionsTouch();
     }
 

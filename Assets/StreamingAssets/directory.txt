@@ -764,4 +764,11 @@ maze
 8-7
 8-7'
 ..
+lib
+/
+mygrid3
+mygrid4
+mycompass3
+mycompass4
+..
 ..
