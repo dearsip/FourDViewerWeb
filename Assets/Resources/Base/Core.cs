@@ -101,7 +101,6 @@ public class Core : MonoBehaviour
 
     public OptionsView ov()
     {
-        if (oa.ovCurrent != null) return oa.ovCurrent;
         return oa.opt.ov4;
     }
 
@@ -313,7 +312,7 @@ public class Core : MonoBehaviour
 
         OptionsMap.copy(oa.omCurrent, om());
         oa.ocCurrent = null; // use standard colors for dimension
-        oa.ovCurrent = null; // ditto
+        // oa.ovCurrent = null; // ditto
         oa.oeCurrent = oa.oeNext;
         oa.oeCurrent.forceSpecified();
         oa.oeNext = new OptionsSeed();
@@ -1137,7 +1136,6 @@ public class Core : MonoBehaviour
         ToggleShowInput();
         menuPanel.doToggleSkybox();
         ToggleStereo();
-        ToggleCross();
     }
 
     public void setOptions()
@@ -1214,7 +1212,7 @@ public class Core : MonoBehaviour
     IEnumerator LoadCoroutine()
     {
         yield return PropertyFile.test(reloadFile, reloadFileIsPath);
-        if (PropertyFile.isMaze) yield return doLoadMaze();
+        if (PropertyFile.isMaze) yield return PropertyFile.load(reloadFile, loadMazeCommand, reloadFileIsPath);
         else yield return doLoadGeom();
     }
 
@@ -1227,11 +1225,6 @@ public class Core : MonoBehaviour
             reloadFileIsPath = false;
             StartCoroutine(LoadCoroutine());
         });
-    }
-
-    private IEnumerator doLoadMaze()
-    {
-        yield return PropertyFile.load(reloadFile, loadMazeCommand);
     }
 
     private IEnumerator doLoadGeom()
@@ -1286,7 +1279,7 @@ public class Core : MonoBehaviour
         store.getObject(KEY_OPTIONS_VIEW,ovLoad);
         store.getObject(KEY_OPTIONS_SEED,oeLoad);
         if ( ! oeLoad.isSpecified() ) throw new Exception("seedError");
-        bool alignModeLoad = store.getBool(KEY_ALIGN_MODE);
+        alignMode = store.getBool(KEY_ALIGN_MODE);
 
     // ok, we know enough ... even if the engine parameters turn out to be invalid,
     // we can still start a new game
@@ -1297,8 +1290,6 @@ public class Core : MonoBehaviour
 
         oa.omCurrent = omLoad; // may as well transfer as copy
         oa.ocCurrent = ocLoad;
-        oa.ovCurrent = ovLoad;
-        oa.oeCurrent = oeLoad;
 
         oa.opt.om4 = omLoad;
         oa.opt.oc4 = ocLoad;
@@ -1310,7 +1301,7 @@ public class Core : MonoBehaviour
         engine.newGame(dim,model,ov(),/*oa.opt.os,*/ot(),false);
         controllerReset();
 
-        engine.load(store,alignModeLoad);
+        engine.load(store,alignMode);
     }
 
     Context context;
@@ -1345,7 +1336,6 @@ public class Core : MonoBehaviour
 
         // no need to modify omCurrent, just leave it with previous maze values
         oa.ocCurrent = null;
-        oa.ovCurrent = null;
         // no need to modify oeCurrent or oeNext
 
         bool[] texture = model.getDesiredTexture();
@@ -1353,7 +1343,7 @@ public class Core : MonoBehaviour
         { // model -> ov
             OptionsView ovLoad = new OptionsView();
             OptionsView.copy(ovLoad, ov(), texture);
-            oa.ovCurrent = ovLoad;
+            oa.opt.ov4 = ovLoad;
             // careful, if you set ovCurrent earlier
             // then ov() will return the wrong thing
         }

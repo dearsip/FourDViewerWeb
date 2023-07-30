@@ -15,7 +15,6 @@ public class OptionsAll
     public Options opt;
     public OptionsMap omCurrent;
     public OptionsColor ocCurrent;
-    public OptionsView ovCurrent; // out of order, but similar to ocCurrent
     public OptionsSeed oeCurrent;
     public OptionsSeed oeNext;
 

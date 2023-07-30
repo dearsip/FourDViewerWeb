@@ -34,18 +34,21 @@ public class PropertyFile
 
     // https://stackoverflow.com/questions/485659/can-net-load-and-parse-a-properties-file-equivalent-to-java-properties-class
     // modified for maze properties
-    private static IEnumerator loadProperties(string file, Dictionary<string, string> dict){
+    private static IEnumerator loadProperties(string file, Dictionary<string, string> dict, bool path) {
         string text;
+        if (!path) text = file;
+        else {
 #if UNITY_EDITOR
-        yield return text = File.ReadAllText(Path.IsPathRooted(file) ? file : FileItem.Combine(Application.streamingAssetsPath, file));
+            yield return text = File.ReadAllText(Path.IsPathRooted(file) ? file : FileItem.Combine(Application.streamingAssetsPath, file));
 #else
-        using (UnityWebRequest www = UnityWebRequest.Get(file.Substring(0,4) == "http" ? file : FileItem.Combine(Application.streamingAssetsPath, file)))
-        {
-            yield return www.SendWebRequest();
-            if (www.result == UnityWebRequest.Result.Success) text = www.downloadHandler.text;
-            else { Debug.Log(www.error); yield break; }
-        }
+            using (UnityWebRequest www = UnityWebRequest.Get(file.Substring(0,4) == "http" ? file : FileItem.Combine(Application.streamingAssetsPath, file)))
+            {
+                yield return www.SendWebRequest();
+                if (www.result == UnityWebRequest.Result.Success) text = www.downloadHandler.text;
+                else { Debug.Log(www.error); yield break; }
+            }
 #endif
+        }
         foreach (string line in text.Replace("\r\n","\n").Split(new[]{'\n','\r'}))
         {
             if ((!String.IsNullOrEmpty(line)) &&
@@ -103,9 +106,9 @@ public class PropertyFile
         yield return testProperties(file, path);
     }
 
-    public static IEnumerator load(string file, Loader storable) {
+    public static IEnumerator load(string file, Loader storable, bool path) {
         Dictionary<string, string> p = new Dictionary<string, string>();
-        yield return loadProperties(file, p);
+        yield return loadProperties(file, p, path);
         try {
             PropertyStore store = new PropertyStore(p);
             storable(store);
