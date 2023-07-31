@@ -197,8 +197,7 @@ public class Core : MonoBehaviour
         xrState = state;
         if (xrState != WebXRState.NORMAL)
         {
-            menuPanel.doOK();
-            menuCanvas.enabled = false;
+            if (menuCanvas.enabled) menuPanel.doOK();
             inputCanvas.enabled = false;
             fixedCameraLeft.enabled = false;
             fixedCameraRight.enabled = false;
@@ -494,7 +493,7 @@ public class Core : MonoBehaviour
 
     public void ToggleMenu()
     {
-        if (menuCanvas.enabled == false) openMenu();
+        if (!menuCanvas.enabled) openMenu();
         else menuPanel.doOK();
     }
 
