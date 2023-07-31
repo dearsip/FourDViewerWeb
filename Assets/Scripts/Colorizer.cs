@@ -36,7 +36,7 @@ public class Colorizer : IColorize
     {
         this.dimSpace = dimSpace;
         this.dimMap = dimMap;
-        limits = DynamicArray.makeLimits(size);
+        limits = DynamicArray.makeLimits(size, dimSpace);
 
         byCell = new DynamicArray.OfColor(dimSpace, limits);
         byOrientation = new Color[dimSpace];

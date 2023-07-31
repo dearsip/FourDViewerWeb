@@ -33,7 +33,7 @@ public class Map
     public Map(int dimSpace, OptionsMap om, int seed)
     {
 
-        int[] limits = DynamicArray.makeLimits(om.size);
+        int[] limits = DynamicArray.makeLimits(om.size, dimSpace);
 
         map = new DynamicArray.OfBoolean(dimSpace, limits);
         // elements start out false, which is correct
@@ -106,7 +106,7 @@ public class Map
     {
         if (store == null) throw new System.Exception();
 
-        int[] limits = DynamicArray.makeLimits(om.size);
+        int[] limits = DynamicArray.makeLimits(om.size, dimSpace);
 
         map = new DynamicArray.OfBoolean(dimSpace, limits);
         // elements start out false, which is correct

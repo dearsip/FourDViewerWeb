@@ -23,15 +23,15 @@ public class DynamicArray
         return limits;
     }
 
-    public static int[] makeLimits(int[] size)
+    public static int[] makeLimits(int[] size, int dim)
     {
 
         // we don't need dimSpace and dimMap as arguments,
         // we know by construction that dimSpace = size.Length
         // and by validation that size[i] = 1 for i >= dimMap
 
-        int[] limits = new int[size.Length];
-        for (int i = 0; i < size.Length; i++) limits[i] = size[i] + 2;
+        int[] limits = new int[dim];
+        for (int i = 0; i < dim; i++) limits[i] = size[i] + 2;
         return limits;
     }
 
