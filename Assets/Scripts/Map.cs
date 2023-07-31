@@ -47,38 +47,64 @@ public class Map
     private const string KEY_START  = "start";
     private const string KEY_FINISH = "finish";
 
-    public void save(IStore store, OptionsMap om) {
-        bool[][][][] cells = new bool[om.size[0]][][][];
-        for (int i = 0; i < om.size[0]; i++)
-            { cells[i] = new bool[om.size[1]][][];
-            for (int j = 0; j < om.size[1]; j++) {
-                cells[i][j] = new bool[om.size[2]][];
-                for (int k = 0; k < om.size[2]; k++) {
-                    cells[i][j][k] = new bool[om.size[3]];
-                }
-            }
-        }
-        int[] p = new int[4];
-        for (int i = 0; i < om.size[0]; i++) {
-            p[0] = i + 1;
-            for (int j = 0; j < om.size[1]; j++) {
-                p[1] = j + 1;
-                for (int k = 0; k < om.size[2]; k++) {
-                    p[2] = k + 1;
-                    for (int l = 0; l < om.size[2]; l++) {
-                        p[3] = l + 1;
-                        cells[i][j][k][l] = isOpen(p);
+    public void save(IStore store, OptionsMap om, int dim) {
+        if (dim == 4)
+        {
+            bool[][][][] cells = new bool[om.size[0]][][][];
+            for (int i = 0; i < om.size[0]; i++)
+                { cells[i] = new bool[om.size[1]][][];
+                for (int j = 0; j < om.size[1]; j++) {
+                    cells[i][j] = new bool[om.size[2]][];
+                    for (int k = 0; k < om.size[2]; k++) {
+                        cells[i][j][k] = new bool[om.size[3]];
                     }
                 }
             }
+            int[] p = new int[4];
+            for (int i = 0; i < om.size[0]; i++) {
+                p[0] = i + 1;
+                for (int j = 0; j < om.size[1]; j++) {
+                    p[1] = j + 1;
+                    for (int k = 0; k < om.size[2]; k++) {
+                        p[2] = k + 1;
+                        for (int l = 0; l < om.size[3]; l++) {
+                            p[3] = l + 1;
+                            cells[i][j][k][l] = isOpen(p);
+                        }
+                    }
+                }
+            }
+            store.putObject(KEY_MAP, cells);
         }
-        store.putObject(KEY_MAP, cells);
+        else
+        {
+            bool[][][] cells = new bool[om.size[0]][][];
+            for (int i = 0; i < om.size[0]; i++) {
+                cells[i] = new bool[om.size[1]][];
+                for (int j = 0; j < om.size[1]; j++) {
+                    cells[i][j] = new bool[om.size[2]];
+                }
+            }
+            int[] p = new int[3];
+            for (int i = 0; i < om.size[0]; i++) {
+                p[0] = i + 1;
+                for (int j = 0; j < om.size[1]; j++) {
+                    p[1] = j + 1;
+                    for (int k = 0; k < om.size[2]; k++) {
+                        p[2] = k + 1;
+                        cells[i][j][k] = isOpen(p);
+                    }
+                }
+            }
+            store.putObject(KEY_MAP, cells);
+        }
         store.putObject(KEY_START, start);
         store.putObject(KEY_FINISH, finish);
     }
 
     public Map(int dimSpace, OptionsMap om, IStore store)
     {
+        if (store == null) throw new System.Exception();
 
         int[] limits = DynamicArray.makeLimits(om.size);
 

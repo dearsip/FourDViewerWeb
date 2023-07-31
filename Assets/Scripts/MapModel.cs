@@ -317,7 +317,7 @@ public class MapModel : IModel
     }
 
     public void save(IStore store, OptionsMap om) {
-        map.save(store, om);
+        map.save(store, om, reg.Length);
     }
 
     public override void ResetTrace()

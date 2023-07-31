@@ -204,7 +204,11 @@ public class Core : MonoBehaviour
             fixedCameraRight.enabled = false;
             opt.oh.stereo = false;
         }
-        else menuCanvas.enabled = true;
+        else
+        {
+            openMenu();
+            ToggleStereo();
+        }
 
         environment.SetActive(xrState != WebXRState.AR && !opt.od.toggleSkyBox);
     }
@@ -640,7 +644,7 @@ public class Core : MonoBehaviour
                 case TouchType.MoveForward1:
                     leftMove = true;
                     dlRotLeft = Quaternion.Euler(0, 0, -2 * (maxAng / limitLR) * (touchPos[i].y - lastTouchPos[i].y) * touchRotateSpeed) * dlRotLeft;
-                    dfRotLeft = Quaternion.Euler(0, 0, -(limitAngForward / limit) * (touchPos[i].y - fromTouchPos[i].y) * touchRotateSpeed) * dfRotLeft;
+                    dfRotLeft = Quaternion.Euler(0, 0, Mathf.Clamp(-(limitAngForward / limit) * (touchPos[i].y - fromTouchPos[i].y) * touchRotateSpeed, -90, 90)) * dfRotLeft;
                     if (opt.oh.allowDiagonalMovement) {
                         dlPosLeft += relarot * Vector3.right * (touchPos[i].x - lastTouchPos[i].x) * Screen.width / Screen.height * touchMoveSpeed;
                         dfPosLeft += relarot * Vector3.right * (touchPos[i].x - fromTouchPos[i].x) * Screen.width / Screen.height * touchMoveSpeed; }
@@ -690,7 +694,7 @@ public class Core : MonoBehaviour
                     dlRotRight = relarot * Quaternion.AngleAxis(360 * reg0.magnitude * touchRotateSpeed, reg0) * Quaternion.Inverse(relarot) * dlRotRight;
                     reg0.x = touchPos[i].y - fromTouchPos[i].y;
                     reg0.y = (fromTouchPos[i].x - touchPos[i].x) * Screen.width / Screen.height;
-                    dfRotRight = relarot * Quaternion.AngleAxis(360 * reg0.magnitude * touchRotateSpeed, reg0) * Quaternion.Inverse(relarot) *dfRotRight;
+                    dfRotRight = relarot * Quaternion.AngleAxis(Mathf.Clamp(360 * reg0.magnitude * touchRotateSpeed, -90, 90), reg0) * Quaternion.Inverse(relarot) *dfRotRight;
                     break;
                 case TouchType.Spin2:
                     rightMove = true;
@@ -699,7 +703,7 @@ public class Core : MonoBehaviour
                     dlRotRight = relarot * Quaternion.AngleAxis(360 * reg0.magnitude * touchRotateSpeed, reg0) * Quaternion.Inverse(relarot) * dlRotRight;
                     reg0.x = touchPos[i].y - fromTouchPos[i].y;
                     reg0.z = (fromTouchPos[i].x - touchPos[i].x) * Screen.width / Screen.height;
-                    dfRotRight = relarot * Quaternion.AngleAxis(360 * reg0.magnitude * touchRotateSpeed, reg0) * Quaternion.Inverse(relarot) * dfRotRight;
+                    dfRotRight = relarot * Quaternion.AngleAxis(Mathf.Clamp(360 * reg0.magnitude * touchRotateSpeed, -90, 90), reg0) * Quaternion.Inverse(relarot) * dfRotRight;
                     break;
                 case TouchType.LeftTouchButton:
                     if (touchEnded[i] && !opt.oh.leftTouchToggleMode) leftTouchButton = false;
@@ -1107,7 +1111,7 @@ public class Core : MonoBehaviour
                     if (Input.GetKey(KEY_SPINDOWN )) { start = true; q *= Quaternion.Euler(0,-dRotate,0); }
                     if (Input.GetKey(KEY_SPININ   )) { start = true; q *= Quaternion.Euler(0,0, dRotate); }
                     if (Input.GetKey(KEY_SPINOUT  )) { start = true; q *= Quaternion.Euler(0,0,-dRotate); }
-                    if (q != Quaternion.identity) relarot = q;
+                    if (q.w < 1) relarot = q;
                 }
                 break;
         }
@@ -1526,9 +1530,9 @@ public class Core : MonoBehaviour
     }
 
     public void doReload(int delta) {
-        if (!reloadFileIsPath || reloadFile == null) return;
+        if (reloadFile == null) return;
 
-        if (delta != 0 && FileItem.Exists(reloadFile)) {
+        if (delta != 0 && reloadFileIsPath && FileItem.Exists(reloadFile)) {
             string[] f = Array.ConvertAll<FileItem, string>(FileItem.Find(FileItem.GetParent(reloadFile)).children.FindAll(x => !x.isDirectory).ToArray(), f => f.path);
 
             int i = Array.IndexOf(f,reloadFile);
@@ -1538,7 +1542,8 @@ public class Core : MonoBehaviour
                 else return; // we're at the end, don't do a reload
             }
         }
-        Debug.Log("Load: " + Path.GetFileName(reloadFile));
+        if (reloadFileIsPath) Debug.Log("Reload: " + Path.GetFileName(reloadFile));
+        else Debug.Log("Reload uploaded file");
         StartCoroutine(LoadCoroutine());
     }
 

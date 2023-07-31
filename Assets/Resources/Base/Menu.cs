@@ -207,7 +207,7 @@ public class Menu : MonoBehaviour
         getFloat(ref oa.opt.ov4.scale, scaleField, OptionsView.SCALE_MIN, OptionsView.SCALE_MAX, false);
 
         getFloat(ref oa.opt.od.transparency, transparencyField, OptionsDisplay.TRANSPARENCY_MIN, OptionsDisplay.TRANSPARENCY_MAX, true);
-        getFloat(ref oa.opt.od.lineThickness, lineThicknessField, OptionsDisplay.LINETHICKNESS_MIN, OptionsDisplay.LINETHICKNESS_MAX, true);
+        getFloat(ref oa.opt.od.lineThickness, lineThicknessField, false);
         oa.opt.od.usePolygon = getBool(usePolygon);
         getFloat(ref oa.opt.od.border, borderField, OptionsDisplay.BORDER_MIN, OptionsDisplay.BORDER_MAX, true);
         getFloat(ref oa.opt.od.size, retinaSizeField, false);
@@ -219,8 +219,8 @@ public class Menu : MonoBehaviour
         oa.opt.od.focus = getBool(focus); focus.isOn = oa.opt.od.focus;
         oa.opt.od.glass = getBool(glass); glass.isOn = oa.opt.od.glass;
         oa.opt.od.mapDistance = mapDistanceSlider.value;
-        getFloat(ref oa.opt.od.cameraDistance, cameraDistanceField, OptionsDisplay.CAMERADISTANCE_MIN, OptionsDisplay.CAMERADISTANCE_MAX, true);
-        getInt(ref oa.opt.od.trainSpeed, trainSpeedField, OptionsDisplay.TRAINSPEED_MIN, OptionsDisplay.TRAINSPEED_MAX);
+        getFloat(ref oa.opt.od.cameraDistance, cameraDistanceField, true);
+        getInt(ref oa.opt.od.trainSpeed, trainSpeedField);
 
         getFloat(ref oa.opt.oo.baseTransparency, baseTransparencyField, true);
         getFloat(ref oa.opt.oo.sliceTransparency, sliceTransparencyField, true);
