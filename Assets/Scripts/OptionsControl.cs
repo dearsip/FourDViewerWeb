@@ -9,6 +9,9 @@ public class OptionsControl
     public bool invertLeftAndRight, invertForward, invertYawAndPitch, invertRoll, sliceMode, limit3D, showInput, keepUpAndDown;
     public float baseTransparency, sliceTransparency;
     public int sliceDir; // x direction (for intuitive switching)
+    public const int NKEY = 20;
+    public bool[] keyShift = new bool[NKEY];
+    public int[] key = new int[NKEY];
 
     // --- constants ---
 
@@ -40,6 +43,11 @@ public class OptionsControl
         dest.showInput = src.showInput;
         dest.keepUpAndDown = src.keepUpAndDown;
         dest.sliceDir = src.sliceDir;
+        for (int i = 0; i < NKEY; i++)
+        {
+            dest.key[i] = src.key[i];
+            dest.keyShift[i] = src.keyShift[i];
+        }
     }
 
 }

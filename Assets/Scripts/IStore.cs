@@ -9,6 +9,7 @@ public interface IStore {
     bool    getBool   (string key);
     int     getInteger(string key);
     long    getLong   (string key);
+    float   getSingle (string key);
     double  getDouble (string key);
     string  getString (string key);
 
@@ -25,6 +26,7 @@ public interface IStore {
     void putBool   (string key, bool b);
     void putInteger(string key, int i);
     void putLong   (string key, long l);
+    void putSingle (string key, float d);
     void putDouble (string key, double d);
     void putString (string key, string s);
 

@@ -167,9 +167,7 @@ public class Core : MonoBehaviour
         fromTouchPos = new Vector2[maxTouchCount];
         lastTouchPos = new Vector2[maxTouchCount];
         touchPos = new Vector2[maxTouchCount];
-        CamraReset();
 
-        FileBrowser.HideDialog();
         StartCoroutine(FileItem.Build());
 
         LeftDown(); RightDown();
@@ -201,7 +199,6 @@ public class Core : MonoBehaviour
             inputCanvas.enabled = false;
             fixedCameraLeft.enabled = false;
             fixedCameraRight.enabled = false;
-            opt.oh.stereo = false;
         }
         else
         {
@@ -911,6 +908,8 @@ public class Core : MonoBehaviour
         { // bonk
 
             target.restore(saveOrigin, saveAxis);
+            command = null;
+            alignActive = null;
 
             if (alignMode && !target.isAligned())
             {
@@ -1001,11 +1000,13 @@ public class Core : MonoBehaviour
         if (target != null)
         {
             engineAlignMode = alignMode; // save
+            if (alignMode != target.isAligned()) overlayText.ShowText("Align mode " + (target.isAligned() ? "on" : "off"));
             alignMode = target.isAligned(); // reasonable default
         }
         else
         {
             target = engine;
+            if (alignMode != engineAlignMode) overlayText.ShowText("Align mode " + (engineAlignMode ? "on" : "off"));
             alignMode = engineAlignMode; // restore
         }
         command = null;
@@ -1044,26 +1045,8 @@ public class Core : MonoBehaviour
         return false;
     }
 
-    public const KeyCode KEY_SLIDELEFT  = KeyCode.S;
-    public const KeyCode KEY_SLIDERIGHT = KeyCode.F;
-    public const KeyCode KEY_SLIDEUP    = KeyCode.A;
-    public const KeyCode KEY_SLIDEDOWN  = KeyCode.Z;
-    public const KeyCode KEY_SLIDEIN    = KeyCode.W;
-    public const KeyCode KEY_SLIDEOUT   = KeyCode.R;
-    public const KeyCode KEY_FORWARD    = KeyCode.E;
-    public const KeyCode KEY_BACK       = KeyCode.D;
-    public const KeyCode KEY_TURNLEFT   = KeyCode.J;
-    public const KeyCode KEY_TURNRIGHT  = KeyCode.L;
-    public const KeyCode KEY_TURNUP     = KeyCode.I;
-    public const KeyCode KEY_TURNDOWN   = KeyCode.K;
-    public const KeyCode KEY_TURNIN     = KeyCode.U;
-    public const KeyCode KEY_TURNOUT    = KeyCode.O;
-    public const KeyCode KEY_SPINLEFT   = KeyCode.K;
-    public const KeyCode KEY_SPINRIGHT  = KeyCode.I;
-    public const KeyCode KEY_SPINUP     = KeyCode.J;
-    public const KeyCode KEY_SPINDOWN   = KeyCode.L;
-    public const KeyCode KEY_SPININ     = KeyCode.U;
-    public const KeyCode KEY_SPINOUT    = KeyCode.O;
+    public enum Keys { FORWARD, BACK, SLIDELEFT, SLIDERIGHT, SLIDEUP, SLIDEDOWN, SLIDEIN, SLIDEOUT, TURNLEFT, TURNRIGHT, TURNUP, TURNDOWN, TURNIN, TURNOUT, SPINLEFT, SPINRIGHT, SPINUP, SPINDOWN, SPININ, SPINOUT, }
+    public static readonly KeyCode[] key = new KeyCode[]{ KeyCode.A, KeyCode.Z, KeyCode.W, KeyCode.S, KeyCode.E, KeyCode.D, KeyCode.R, KeyCode.F, KeyCode.U, KeyCode.J, KeyCode.I, KeyCode.K, KeyCode.O, KeyCode.L, };
     private const int KEYMODE_SLIDE = 0;
     private const int KEYMODE_TURN = 1;
     private const int KEYMODE_SPIN = 2;
@@ -1072,48 +1055,61 @@ public class Core : MonoBehaviour
         if (menuCanvas.enabled || Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl)) return;
         switch (keyMode) {
             case (KEYMODE_SLIDE):
-                if (Input.GetKey(KEY_SLIDELEFT )) { start = true; reg3[0] = -1; }
-                if (Input.GetKey(KEY_SLIDERIGHT)) { start = true; reg3[0] =  1; }
-                if (Input.GetKey(KEY_SLIDEUP   )) { start = true; reg3[1] =  1; }
-                if (Input.GetKey(KEY_SLIDEDOWN )) { start = true; reg3[1] = -1; }
-                if (Input.GetKey(KEY_SLIDEIN   )) { start = true; reg3[2] =  1; }
-                if (Input.GetKey(KEY_SLIDEOUT  )) { start = true; reg3[2] = -1; }
-                if (Input.GetKey(KEY_FORWARD   )) { start = true; reg3[3] =  1; }
-                if (Input.GetKey(KEY_BACK      )) { start = true; reg3[3] = -1; }
+                if (GetKey(Keys.SLIDELEFT )) { start = true; reg3[0] = -1; }
+                if (GetKey(Keys.SLIDERIGHT)) { start = true; reg3[0] =  1; }
+                if (GetKey(Keys.SLIDEUP   )) { start = true; reg3[1] =  1; }
+                if (GetKey(Keys.SLIDEDOWN )) { start = true; reg3[1] = -1; }
+                if (GetKey(Keys.SLIDEIN   )) { start = true; reg3[2] =  1; }
+                if (GetKey(Keys.SLIDEOUT  )) { start = true; reg3[2] = -1; }
+                if (GetKey(Keys.FORWARD   )) { start = true; reg3[3] =  1; }
+                if (GetKey(Keys.BACK      )) { start = true; reg3[3] = -1; }
                 break;
             case (KEYMODE_TURN):
                 if (!Input.GetKey(KeyCode.LeftShift) && !Input.GetKey(KeyCode.RightShift)) {
-                    if (Input.GetKey(KEY_TURNLEFT )) { start = true; reg2[0] = -1; }
-                    if (Input.GetKey(KEY_TURNRIGHT)) { start = true; reg2[0] =  1; }
-                    if (Input.GetKey(KEY_TURNUP   )) { start = true; reg2[1] =  1; }
-                    if (Input.GetKey(KEY_TURNDOWN )) { start = true; reg2[1] = -1; }
-                    if (Input.GetKey(KEY_TURNIN   )) { start = true; reg2[2] =  1; }
-                    if (Input.GetKey(KEY_TURNOUT  )) { start = true; reg2[2] = -1; }
+                    if (GetKey(Keys.TURNLEFT )) { start = true; reg2[0] = -1; }
+                    if (GetKey(Keys.TURNRIGHT)) { start = true; reg2[0] =  1; }
+                    if (GetKey(Keys.TURNUP   )) { start = true; reg2[1] =  1; }
+                    if (GetKey(Keys.TURNDOWN )) { start = true; reg2[1] = -1; }
+                    if (GetKey(Keys.TURNIN   )) { start = true; reg2[2] =  1; }
+                    if (GetKey(Keys.TURNOUT  )) { start = true; reg2[2] = -1; }
                 }
                 break;
             case (KEYMODE_SPIN):
                 if (Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift) || dim == 3) {
-                    if (Input.GetKey(KEY_SPINLEFT )) { start = true; reg0[0] = -1; }
-                    if (Input.GetKey(KEY_SPINRIGHT)) { start = true; reg0[0] =  1; }
-                    if (Input.GetKey(KEY_SPINUP   )) { start = true; reg0[1] =  1; }
-                    if (Input.GetKey(KEY_SPINDOWN )) { start = true; reg0[1] = -1; }
-                    if (Input.GetKey(KEY_SPININ   )) { start = true; reg0[2] =  1; }
-                    if (Input.GetKey(KEY_SPINOUT  )) { start = true; reg0[2] = -1; }
+                    if (GetKey(Keys.SPINLEFT )) { start = true; reg0[0] = -1; }
+                    if (GetKey(Keys.SPINRIGHT)) { start = true; reg0[0] =  1; }
+                    if (GetKey(Keys.SPINUP   )) { start = true; reg0[1] =  1; }
+                    if (GetKey(Keys.SPINDOWN )) { start = true; reg0[1] = -1; }
+                    if (GetKey(Keys.SPININ   )) { start = true; reg0[2] =  1; }
+                    if (GetKey(Keys.SPINOUT  )) { start = true; reg0[2] = -1; }
                 }
                 break;
             case (KEYMODE_SPIN2):
                 if (Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift) || dim == 3) {
                     Quaternion q = Quaternion.identity;
-                    if (Input.GetKey(KEY_SPINLEFT )) { start = true; q *= Quaternion.Euler(-dRotate,0,0); }
-                    if (Input.GetKey(KEY_SPINRIGHT)) { start = true; q *= Quaternion.Euler( dRotate,0,0); }
-                    if (Input.GetKey(KEY_SPINUP   )) { start = true; q *= Quaternion.Euler(0, dRotate,0); }
-                    if (Input.GetKey(KEY_SPINDOWN )) { start = true; q *= Quaternion.Euler(0,-dRotate,0); }
-                    if (Input.GetKey(KEY_SPININ   )) { start = true; q *= Quaternion.Euler(0,0, dRotate); }
-                    if (Input.GetKey(KEY_SPINOUT  )) { start = true; q *= Quaternion.Euler(0,0,-dRotate); }
+                    if (GetKey(Keys.SPINLEFT )) { start = true; q *= Quaternion.Euler(-dRotate,0,0); }
+                    if (GetKey(Keys.SPINRIGHT)) { start = true; q *= Quaternion.Euler( dRotate,0,0); }
+                    if (GetKey(Keys.SPINUP   )) { start = true; q *= Quaternion.Euler(0, dRotate,0); }
+                    if (GetKey(Keys.SPINDOWN )) { start = true; q *= Quaternion.Euler(0,-dRotate,0); }
+                    if (GetKey(Keys.SPININ   )) { start = true; q *= Quaternion.Euler(0,0, dRotate); }
+                    if (GetKey(Keys.SPINOUT  )) { start = true; q *= Quaternion.Euler(0,0,-dRotate); }
                     if (q.w < 1) relarot = q;
                 }
                 break;
         }
+    }
+    
+    private bool GetKey(Keys k) {
+        return (!(opt.oo.keyShift[(int)k]
+             ^ (Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift)))
+            || (!reserved[(int)k] && !opt.oo.keyShift[(int)k]))
+            && Input.GetKey(key[opt.oo.key[(int)k]]);
+    }
+
+    private bool[] reserved = new bool[OptionsControl.NKEY];
+    private void setOptionsKey()
+    {
+        for (int i = 0; i < OptionsControl.NKEY; i++) reserved[opt.oo.key[i]] = opt.oo.keyShift[i];
     }
 
     public OptionsAll getOptionsAll()
@@ -1145,6 +1141,7 @@ public class Core : MonoBehaviour
     {
         engine.setOptions(oc(), ov(), oa.oeCurrent, ot(), oa.opt.od);
         setOptionsMotion(oa.opt.ot4);
+        setOptionsKey();
     }
 
     private void setKeepUpAndDown() {
@@ -1195,12 +1192,10 @@ public class Core : MonoBehaviour
         StartCoroutine(ShowLoadDialogCoroutine());
     }
 
-    private bool opened;
     private IStore store;
     IEnumerator ShowLoadDialogCoroutine()
     {
-        yield return FileBrowser.WaitForLoadDialog(FileBrowser.PickMode.Files, false, opened ? null : "", "Load File", "Load");
-        opened = true;
+        yield return FileBrowser.WaitForLoadDialog(FileBrowser.PickMode.Files, false, null, "Load File", "Load");
 
         Debug.Log("LoadFile " + (FileBrowser.Success ? "successful: " + Path.GetFileName(FileBrowser.Result[0]) : "failed"));
 
@@ -1248,9 +1243,9 @@ public class Core : MonoBehaviour
    private static readonly string KEY_OPTIONS_COLOR = "oc";
    private static readonly string KEY_OPTIONS_VIEW  = "ov";
    private static readonly string KEY_OPTIONS_SEED  = "oe";
-   private static readonly string KEY_OPTIONS_DISPLAY = "od";
-   private static readonly string KEY_OPTIONS_CONTROL = "oo";
    private static readonly string KEY_ALIGN_MODE    = "align";
+   private static readonly string KEY_CAMERA_X      = "cameraX";
+   private static readonly string KEY_CAMERA_Y      = "cameraY";
 
     public void loadMazeCommand(IStore store) { this.store = store; menuCommand = loadMaze; }
     private void loadMaze()
@@ -1595,6 +1590,10 @@ public class Core : MonoBehaviour
 
         store.getObject(KEY_OPTIONS,opt);
         dim = 3;
+        opt.of.recalculate();
+        menuPanel.tab = store.getInteger(KEY_TAB);
+        cameraRot.x = store.getSingle(KEY_CAMERA_X);
+        cameraRot.y = store.getSingle(KEY_CAMERA_Y);
     }
 
     public void load(IStore store)
@@ -1605,6 +1604,8 @@ public class Core : MonoBehaviour
 
         opt.of.recalculate();
         if (!menuCanvas.enabled) menuPanel.tab = store.getInteger(KEY_TAB);
+        cameraRot.x = store.getSingle(KEY_CAMERA_X);
+        cameraRot.y = store.getSingle(KEY_CAMERA_Y);
     }
 
     public void doSave() {
@@ -1639,6 +1640,8 @@ public class Core : MonoBehaviour
         store.putObject(KEY_OPTIONS,oa.opt);
         store.putInteger(KEY_DIM,dim);
         store.putInteger(KEY_TAB,menuPanel.tab);
+        store.putSingle(KEY_CAMERA_X,cameraRot.x);
+        store.putSingle(KEY_CAMERA_Y,cameraRot.y);
 
         store.putInteger(KEY_VERSION,-1);
     }

@@ -25,17 +25,19 @@ public class Menu : MonoBehaviour
 
     public Slider dimSlider, sizeSlider, densitySlider, twistProbabilitySlider, branchProbabilitySlider, loopCrossProbabilitySlider,
         dimSameParallelSlider, dimSamePerpendicularSlider, depthSlider, retinaSlider, scaleSlider, trainSpeedSlider, mapDistanceSlider, cameraDistanceSlider,
-        transparencySlider, lineThicknessSlider, borderSlider, retinaSizeSlider, baseTransparencySlider, sliceTransparencySlider, 
+        transparencySlider, lineThicknessSlider, retinaSizeSlider, baseTransparencySlider, sliceTransparencySlider, 
         timeMoveSlider, timeRotateSlider, timeAlignMoveSlider, timeAlignRotateSlider, widthSlider, flareSlider, rainbowGapSlider,iPDSlider, fovscaleSlider, distanceSlider;
     public InputField dimCurrent, dimNext, sizeCurrent, sizeNext, densityCurrent, densityNext, twistPobabilityCurrent, twistProbabilityNext,
         branchProbabilityCurrent, branchProbabilityNext, loopCrossProbabilityCurrent, loopCrossProbabilityNext, dimSameParallelField,
         dimSamePerpendicularField, mazeCurrent, mazeNext, colorCurrent, colorNext, depthField, retinaField, scaleField, trainSpeedField, cameraDistanceField,
-        transparencyField, lineThicknessField, borderField, retinaSizeField, baseTransparencyField, sliceTransparencyField, 
+        transparencyField, lineThicknessField, retinaSizeField, baseTransparencyField, sliceTransparencyField, 
         timeMoveField, timeRotateField, timeAlignMoveField, timeAlignRotateField, width, flare, rainbowGap, iPDField, fovscaleField, distanceField, paintColorField, quantityField;
     public Toggle allowLoopsCurrent, allowLoopsNext, allowReservedPathsCurrent, allowReservedPathsNext, arrow, usePolygon, useEdgeColor, hideSel, invertNormals, separate, map, focus, glass, invertLeftAndRight, invertForward,
         invertYawAndPitch, invertRoll, sliceMode, limit3D, showInput, keepUpAndDown, fisheye, custom, rainbow, glide, allowDiagonalMovement, buttonToggleModeLeft, buttonToggleModeRight, showController, showHint,horizontalInputFollowing, stereo, cross, invertX, invertY, alternativeControlIn3D, threeDMazeIn3DScene, paintWithAddButton;
     public Toggle[] enable, texture;
     public Dropdown colorMode, inputTypeLeftAndRight, inputTypeForward, inputTypeYawAndPitch, inputTypeRoll, paintColor, addShapes, paintMode;
+    public Toggle[] keyShift;
+    public Dropdown[] key;
     public Material defaultMat, alternativeMat;
     public GameObject environment;
     public Toggle skyboxToggle;
@@ -98,9 +100,8 @@ public class Menu : MonoBehaviour
 
         put(transparencyField, transparencySlider, oa.opt.od.transparency);
         put(lineThicknessField, lineThicknessSlider, oa.opt.od.lineThickness);
+        put(retinaSizeField, retinaSizeSlider, oa.opt.od.size);
         put(usePolygon, oa.opt.od.usePolygon);
-        put(borderField, borderSlider, oa.opt.od.border);
-        put(borderField, retinaSizeSlider, oa.opt.od.size);
         put(useEdgeColor, oa.opt.od.useEdgeColor);
         put(hideSel, oa.opt.od.hidesel);
         put(invertNormals, oa.opt.od.invertNormals);
@@ -128,6 +129,12 @@ public class Menu : MonoBehaviour
         put(limit3D, oa.opt.oo.limit3D);
         put(showInput, oa.opt.oo.showInput);
         put(keepUpAndDown, oa.opt.oo.keepUpAndDown);
+        for (int i = 0; i < OptionsControl.NKEY; i++)
+        {
+            put(key[i], oa.opt.oo.key[i]);
+            put(keyShift[i], oa.opt.oo.keyShift[i]);
+        }
+
         put(timeMoveField, timeMoveSlider, oa.opt.ot4.timeMove);
         put(timeRotateField, timeRotateSlider, oa.opt.ot4.timeRotate);
         put(timeAlignMoveField, timeAlignMoveSlider, oa.opt.ot4.timeAlignMove);
@@ -208,8 +215,8 @@ public class Menu : MonoBehaviour
 
         getFloat(ref oa.opt.od.transparency, transparencyField, OptionsDisplay.TRANSPARENCY_MIN, OptionsDisplay.TRANSPARENCY_MAX, true);
         getFloat(ref oa.opt.od.lineThickness, lineThicknessField, false);
+        getFloat(ref oa.opt.od.size, retinaSizeField, false);
         oa.opt.od.usePolygon = getBool(usePolygon);
-        getFloat(ref oa.opt.od.border, borderField, OptionsDisplay.BORDER_MIN, OptionsDisplay.BORDER_MAX, true);
         getFloat(ref oa.opt.od.size, retinaSizeField, false);
         oa.opt.od.useEdgeColor = getBool(useEdgeColor);
         oa.opt.od.hidesel = getBool(hideSel);
@@ -289,6 +296,11 @@ public class Menu : MonoBehaviour
         oa.opt.oo.limit3D = getBool(limit3D);
         oa.opt.oo.keepUpAndDown = getBool(keepUpAndDown);
         oa.opt.oo.sliceMode = getBool(sliceMode);
+        for (int i = 0; i < OptionsControl.NKEY; i++)
+        {
+            oa.opt.oo.key[i] = getInt(key[i]);
+            oa.opt.oo.keyShift[i] = getBool(keyShift[i]);
+        }
 
         getFloat(ref oa.opt.ot4.timeMove, timeMoveField, false);
         getFloat(ref oa.opt.ot4.timeRotate, timeRotateField, false);

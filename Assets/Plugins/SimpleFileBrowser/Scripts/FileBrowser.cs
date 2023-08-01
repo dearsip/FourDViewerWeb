@@ -823,7 +823,7 @@ namespace SimpleFileBrowser
 #if !UNITY_EDITOR && ( UNITY_ANDROID || UNITY_IOS || UNITY_WSA || UNITY_WSA_10_0 )
 			defaultInitialPath = Application.persistentDataPath;
 #else
-			defaultInitialPath = Environment.GetFolderPath( Environment.SpecialFolder.MyDocuments );
+			defaultInitialPath = "";// Environment.GetFolderPath( Environment.SpecialFolder.MyDocuments );
 #endif
 
 #if !UNITY_EDITOR && UNITY_ANDROID
@@ -869,6 +869,9 @@ namespace SimpleFileBrowser
 			quickLinksContainer.GetComponentInParent<ScrollRect>().scrollSensitivity *= 0.25f;
 			filtersDropdownContainer.GetComponent<ScrollRect>().scrollSensitivity *= 0.25f;
 #endif
+
+			//
+			gameObject.SetActive( false );
 		}
 
 		private void OnRectTransformDimensionsChange()
@@ -1653,7 +1656,8 @@ namespace SimpleFileBrowser
 
 			Hide();
 
-			if( !string.IsNullOrEmpty( m_currentPath ) )
+			// if( !string.IsNullOrEmpty( m_currentPath ) )
+			if( m_currentPath != null )
 				LastBrowsedFolder = m_currentPath;
 
 			OnSuccess _onSuccess = onSuccess;
