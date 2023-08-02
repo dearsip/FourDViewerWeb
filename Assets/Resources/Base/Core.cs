@@ -19,6 +19,7 @@ public class Core : MonoBehaviour
     public int dim, dimNext;
     private string reloadFile;
     private bool reloadFileIsPath;
+    private bool loading;
 
     private OptionsAll oa;
     private Engine engine;
@@ -180,6 +181,9 @@ public class Core : MonoBehaviour
         sFar = fixedCameraLeft.farClipPlane;
         sHeight = sNear * Mathf.Tan(fixedCameraLeft.fieldOfView * 0.5f * Mathf.Deg2Rad);
         sWidth = sHeight * fixedCameraLeft.aspect;
+
+        inputCanvas.enabled = xrState == WebXRState.NORMAL && opt.oh.showController;
+        hint.SetActive(opt.oh.showHint);
     }
 
     private void OnEnable() {
@@ -1065,36 +1069,30 @@ public class Core : MonoBehaviour
                 if (GetKey(Keys.BACK      )) { start = true; reg3[3] = -1; }
                 break;
             case (KEYMODE_TURN):
-                if (!Input.GetKey(KeyCode.LeftShift) && !Input.GetKey(KeyCode.RightShift)) {
-                    if (GetKey(Keys.TURNLEFT )) { start = true; reg2[0] = -1; }
-                    if (GetKey(Keys.TURNRIGHT)) { start = true; reg2[0] =  1; }
-                    if (GetKey(Keys.TURNUP   )) { start = true; reg2[1] =  1; }
-                    if (GetKey(Keys.TURNDOWN )) { start = true; reg2[1] = -1; }
-                    if (GetKey(Keys.TURNIN   )) { start = true; reg2[2] =  1; }
-                    if (GetKey(Keys.TURNOUT  )) { start = true; reg2[2] = -1; }
-                }
+                if (GetKey(Keys.TURNLEFT )) { start = true; reg2[0] = -1; }
+                if (GetKey(Keys.TURNRIGHT)) { start = true; reg2[0] =  1; }
+                if (GetKey(Keys.TURNUP   )) { start = true; reg2[1] =  1; }
+                if (GetKey(Keys.TURNDOWN )) { start = true; reg2[1] = -1; }
+                if (GetKey(Keys.TURNIN   )) { start = true; reg2[2] =  1; }
+                if (GetKey(Keys.TURNOUT  )) { start = true; reg2[2] = -1; }
                 break;
             case (KEYMODE_SPIN):
-                if (Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift) || dim == 3) {
-                    if (GetKey(Keys.SPINLEFT )) { start = true; reg0[0] = -1; }
-                    if (GetKey(Keys.SPINRIGHT)) { start = true; reg0[0] =  1; }
-                    if (GetKey(Keys.SPINUP   )) { start = true; reg0[1] =  1; }
-                    if (GetKey(Keys.SPINDOWN )) { start = true; reg0[1] = -1; }
-                    if (GetKey(Keys.SPININ   )) { start = true; reg0[2] =  1; }
-                    if (GetKey(Keys.SPINOUT  )) { start = true; reg0[2] = -1; }
-                }
+                if (GetKey(Keys.SPINLEFT )) { start = true; reg0[0] = -1; }
+                if (GetKey(Keys.SPINRIGHT)) { start = true; reg0[0] =  1; }
+                if (GetKey(Keys.SPINUP   )) { start = true; reg0[1] =  1; }
+                if (GetKey(Keys.SPINDOWN )) { start = true; reg0[1] = -1; }
+                if (GetKey(Keys.SPININ   )) { start = true; reg0[2] =  1; }
+                if (GetKey(Keys.SPINOUT  )) { start = true; reg0[2] = -1; }
                 break;
             case (KEYMODE_SPIN2):
-                if (Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift) || dim == 3) {
-                    Quaternion q = Quaternion.identity;
-                    if (GetKey(Keys.SPINLEFT )) { start = true; q *= Quaternion.Euler(-dRotate,0,0); }
-                    if (GetKey(Keys.SPINRIGHT)) { start = true; q *= Quaternion.Euler( dRotate,0,0); }
-                    if (GetKey(Keys.SPINUP   )) { start = true; q *= Quaternion.Euler(0, dRotate,0); }
-                    if (GetKey(Keys.SPINDOWN )) { start = true; q *= Quaternion.Euler(0,-dRotate,0); }
-                    if (GetKey(Keys.SPININ   )) { start = true; q *= Quaternion.Euler(0,0, dRotate); }
-                    if (GetKey(Keys.SPINOUT  )) { start = true; q *= Quaternion.Euler(0,0,-dRotate); }
-                    if (q.w < 1) relarot = q;
-                }
+                Quaternion q = Quaternion.identity;
+                if (GetKey(Keys.SPINLEFT )) { start = true; q *= Quaternion.Euler(-dRotate,0,0); }
+                if (GetKey(Keys.SPINRIGHT)) { start = true; q *= Quaternion.Euler( dRotate,0,0); }
+                if (GetKey(Keys.SPINUP   )) { start = true; q *= Quaternion.Euler(0, dRotate,0); }
+                if (GetKey(Keys.SPINDOWN )) { start = true; q *= Quaternion.Euler(0,-dRotate,0); }
+                if (GetKey(Keys.SPININ   )) { start = true; q *= Quaternion.Euler(0,0, dRotate); }
+                if (GetKey(Keys.SPINOUT  )) { start = true; q *= Quaternion.Euler(0,0,-dRotate); }
+                if (q.w < 1) relarot = q;
                 break;
         }
     }
@@ -1189,6 +1187,8 @@ public class Core : MonoBehaviour
 
     public void doLoad()
     {
+        if (loading) return;
+        loading = true;
         StartCoroutine(ShowLoadDialogCoroutine());
     }
 
@@ -1205,6 +1205,7 @@ public class Core : MonoBehaviour
             Debug.Log("Load: " + Path.GetFileName(reloadFile));
             yield return LoadCoroutine();
         }
+        else loading = false;
     }
 
     IEnumerator LoadCoroutine()
@@ -1212,6 +1213,7 @@ public class Core : MonoBehaviour
         yield return PropertyFile.test(reloadFile, reloadFileIsPath);
         if (PropertyFile.isMaze) yield return PropertyFile.load(reloadFile, loadMazeCommand, reloadFileIsPath);
         else yield return doLoadGeom();
+        loading = false;
     }
 
     public void doLoadLocal()
@@ -1221,6 +1223,7 @@ public class Core : MonoBehaviour
             Debug.Log($"Uploaded file: \"{f.Filename}\"");
             reloadFile = System.Text.Encoding.UTF8.GetString(f.Data);
             reloadFileIsPath = false;
+            loading = true;
             StartCoroutine(LoadCoroutine());
         });
     }
@@ -1524,7 +1527,8 @@ public class Core : MonoBehaviour
     }
 
     public void doReload(int delta) {
-        if (reloadFile == null) return;
+        if (loading || reloadFile == null) return;
+        loading = true;
 
         if (delta != 0 && reloadFileIsPath && FileItem.Exists(reloadFile)) {
             string[] f = Array.ConvertAll<FileItem, string>(FileItem.Find(FileItem.GetParent(reloadFile)).children.FindAll(x => !x.isDirectory).ToArray(), f => f.path);
@@ -1533,7 +1537,11 @@ public class Core : MonoBehaviour
             if (i != -1) {
                 i += delta;
                 if (i >= 0 && i < f.Length) reloadFile = f[i];
-                else return; // we're at the end, don't do a reload
+                else
+                {
+                    loading = false;
+                    return; // we're at the end, don't do a reload
+                }
             }
         }
         if (reloadFileIsPath) Debug.Log("Reload: " + Path.GetFileName(reloadFile));

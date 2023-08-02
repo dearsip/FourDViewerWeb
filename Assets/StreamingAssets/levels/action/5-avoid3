@@ -1,0 +1,39 @@
+"library" include
+"sky3" include
+"levels/lib/mygrid3" include
+
+[0.5 3.5 0.5] [X+ Y+ Z+] viewinfo
+
+[0 3 11] finishinfo
+
+FOOT footinfo
+
+block3 [0 2 0] translate white shapecolor
+block3 [1 2 0] translate white shapecolor
+block3 [1 2 1] translate white shapecolor
+block3 [0 2 1] translate white shapecolor
+block3 [0 2 2] translate white shapecolor
+block3 [1 2 2] translate white shapecolor
+block3 [1 2 3] translate white shapecolor
+block3 [0 2 3] translate white shapecolor
+block3 [0 2 4] translate white shapecolor
+block3 [0 3 4] translate white shapecolor
+block3 [0 4 4] translate white shapecolor
+block3 [1 2 4] translate white shapecolor
+block3 [1 2 5] translate white shapecolor
+block3 [0 2 5] translate white shapecolor
+block3 [1 2 6] translate white shapecolor
+block3 [1 2 7] translate white shapecolor
+block3 [1 3 7] translate white shapecolor
+block3 [1 4 7] translate white shapecolor
+block3 [0 2 7] translate white shapecolor
+block3 [0 2 8] translate white shapecolor
+block3 [1 2 8] translate white shapecolor
+block3 [1 2 9] translate white shapecolor
+block3 [0 2 9] translate white shapecolor
+block3 [0 2 10] translate white shapecolor
+block3 [0 3 10] translate white shapecolor
+block3 [0 4 10] translate white shapecolor
+block3 [1 2 10] translate white shapecolor
+block3 [1 2 11] translate white shapecolor
+block3 [0 2 11] translate white shapecolor

@@ -1,0 +1,18 @@
+"library" include
+"sky4" include
+"levels/lib/mygrid4" include
+
+[0.5 2.5 0.5 0.5] [X+ Y+ Z+ W+] viewinfo
+
+[0 2 0 12.5] finishinfo
+
+FOOT footinfo
+
+block4 [2 0.1 2 2] scale [-0.5 2 -0.5 -0.5] translate white shapecolor "floor4" def
+
+floor4
+floor4 [0 0 0 2.5] translate
+floor4 [1.5 0 0 5] translate
+floor4 [0 0 0 7.5] translate
+floor4 [0 0 1.5 10] translate
+floor4 [0 0 0 12.5] translate

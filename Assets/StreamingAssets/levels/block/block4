@@ -1,0 +1,19 @@
+"library" include
+"levels/lib/mygrid4" include
+
+[0.5 0.5 0.5 -2.5] [X+ Y+ Z+ W+] viewinfo
+
+blockinfo
+
+FOOT_COMPASS footinfo
+
+block4 [ 0 0  0 2] translate white   shapecolor
+block4 [-2 0 -2 0] translate red     shapecolor
+block4 [ 0 0 -2 0] translate cyan    shapecolor
+block4 [ 2 0 -2 0] translate orange  shapecolor
+block4 [-2 0  0 0] translate green   shapecolor
+block4 [ 0 0  0 0] translate gray    shapecolor
+block4 [ 2 0  0 0] translate magenta shapecolor
+block4 [-2 0  2 0] translate brown   shapecolor
+block4 [ 0 0  2 0] translate blue    shapecolor
+block4 [ 2 0  2 0] translate yellow  shapecolor

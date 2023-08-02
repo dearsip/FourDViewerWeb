@@ -1,0 +1,16 @@
+"library" include
+"sky4" include
+"levels/lib/mygrid4" include
+
+FOOT footinfo
+
+[-2.5 0.5 -2.5 -2.5] [X+ Y+ Z+ W+] viewinfo
+
+block4 [0.5 1 0.5 0.5] scale [2 0 2 2] translate yellow shapecolor WALK_SHOOT enemy
+
+block4 [1 2 10 10] scale [-5 0 -5 -5] translate white shapecolor
+block4 [10 2 10 1] scale [-4 0 -5 -5] translate white shapecolor
+block4 [1 2 10 10] scale [ 5 0 -5 -4] translate white shapecolor
+block4 [10 2 10 1] scale [-5 0 -5  5] translate white shapecolor
+block4 [ 9 2 1  9] scale [-4 0 -5 -4] translate white shapecolor
+block4 [11 2 1 11] scale [-5 0  5 -5] translate white shapecolor

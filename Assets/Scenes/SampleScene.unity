@@ -29333,7 +29333,9 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Touch
+  m_Text: 'Touch
+
+    Stereo'
 --- !u!222 &1142483325
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -56198,6 +56200,12 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 7242501030908856058, guid: 9cb2164b37395894aa143a9e156f34dd, type: 3}
+      propertyPath: m_Text
+      value: 'Cmd
+
+        Motion'
+      objectReference: {fileID: 0}
     - target: {fileID: 7242501030911018549, guid: 9cb2164b37395894aa143a9e156f34dd, type: 3}
       propertyPath: m_AnchorMax.x
       value: 0
@@ -56801,6 +56809,12 @@ PrefabInstance:
     - target: {fileID: 7242501031373104748, guid: 9cb2164b37395894aa143a9e156f34dd, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[8].m_Arguments.m_ObjectArgumentAssemblyTypeName
       value: UnityEngine.Object, UnityEngine
+      objectReference: {fileID: 0}
+    - target: {fileID: 7242501031373197610, guid: 9cb2164b37395894aa143a9e156f34dd, type: 3}
+      propertyPath: m_Text
+      value: 'Control
+
+        Slice'
       objectReference: {fileID: 0}
     - target: {fileID: 7242501031381333347, guid: 9cb2164b37395894aa143a9e156f34dd, type: 3}
       propertyPath: m_IsActive
@@ -57549,6 +57563,12 @@ PrefabInstance:
     - target: {fileID: 7242501032110718909, guid: 9cb2164b37395894aa143a9e156f34dd, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
       value: Menu, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 7242501032121722638, guid: 9cb2164b37395894aa143a9e156f34dd, type: 3}
+      propertyPath: m_Text
+      value: 'Seed
+
+        Fisheye'
       objectReference: {fileID: 0}
     - target: {fileID: 7242501032130017177, guid: 9cb2164b37395894aa143a9e156f34dd, type: 3}
       propertyPath: m_AnchorMax.x
