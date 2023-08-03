@@ -30,7 +30,7 @@ You cannot open the menu in XR environment. When you exit XR mode, the menu will
 - **Esc**: Open/Close Menu
 - **Return**: Alignment
 - **G**: Slice
-- **T**: Restrict Operations to 3D
+- **T**: Restrict to 3D
 - **Space**: Select Block, Jump
 - **M**: Add Block, Shoot
 - **N**: Remove Block
@@ -75,11 +75,11 @@ This tab contains the settings that accepted only key input in the original and 
 
 ### Control/Slice
 
-This tab contains the settings for the additional functions related to the operation.
+This tab contains the settings for the additional functions related to the control.
 
-- Motion controller and touchpad operation can be selected from two types. The default ("**Drag**") reflects the amount of movement of the controller directly in the amount of movement of the target. In "**Joystick**", the target moves at a constant speed proportional to the difference while the button is pressed. The movement speed with Joystick is affected by the speed setting in the "**Motion**" tab, but not by Drag.
+- Motion controller and touchpad control can be selected from two types. The default ("**Drag**") reflects the amount of movement of the controller directly in the amount of movement of the target. In "**Joystick**", the target moves at a constant speed proportional to the difference while the button is pressed. The movement speed with Joystick is affected by the speed setting in the "**Motion**" tab, but not by Drag.
 - "**Invert**" reverses the input. If you want to operate the map like a block, turn on everything except "**Left & Right**".
-- Turning on "**Slice Mode**" allows you to select slices in different directions. It currently has no effect on operations, so it is recommended to use it in conjunction with align mode. The two sliders below, "**Base Transparency**" and "**Slice Transparency**", determine the transparency of the original image and the slice, respectively.
+- Turning on "**Slice Mode**" allows you to select slices in different directions. It currently has no effect on controls, so it is recommended to use it in conjunction with align mode. The two sliders below, "**Base Transparency**" and "**Slice Transparency**", determine the transparency of the original image and the slice, respectively.
 - "**Show Input**" displays the touch position and an arrow indicating  motion controller input.
 - "**Keep Up & Down**" prevents the retina from tilting sideways. The change will take effect the next time you load it.
 
@@ -95,8 +95,8 @@ This tab contains the settings for the commands related to the scene and the ori
 This tab controls the settings for touch input and the camera (projecting the three-dimensional retina onto the screen).
 
 - If you turn off "**Allow Diagonal Movements**", you will not move left or right when moving forward or backward in touch input. In XR, horizontal movement itself is prohibited.
-- Touch operation in the 3D scene is somewhat redundant for compatibility with 4D. Turning on "**Alternative Control in 3D Scene**" eliminates the need for modifiers (see Hints).
-- "**Modifiers Toggle Mode**" replaces the behavior of modifiers from momentary to toggle. This is essential when you want to operate with a mouse. Note: "Left" edits *the left button that modifies the right hand operation*.
+- Touch control in the 3D scene is somewhat redundant for compatibility with 4D. Turning on "**Alternative Control in 3D Scene**" eliminates the need for modifiers (see Hints).
+- "**Modifiers Toggle Mode**" replaces the behavior of modifiers from momentary to toggle. This is essential when you want to operate with a mouse. Note: "Left" edits *the left button that modifies the right hand control*.
 - Even if you turn off "**Show Controller**", you can still input normally.
 - The display of "**Show Hints**" reflects the state of modifiers and Alternative Control. Other settings have no effect.
 - **"Reset**" resets the camera position to the front.
