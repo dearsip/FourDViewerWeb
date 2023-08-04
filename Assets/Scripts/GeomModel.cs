@@ -855,19 +855,7 @@ public class GeomModel : IModel, IMove, ISelectShape
         }
     }
 
-    public override void testOrigin(double[] origin, int[] reg1, int[] reg2) //throws ValidationException
-    {
-    }
-
-    public override void setColorMode(int colorMode)
-    {
-    }
-
-    public override void setDepth(int depth)
-    {
-    }
-
-    public override void setArrow(bool arrow)
+    public override void testOrigin(double[] origin, int[] reg1, int[] reg2)
     {
     }
 
@@ -885,14 +873,14 @@ public class GeomModel : IModel, IMove, ISelectShape
         // I forget why we copy rather than share, but that's what RenderAbsolute does
     }
 
-    public override void setTransparency(double transparency)
+    public override void setTransparency(float transparency)
     {
         this.transparency = transparency;
     }
 
-    public override void setOptions(OptionsColor oc, int seed, int depth, bool arrow, bool[] texture, OptionsDisplay od)
+    public override void setOptions(OptionsColor oc, int seed, OptionsView ov, OptionsDisplay od)
     {
-        setTexture(texture);
+        setTexture(ov.texture);
         setTransparency(od.transparency);
         usePolygon = od.usePolygon;
         useEdgeColor = od.useEdgeColor;

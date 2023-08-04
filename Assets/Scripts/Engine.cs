@@ -267,22 +267,6 @@ public class Engine : IMove
     }
 
     // --- options ---
-
-    public void setColorMode(int colorMode)
-    {
-        model.setColorMode(colorMode);
-    }
-
-    public void setDepth(int depth)
-    {
-        model.setDepth(depth);
-    }
-
-    public void setTexture(bool[] texture)
-    {
-        model.setTexture(texture);
-    }
-
     public void setRetina(double retina)
     {
         nonFisheyeRetina = retina;
@@ -292,7 +276,7 @@ public class Engine : IMove
     public void setOptions(OptionsColor oc, OptionsView ov, OptionsSeed oe, OptionsMotion ot, OptionsDisplay od)
     {
 
-        model.setOptions(oc, oe.colorSeed, ov.depth, ov.arrow, ov.texture, od);
+        model.setOptions(oc, oe.colorSeed, ov, od);
 
         setRetina(ov.retina);
 

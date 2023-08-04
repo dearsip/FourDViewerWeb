@@ -151,7 +151,7 @@ public class Core : MonoBehaviour
         GetComponent<MeshFilter>().sharedMesh = mesh;
         engine = new Engine(mesh);
 
-        newGame(dim);
+        newGame(0);
 
         reg2 = new double[3];
         reg3 = new double[4];
@@ -298,19 +298,23 @@ public class Core : MonoBehaviour
         newGame(dimNext);
     }
 
-    private void newGame(int dim)
+    private void newGame(int dimMaze)
     {
-        if (!opt.of.threeDMazeIn3DScene) this.dim = 4;
-        if (dim>0) {
-            if (opt.of.threeDMazeIn3DScene) this.dim = dim;
-            opt.om4.dimMap = dim;
-            if (dim==4) {
+        if (!opt.of.threeDMazeIn3DScene) dim = 4;
+        if (dimMaze>0) {
+            if (opt.of.threeDMazeIn3DScene) dim = dimMaze;
+            opt.om4.dimMap = dimMaze; // Choosing nD would mean wanting to play in the nD maze
+            if (dimMaze==3) {
+                opt.oo.limit3D = true;
+                opt.oo.sliceDir = 1;
+            } else {
                 opt.oo.limit3D = false;
                 opt.oo.sliceDir = 0;
                 IVLeft.ToggleLimit3D(opt.oo.limit3D);
                 IVRight.ToggleLimit3D(opt.oo.limit3D);
             }
         }
+        PropertyFile.save(save, PropertyFile.SaveType.SAVE_PROPERTIES);
         // allow zero to mean "keep the same"
 
         OptionsMap.copy(oa.omCurrent, om());
@@ -320,8 +324,8 @@ public class Core : MonoBehaviour
         oa.oeCurrent.forceSpecified();
         oa.oeNext = new OptionsSeed();
 
-        IModel model = new MapModel(this.dim, oa.omCurrent, oc(), oa.oeCurrent, ov(), null);
-        engine.newGame(this.dim, model, ov(), /*oa.opt.os,*/ ot(), true);
+        IModel model = new MapModel(dim, oa.omCurrent, oc(), oa.oeCurrent, ov(), null);
+        engine.newGame(dim, model, ov(), /*oa.opt.os,*/ ot(), true);
         controllerReset();
     }
 
@@ -336,9 +340,9 @@ public class Core : MonoBehaviour
 
         target = engine;
         command = null;
-        saveOrigin = new double[this.dim];
-        saveAxis = new double[this.dim][];
-        for (int i = 0; i < this.dim; i++) saveAxis[i] = new double[this.dim];
+        saveOrigin = new double[dim];
+        saveAxis = new double[dim][];
+        for (int i = 0; i < dim; i++) saveAxis[i] = new double[dim];
         started = false;
 
         alignButton.color = ButtonEnabled(TouchType.Align) ? enabledColor : disabledColor;
@@ -349,7 +353,7 @@ public class Core : MonoBehaviour
         reg7 = new double[dim];
         reg8 = new double[dim];
 
-        if (dim == 3)
+        if (dim == 3) // dimSpace
         {
             opt.oo.sliceDir = 0;
             opt.oo.limit3D = false;
@@ -1620,6 +1624,7 @@ public class Core : MonoBehaviour
         if (!menuCanvas.enabled) menuPanel.tab = store.getInteger(KEY_TAB);
         cameraRot.x = store.getSingle(KEY_CAMERA_X);
         cameraRot.y = store.getSingle(KEY_CAMERA_Y);
+        alignMode = store.getBool(KEY_ALIGN_MODE);
     }
 
     public void doSave() {
@@ -1656,6 +1661,7 @@ public class Core : MonoBehaviour
         store.putInteger(KEY_TAB,menuPanel.tab);
         store.putSingle(KEY_CAMERA_X,cameraRot.x);
         store.putSingle(KEY_CAMERA_Y,cameraRot.y);
+        store.putBool(KEY_ALIGN_MODE,alignMode);
 
         store.putInteger(KEY_VERSION,-1);
     }

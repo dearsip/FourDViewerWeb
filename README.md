@@ -61,6 +61,7 @@ For basic functions and scene files, see the documentation for [4D Maze](http://
 ### Color/View
 
 - The "**By Trace**" color mode paints the rooms you have reached black. Also, if you turn on "**Use Arrow**", an arrow will be displayed to indicate the direction you have come from. Both can be used to solve the maze. "**Reset Win**" (not "**Restart**") clears these records as well.
+- To simplify the appearance of the start and finish, the interior color itself is changed instead of drawing additional textures. You can revert to the original display with "**Use Start & Finish Mark**".
 
 ### Display
 
@@ -70,7 +71,7 @@ This tab contains the settings that accepted only key input in the original and 
 - "**Size**" changes the size of the retina, mainly for XR.
 - "**Allow Glide**" removes the friction of the blocks and allows you to move along the walls. While it makes it less likely to get stuck on walls, it may cause the input and the direction of movement to be different, so if you prefer the original behavior, turn it off.
 - "**Toggle Skybox**" changes the background to black, the *black lines of the frame to white*, to make it look more like the original. Changing the color of the lines may also be useful in AR mode.
-- "**Show Map**" is realized by arranging blocks with the same configuration as the maze. The blocks are transparent so that they do not put a load on the drawing, and you can toggle the transparency by turning off "**Glass**". In this case, the cells adjacent to the path are drawn in white. "**Distance**" changes the distance between the map and the retina. "**Focus**" moves the camera to the position of the map.
+- "**Show Map**" is realized by arranging blocks with the same configuration as the maze. The cells facing the unreached path are drawn in white. The blocks are transparent so that they do not put a load on the drawing, and you can toggle the transparency by turning off "**Glass**". "**Distance**" changes the distance between the map and the retina. "**Focus**" moves the camera to the position of the map.
 - "**Camera Distance**" moves the rendering position to the back of the player position (except in Maze).
 
 ### Control/Slice

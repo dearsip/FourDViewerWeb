@@ -25,7 +25,7 @@ public class Colorizer : IColorize
     private Color[] byOrientation;
     private Color[] byDirection;
     private DynamicArray.OfColor byTrace;
-    private DynamicArray.OfDir trace;
+    private DynamicArray.OfInt trace;
 
     private OptionsColor ocCache; // cache only used to detect changes
     private int seedCache;
@@ -42,7 +42,7 @@ public class Colorizer : IColorize
         byOrientation = new Color[dimSpace];
         byDirection = new Color[2 * dimSpace];
         byTrace = new DynamicArray.OfColor(dimSpace, limits);
-        trace = new DynamicArray.OfDir(dimSpace, limits);
+        trace = new DynamicArray.OfInt(dimSpace, limits);
 
         ocCache = new OptionsColor();
 
@@ -50,11 +50,6 @@ public class Colorizer : IColorize
     }
 
     // --- options ---
-
-    public void setColorMode(int colorMode)
-    {
-        this.colorMode = ocCache.colorMode = colorMode;
-    }
 
     public void setOptions(OptionsColor oc, int seed)
     {
@@ -243,7 +238,7 @@ public class Colorizer : IColorize
 
     public void ResetTrace()
     {
-        trace = new DynamicArray.OfDir(dimSpace, limits);
+        trace = new DynamicArray.OfInt(dimSpace, limits);
         generateByTrace();
     }
 }

@@ -39,10 +39,10 @@ public class OptionsControl
         dest.sliceMode = src.sliceMode;
         dest.baseTransparency = src.baseTransparency;
         dest.sliceTransparency = src.sliceTransparency;
-        dest.limit3D = src.limit3D;
+        // dest.limit3D = src.limit3D;
         dest.showInput = src.showInput;
         dest.keepUpAndDown = src.keepUpAndDown;
-        dest.sliceDir = src.sliceDir;
+        // dest.sliceDir = src.sliceDir;
         for (int i = 0; i < NKEY; i++)
         {
             dest.key[i] = src.key[i];

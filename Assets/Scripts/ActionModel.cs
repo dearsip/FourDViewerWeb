@@ -69,9 +69,9 @@ public class ActionModel : GeomModel {
 
    // --- implementation of IModel ---
 
-    public override void setOptions(OptionsColor oc, int seed, int depth, bool arrow, bool[] texture, OptionsDisplay od)
+    public override void setOptions(OptionsColor oc, int seed, OptionsView ov, OptionsDisplay od)
     {
-        setTexture(texture);
+        setTexture(ov.texture);
         setTransparency(od.transparency);
         usePolygon = od.usePolygon;
         useEdgeColor = od.useEdgeColor;

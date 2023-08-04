@@ -175,6 +175,7 @@ opt.oc4.enable[10]=True
 opt.oc4.enable[11]=False
 opt.ov4.depth=5
 opt.ov4.arrow=False
+opt.ov4.mark=False
 opt.ov4.texture[0]=False
 opt.ov4.texture[1]=False
 opt.ov4.texture[2]=False

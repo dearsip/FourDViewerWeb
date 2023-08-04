@@ -32,7 +32,7 @@ public class Menu : MonoBehaviour
         dimSamePerpendicularField, mazeCurrent, mazeNext, colorCurrent, colorNext, depthField, retinaField, scaleField, trainSpeedField, cameraDistanceField,
         transparencyField, lineThicknessField, retinaSizeField, baseTransparencyField, sliceTransparencyField, 
         timeMoveField, timeRotateField, timeAlignMoveField, timeAlignRotateField, width, flare, rainbowGap, iPDField, fovscaleField, distanceField, paintColorField, quantityField;
-    public Toggle allowLoopsCurrent, allowLoopsNext, allowReservedPathsCurrent, allowReservedPathsNext, arrow, usePolygon, useEdgeColor, hideSel, invertNormals, separate, map, focus, glass, invertLeftAndRight, invertForward,
+    public Toggle allowLoopsCurrent, allowLoopsNext, allowReservedPathsCurrent, allowReservedPathsNext, arrow, mark, usePolygon, useEdgeColor, hideSel, invertNormals, separate, map, focus, glass, invertLeftAndRight, invertForward,
         invertYawAndPitch, invertRoll, sliceMode, limit3D, showInput, keepUpAndDown, fisheye, custom, rainbow, glide, allowDiagonalMovement, buttonToggleModeLeft, buttonToggleModeRight, showController, showHint,horizontalInputFollowing, stereo, cross, invertX, invertY, alternativeControlIn3D, threeDMazeIn3DScene, paintWithAddButton;
     public Toggle[] enable, texture;
     public Dropdown colorMode, inputTypeLeftAndRight, inputTypeForward, inputTypeYawAndPitch, inputTypeRoll, paintColor, addShapes, paintMode;
@@ -94,6 +94,7 @@ public class Menu : MonoBehaviour
 
         put(depthField, depthSlider, oa.opt.ov4.depth);
         put(arrow, oa.opt.ov4.arrow);
+        put(mark, oa.opt.ov4.mark);
         put(texture, oa.opt.ov4.texture);
         put(retinaField, retinaSlider, oa.opt.ov4.retina);
         put(scaleField, scaleSlider, oa.opt.ov4.scale);
@@ -126,7 +127,7 @@ public class Menu : MonoBehaviour
         put(sliceMode, oa.opt.oo.sliceMode);
         put(baseTransparencyField, baseTransparencySlider, oa.opt.oo.baseTransparency);
         put(sliceTransparencyField, sliceTransparencySlider, oa.opt.oo.sliceTransparency);
-        put(limit3D, oa.opt.oo.limit3D);
+        // put(limit3D, oa.opt.oo.limit3D);
         put(showInput, oa.opt.oo.showInput);
         put(keepUpAndDown, oa.opt.oo.keepUpAndDown);
         for (int i = 0; i < OptionsControl.NKEY; i++)
@@ -209,6 +210,7 @@ public class Menu : MonoBehaviour
 
         getInt(ref oa.opt.ov4.depth, depthField, OptionsView.DEPTH_MIN, OptionsView.DEPTH_MAX);
         oa.opt.ov4.arrow = getBool(arrow);
+        oa.opt.ov4.mark = getBool(mark);
         getBool(texture, oa.opt.ov4.texture);
         getFloat(ref oa.opt.ov4.retina, retinaField, false);
         getFloat(ref oa.opt.ov4.scale, scaleField, OptionsView.SCALE_MIN, OptionsView.SCALE_MAX, false);
@@ -253,7 +255,7 @@ public class Menu : MonoBehaviour
         core.menuCommand = core.updateOptions;
     }
 
-    public void doOK()
+    public void doOK(bool save = true)
     {
         getInt(ref oa.opt.om4.dimMap, dimNext, OptionsMap.DIM_MAP_MIN, OptionsMap.DIM_MAP_MAX);
         getDimMap(oa.opt.om4.size, sizeNext);
@@ -293,7 +295,7 @@ public class Menu : MonoBehaviour
         oa.opt.oo.invertForward = getBool(invertForward);
         oa.opt.oo.invertYawAndPitch = getBool(invertYawAndPitch);
         oa.opt.oo.invertRoll = getBool(invertRoll);
-        oa.opt.oo.limit3D = getBool(limit3D);
+        // oa.opt.oo.limit3D = getBool(limit3D);
         oa.opt.oo.keepUpAndDown = getBool(keepUpAndDown);
         oa.opt.oo.sliceMode = getBool(sliceMode);
         for (int i = 0; i < OptionsControl.NKEY; i++)
@@ -316,7 +318,7 @@ public class Menu : MonoBehaviour
         oa.opt.oh.horizontalInputFollowing = getBool(horizontalInputFollowing);
         oa.opt.oh.alternativeControlIn3D = getBool(alternativeControlIn3D);
 
-        PropertyFile.save(core.save, PropertyFile.SaveType.SAVE_PROPERTIES);
+        if (save) PropertyFile.save(core.save, PropertyFile.SaveType.SAVE_PROPERTIES);
 
         // command
         core.menuCommand = core.setOptions;
@@ -341,7 +343,7 @@ public class Menu : MonoBehaviour
 
     public void doNewGame(int dim)
     {
-        doOK();
+        doOK(false);
         core.dimNext = dim;
         core.menuCommand = core.newGame;
     }

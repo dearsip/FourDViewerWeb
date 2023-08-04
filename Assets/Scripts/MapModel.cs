@@ -15,6 +15,8 @@ public class MapModel : IModel
     // --- fields ---
 
     private Map map;
+    private DynamicArray.OfInt cubeNum;
+    private int[] limits;
     private Colorizer colorizer;
     private int colorMode;
     private RenderAbsolute renderAbsolute;
@@ -26,13 +28,11 @@ public class MapModel : IModel
     private readonly double retina = 0.8;
     private readonly double distance = 7;
     private int count;
-    private double[] reg, reg3, reg4, reg5, reg6;
-    private int[] reg7, reg8, reg9;
-    private double[] origin;
-    private double[][] axis;
+    private double[] reg;
+    private int[] reg7;
     public bool showMap;
     private List<double[][]> normals = new List<double[][]>();
-    private bool glide, glass;
+    private bool glide, glass, mark;
     private float mapDistance;
 
     // --- construction ---
@@ -41,47 +41,21 @@ public class MapModel : IModel
     {
         om.dimMap = Math.Min(dimSpace, om.dimMap);
         try { map = new Map(dimSpace, om, store); } catch (Exception) { map = new Map(dimSpace, om, oe.mapSeed); }
+        limits = DynamicArray.makeLimits(om.size, dimSpace);
+        cubeNum = new DynamicArray.OfInt(dimSpace, limits);
         colorizer = new Colorizer(dimSpace, om.dimMap, om.size, oc, oe.colorSeed);
         renderAbsolute = new RenderAbsolute(dimSpace, map, colorizer, ov, this);
         bufAbsolute = new PolygonBuffer(dimSpace);
         bufRelative = new PolygonBuffer(dimSpace - 1);
 
         reg = new double[dimSpace];
-        reg3 = new double[dimSpace];
-        reg4 = new double[dimSpace];
-        reg5 = new double[dimSpace];
-        reg6 = new double[dimSpace];
         reg7 = new int[dimSpace];
-        reg8 = new int[dimSpace];
-        reg9 = new int[dimSpace];
         normals.Clear();
 
         geomModel = new GeomModel(dimSpace, new Geom.Shape[om.size[0] * om.size[1] * om.size[2] * om.size[3]], null, null);
         geomModel.setBuffer(bufAbsolute);
         geomRelative = new RenderRelative(bufAbsolute, bufRelative, dimSpace, retina);
         cube = dimSpace == 3 ? cube3 : cube4;
-        if (dimSpace == 3)
-        {
-            tex = new Geom.Texture[3];
-            for (int k = 0; k < reg3.Length; k++) reg3[k] = 0.5;
-            tex[0] = tex3.copy();
-            tex[1] = tex3.copy();
-            tex[1].rotate(0, 2, 90, reg3);
-            tex[2] = tex3.copy();
-            tex[2].rotate(0, 4, 90, reg3);
-        }
-        else
-        {
-            tex = new Geom.Texture[4];
-            for (int k = 0; k < reg3.Length; k++) reg3[k] = 0.5;
-            tex[0] = tex4.copy();
-            tex[1] = tex4.copy();
-            tex[1].rotate(0, 2, 90, reg3);
-            tex[2] = tex4.copy();
-            tex[2].rotate(0, 4, 90, reg3);
-            tex[3] = tex4.copy();
-            tex[3].rotate(0, 6, 90, reg3);
-        }
         count = 0;
     }
 
@@ -97,9 +71,6 @@ public class MapModel : IModel
         // everything else is random, so it's OK for the axes to be deterministic
         //
         for (int a = 0; a < axis.Length; a++) Vec.unitVector(axis[a], (a + 1) % axis.Length);
-
-        this.axis = axis;
-        this.origin = origin;
     }
 
     public override void testOrigin(double[] origin, int[] reg1, int[] reg2)
@@ -119,47 +90,27 @@ public class MapModel : IModel
         if (!Grid.isOpen(origin, map, reg1)) throw new Exception();
     }
 
-    public override void setColorMode(int colorMode)
-    {
-        colorizer.setColorMode(colorMode);
-    }
-
-    public override void setDepth(int depth)
-    {
-        renderAbsolute.setDepth(depth);
-    }
-
-    public override void setArrow(bool arrow)
-    {
-        renderAbsolute.setArrow(arrow);
-    }
-
     public override void setTexture(bool[] texture)
     {
         renderAbsolute.setTexture(texture);
     }
 
-    public override void setTransparency(double transparency)
+    public override void setTransparency(float transparency)
     {
         renderAbsolute.setTransparency(transparency);
     }
 
-    public override void setOptions(OptionsColor oc, int seed, int depth, bool arrow, bool[] texture, OptionsDisplay od)
+    public override void setOptions(OptionsColor oc, int seed, OptionsView ov, OptionsDisplay od)
     {
         colorizer.setOptions(oc, seed);
-        if (colorMode != oc.colorMode) SetMapColor();
+        if (colorMode != oc.colorMode || mark != ov.mark) SetMapColor();
         colorMode = oc.colorMode;
-        renderAbsolute.setDepth(depth);
-        renderAbsolute.setArrow(arrow);
-        renderAbsolute.setTexture(texture);
-        renderAbsolute.setTransparency(od.transparency);
-        renderAbsolute.setTransparency(od.transparency);
-        renderAbsolute.useEdgeColor = od.useEdgeColor;
-        renderAbsolute.usePolygon = od.usePolygon;
-        geomModel.setOptions(oc, seed, depth, arrow, texture, od);
+        renderAbsolute.setOptions(oc, seed, ov, od);
+        geomModel.setOptions(oc, seed, ov, od);
         showMap = od.map;
         glide = od.glide;
         glass = od.glass;
+        mark = ov.mark;
         ToggleGlass();
         mapDistance = od.mapDistance;
     }
@@ -206,9 +157,9 @@ public class MapModel : IModel
     {
         renderAbsolute.run(origin, axis);
         if (showMap) {
-            Vec.addScaled(reg, origin, this.axis[axis.Length-1], -distance);
+            Vec.addScaled(reg, origin, axis[axis.Length-1], -distance);
             geomModel.render(reg, axis, false);
-            geomRelative.run(this.axis, false);
+            geomRelative.run(axis, false);
             for (int i = 0; i < bufRelative.getSize(); i++)
             {
                 p = bufRelative.get(i);
@@ -229,33 +180,26 @@ public class MapModel : IModel
                                                              new double[] { 0, 1 },
                                                              new double[] { 0, 1 },
                                                              new double[] { 0, 1 } });
-    private Geom.Texture[] tex;
     private static readonly Geom.Texture gtex = new Geom.Texture(new Geom.Edge[0], new double[][] { new double[] {} });
-    private const double l = 0.1;
-    private const double h = 0.9;
-    private static readonly UnityEngine.Color w = UnityEngine.Color.white;
-    private static readonly Geom.Texture tex3 = new Geom.Texture(new Geom.Edge[] {
-        new Geom.Edge(0,1,w), new Geom.Edge(1,2,w), new Geom.Edge(2,3,w), new Geom.Edge(3,0,w) }, new double[][] { 
-        new double[] {l,l,l}, new double[] {l,h,l}, new double[] {l,h,h}, new double[] {l,l,h} });
-    private static readonly Geom.Texture tex4 = new Geom.Texture(new Geom.Edge[] {
-        new Geom.Edge(0,1,w), new Geom.Edge(1,2,w), new Geom.Edge(2,3,w), new Geom.Edge(3,0,w),
-        new Geom.Edge(0,4,w), new Geom.Edge(1,5,w), new Geom.Edge(2,6,w), new Geom.Edge(3,7,w),
-        new Geom.Edge(4,5,w), new Geom.Edge(5,6,w), new Geom.Edge(6,7,w), new Geom.Edge(7,4,w), }, new double[][] { 
-        new double[] {l,l,l,l}, new double[] {l,h,l,l}, new double[] {l,h,h,l}, new double[] {l,l,h,l},
-        new double[] {l,l,l,h}, new double[] {l,h,l,h}, new double[] {l,h,h,h}, new double[] {l,l,h,h} });
     public void addShape(int[] pos)
     {
         Geom.Shape s = cube.copy();
         for (int i = 0; i < pos.Length * 2; i++)
         {
-            int j = Dir.getOpposite(i);
+            int j = Dir.getOpposite(i); // cube: negative -> positive, dir: positive -> negative
             Dir.apply(j, pos, 1);
+            bool open = false;
             if (map.isOpen(pos))
             {
-                s.setFaceTexture(i, glass ? gtex : tex[Dir.getAxis(j)].copy(), Vec.PROJ_NORMAL, null);
+                open = true;
+                if (colorizer.getTrace(pos) != -1)
+                {
+                    s.setFaceTexture(i, gtex, Vec.PROJ_NORMAL, null);
+                    geomModel.shapes[cubeNum.get(pos)].setFaceTexture(j, gtex, Vec.PROJ_NORMAL, null);
+                }
             }
             Dir.apply(i, pos, 1);
-            s.cell[i].color = Grid.equals(pos, map.getStart()) ? RenderAbsolute.COLOR_START : Grid.equals(pos, map.getFinish()) ? RenderAbsolute.COLOR_FINISH : colorizer.getColor(pos, j);
+            s.cell[i].color = open ? UnityEngine.Color.white : mark ? colorizer.getColor(pos, j) : Grid.equals(pos, map.getStart()) ? RenderAbsolute.COLOR_START : Grid.equals(pos, map.getFinish()) ? RenderAbsolute.COLOR_FINISH : colorizer.getColor(pos, j);
         }
         for (int i = 0; i < pos.Length; i++) reg[i] = 0.999;
         s.scale(reg);
@@ -269,6 +213,7 @@ public class MapModel : IModel
         }
         normals.Add(n);
         if (glass) s.glass();
+        cubeNum.set(pos, count);
         geomModel.shapes[count++] = s;
     }
 
@@ -279,10 +224,6 @@ public class MapModel : IModel
             for (int i = 0; i < count; i++)
             {
                 geomModel.shapes[i].glass();
-                for (int j = 0; j < geomModel.shapes[i].cell.Length; j++)
-                {
-                    if (geomModel.shapes[i].cell[j].customTexture != null) geomModel.shapes[i].cell[j].customTexture = gtex;
-                }
             }
         }
         else
@@ -292,12 +233,6 @@ public class MapModel : IModel
                 for (int j = 0; j < geomModel.shapes[i].cell.Length; j++)
                 {
                     geomModel.shapes[i].cell[j].normal = normals[i][j];
-                    if (geomModel.shapes[i].cell[j].customTexture != null)
-                    {
-                        Geom.Texture t = tex[Dir.getAxis(j)].copy();
-                        t.translate(geomModel.shapes[i].vertex[0]);
-                        geomModel.shapes[i].setFaceTexture(j, t, Vec.PROJ_NORMAL, null);
-                    }
                 }
             }
         }
@@ -311,7 +246,14 @@ public class MapModel : IModel
             for (int j = 0; j < geomModel.shapes[i].cell.Length; j++)
             {
                 int dir = Dir.getOpposite(j);
-                geomModel.shapes[i].cell[j].color = Grid.equals(reg7, map.getStart()) ? RenderAbsolute.COLOR_START : Grid.equals(reg7, map.getFinish()) ? RenderAbsolute.COLOR_FINISH : colorizer.getColor(reg7, dir);
+                Dir.apply(dir, reg7, 1);
+                bool open = false;
+                if (map.isOpen(reg7))
+                {
+                    open = true;
+                }
+                Dir.apply(j, reg7, 1);
+                geomModel.shapes[i].cell[j].color = open ? UnityEngine.Color.white : !mark/*not updated yet*/ ? colorizer.getColor(reg7, dir) : Grid.equals(reg7, map.getStart()) ? RenderAbsolute.COLOR_START : Grid.equals(reg7, map.getFinish()) ? RenderAbsolute.COLOR_FINISH : colorizer.getColor(reg7, dir);
             }
         }
     }
@@ -330,6 +272,7 @@ public class MapModel : IModel
             geomModel.clearSeparators(i);
         }
         count = 0;
+        cubeNum = new DynamicArray.OfInt(reg.Length, limits);
     }
 }
 

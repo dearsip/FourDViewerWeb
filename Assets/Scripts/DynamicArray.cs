@@ -235,7 +235,7 @@ public class DynamicArray
 
     // --- integer ---
 
-    public class OfDir
+    public class OfInt
     {
 
         // --- fields ---
@@ -246,7 +246,7 @@ public class DynamicArray
 
         // --- construction ---
 
-        public OfDir(int dim, int[] limits)
+        public OfInt(int dim, int[] limits) // initialize with -1
         {
             this.dim = dim;
             this.limits = limits;

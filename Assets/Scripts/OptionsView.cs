@@ -15,6 +15,7 @@ public class OptionsView
 
     public int depth;
     public bool arrow;
+    public bool mark;
     public bool[] texture; // 0 is for cell boundaries, 1-9 for wall texture
     public float retina;
     public float scale;
@@ -37,6 +38,7 @@ public class OptionsView
     {
         dest.depth = src.depth;
         dest.arrow = src.arrow;
+        dest.mark = src.mark;
         for (int i = 0; i < 10; i++) dest.texture[i] = texture[i];
         dest.retina = src.retina;
         dest.scale = src.scale;

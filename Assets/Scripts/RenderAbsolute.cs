@@ -22,7 +22,7 @@ public class RenderAbsolute
     public bool useEdgeColor;
 
     private int depthMax;
-    private bool arrow;
+    private bool arrow, mark;
     private bool[] texture;
     private float transparency;
 
@@ -51,6 +51,7 @@ public class RenderAbsolute
 
         depthMax = ov.depth;
         arrow = ov.arrow;
+        mark = ov.mark;
         texture = new bool[10];
         setTexture(ov.texture);
 
@@ -69,22 +70,23 @@ public class RenderAbsolute
 
     }
 
+    public void setOptions(OptionsColor oc, int seed, OptionsView ov, OptionsDisplay od)
+    {
+        depthMax = ov.depth;
+        arrow = ov.arrow;
+        mark = ov.mark;
+        setTexture(ov.texture);
+        setTransparency(od.transparency);
+        useEdgeColor = od.useEdgeColor;
+        usePolygon = od.usePolygon;
+    }
+
     public void setBuffer(PolygonBuffer buf)
     {
         this.buf = buf;
     }
 
     // --- options ---
-
-    public void setDepth(int depth)
-    {
-        depthMax = depth;
-    }
-
-    public void setArrow(bool arrow)
-    {
-        this.arrow = arrow;
-    }
 
     public void setTexture(bool[] texture)
     {
@@ -94,9 +96,9 @@ public class RenderAbsolute
         }
     }
 
-    public void setTransparency(double transparency)
+    public void setTransparency(float transparency)
     {
-        this.transparency = (float)transparency;
+        this.transparency = transparency;
     }
 
     // --- clipping ---
@@ -519,18 +521,20 @@ public class RenderAbsolute
     private void addFace(int[] p, int dir)
     {
         Color color = colorizer.getColor(p, dir);
-        // Color color5 = Color.clear;
+        Color color5 = Color.clear;
 
         bool force = false;
         if (Grid.equals(p, map.getStart()))
         {
             force = true;
-            color/*5*/ =/* (texture[5] && color.Equals(COLOR_START)) ? COLOR_START_ALTERNATE :*/ COLOR_START;
+            if (!mark) color = COLOR_START;
+            else color5 = (texture[5] && color.Equals(COLOR_START)) ? COLOR_START_ALTERNATE : COLOR_START;
         }
         else if (Grid.equals(p, map.getFinish()))
         {
             force = true;
-            color/*5*/ =/* (texture[5] && color.Equals(COLOR_FINISH)) ? COLOR_FINISH_ALTERNATE :*/ COLOR_FINISH;
+            if (!mark) color = COLOR_FINISH;
+            else color5 = (texture[5] && color.Equals(COLOR_FINISH)) ? COLOR_FINISH_ALTERNATE : COLOR_FINISH;
         }
 
         if (texture[0]) addTexture(p, dir, useEdgeColor || force ? color : Color.white, 0.999999);
@@ -543,11 +547,11 @@ public class RenderAbsolute
             Color c = color;
             bool draw = texture[i];
 
-            // if (i == 5 && color5 != Color.clear)
-            // {
-                // c = color5;
-                // draw = true;
-            // }
+            if (mark && i == 5 && color5 != Color.clear)
+            {
+                c = color5;
+                draw = true;
+            }
 
             if (draw) addTexture(p, dir, c, 0.1 * i);
         }
