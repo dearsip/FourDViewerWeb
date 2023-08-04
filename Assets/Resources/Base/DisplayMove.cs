@@ -19,19 +19,13 @@ public class DisplayMove : MonoBehaviour
     private Quaternion relarot;
     void Update()
     {
-        // if (grab.GetState(handL)) {
-            // transform.position += (pose.GetLocalPosition(handL) - pose.GetLastLocalPosition(handL))*size.value;
-            // relarot = pose.GetLocalRotation(handL) * Quaternion.Inverse(pose.GetLastLocalRotation(handL));
-            // relarot.x = 0; relarot.z = 0;
-            // transform.rotation *= relarot;
-        // }
-        if (controllerL.GetButton(WebXRController.ButtonTypes.Grip)) {
+        if (controllerL.GetAxis(WebXRController.AxisTypes.Grip) > 0.5f) {
             transform.localPosition += (handL.localPosition - lastPosL)*size.value;
             relarot = handL.localRotation * Quaternion.Inverse(lastRotL);
             relarot.x = 0; relarot.z = 0;
             transform.rotation *= relarot;
         }
-        else if (controllerR.GetButton(WebXRController.ButtonTypes.Grip)) {
+        if (controllerR.GetAxis(WebXRController.AxisTypes.Grip) > 0.5f) {
             transform.localPosition += (handR.localPosition - lastPosR)*size.value;
             relarot = handR.localRotation * Quaternion.Inverse(lastRotR);
             relarot.x = 0; relarot.z = 0;

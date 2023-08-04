@@ -304,12 +304,11 @@ public class Core : MonoBehaviour
         if (dim>0) {
             if (opt.of.threeDMazeIn3DScene) this.dim = dim;
             opt.om4.dimMap = dim;
-            if (dim==3) {
-                opt.oo.limit3D = true;
-                opt.oo.sliceDir = 1;
-            } else {
+            if (dim==4) {
                 opt.oo.limit3D = false;
                 opt.oo.sliceDir = 0;
+                IVLeft.ToggleLimit3D(opt.oo.limit3D);
+                IVRight.ToggleLimit3D(opt.oo.limit3D);
             }
         }
         // allow zero to mean "keep the same"
@@ -354,6 +353,8 @@ public class Core : MonoBehaviour
         {
             opt.oo.sliceDir = 0;
             opt.oo.limit3D = false;
+            IVLeft.ToggleLimit3D(true);
+            IVRight.ToggleLimit3D(true);
         }
     }
 
@@ -501,6 +502,7 @@ public class Core : MonoBehaviour
     private int swipeDir = 0;
     private float tSwipe = 0.3f;
     private float alignTime;
+    private float lastLeftTrigger, lastRightTrigger;
     private void calcInputFrame() {
         if (leftC.GetButtonDown(WebXRController.ButtonTypes.ButtonA) || leftC.GetButtonUp(WebXRController.ButtonTypes.ButtonA))
             LeftDown();
@@ -510,10 +512,14 @@ public class Core : MonoBehaviour
             doToggleLimit3D();
         if (rightC.GetButtonDown(WebXRController.ButtonTypes.ButtonB))
             Slice();
-        if (leftC.GetButtonDown(WebXRController.ButtonTypes.Trigger))
+        float trigger = leftC.GetAxis(WebXRController.AxisTypes.Trigger);
+        if (trigger > 0.5f && lastLeftTrigger <= 0.5f)
             OperateAlign();
-        if (rightC.GetButtonDown(WebXRController.ButtonTypes.Trigger))
+        lastLeftTrigger = trigger;
+        trigger = rightC.GetAxis(WebXRController.AxisTypes.Trigger);
+        if (trigger > 0.5f && lastRightTrigger <= 0.5f)
             RightClick();
+        lastRightTrigger = trigger;
         if (alignTime > 0) alignTime -= Time.deltaTime;
 
         Vector2 v = rightC.GetAxis2D(WebXRController.Axis2DTypes.Thumbstick);
