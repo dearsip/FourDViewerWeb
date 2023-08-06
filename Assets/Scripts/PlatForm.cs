@@ -376,7 +376,7 @@ public class Platform
 
         shape = extend(shape, height, thickness);
         shape.isNoUserMove = true;
-        if (track.getPlatformColor() != null) shape.setShapeColor(track.getPlatformColor());
+        if (track.getPlatformColor() != UnityEngine.Color.clear) shape.setShapeColor(track.getPlatformColor());
         shape.cell[shape.cell.Length - 1].customTexture = new Track.TileTexture(tiles, height, track);
         return shape;
     }
@@ -1726,7 +1726,7 @@ public class Platform
         ramp.translate(temp);
 
         ramp.setNoUserMove();
-        if (track.getPlatformColor() != null) ramp.setShapeColor(track.getPlatformColor());
+        if (track.getPlatformColor() != UnityEngine.Color.clear) ramp.setShapeColor(track.getPlatformColor());
         return ramp;
     }
 
@@ -1855,7 +1855,7 @@ public class Platform
 
         pylon = extend(pylon, top, top - bot);
         pylon.isNoUserMove = true;
-        if (track.getPlatformColor() != null) pylon.setShapeColor(track.getPlatformColor());
+        if (track.getPlatformColor() != UnityEngine.Color.clear) pylon.setShapeColor(track.getPlatformColor());
         return pylon;
     }
 

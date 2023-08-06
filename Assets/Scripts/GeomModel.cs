@@ -62,7 +62,7 @@ public class GeomModel : IModel, IMove, ISelectShape
     protected int faceNumber; // extra result from findShape
     protected int shapeNumber; // extra result from canMove
 
-    private double transparency;
+    private float transparency;
     // private double sceneryTransparency;
     protected double cameraDistance;
 
@@ -1187,7 +1187,7 @@ public class GeomModel : IModel, IMove, ISelectShape
                 Vec.mid(poly.vertex[j], cell.center, shape.vertex[face.iv[j]], scale);
             }
             poly.color = getColor(Geom.getColor(/*edge.color, */cell.color));
-            poly.color.a = (float)transparency;
+            poly.color.a = transparency;
             drawPolygon(poly);
         }
         for (int i = 0; i < cell.ie.Length; i++)
@@ -1212,7 +1212,7 @@ public class GeomModel : IModel, IMove, ISelectShape
                 Vec.mid(poly.vertex[j], cell.center, shape.vertex[face.iv[j]], scale);
             }
             poly.color = color;
-            poly.color.a = (float)transparency;
+            poly.color.a = transparency;
             drawPolygon(poly);
         }
         for (int i = 0; i < cell.ie.Length; i++)
