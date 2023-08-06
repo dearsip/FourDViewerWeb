@@ -188,10 +188,12 @@ public class Core : MonoBehaviour
 
     private void OnEnable() {
         WebXRManager.OnXRChange += OnXRChange;
+        Application.logMessageReceived += HandleLog;
     }
 
     private void OnDisable() {
         WebXRManager.OnXRChange -= OnXRChange;
+        Application.logMessageReceived -= HandleLog;
     }
 
     private void OnXRChange(WebXRState state, int viewsCount, Rect leftRect, Rect rightRect)
@@ -211,6 +213,11 @@ public class Core : MonoBehaviour
         }
 
         environment.SetActive(xrState != WebXRState.AR && !opt.od.toggleSkyBox);
+    }
+
+    private void HandleLog(string logText, string stackTrace, LogType logType)
+    {
+        loading = false;
     }
 
     public void ToggleStereo()
@@ -1247,18 +1254,19 @@ public class Core : MonoBehaviour
         yield return Language.include(context, reloadFile, reloadFileIsPath);
         menuCommand = loadGeom;
     }
-   private static readonly string VALUE_CHECK       = "Maze";
 
-   private static readonly string KEY_CHECK         = "game";
-   private static readonly string KEY_DIM           = "dim";
-   private static readonly string KEY_TAB           = "tab";
-   private static readonly string KEY_OPTIONS_MAP   = "om";
-   private static readonly string KEY_OPTIONS_COLOR = "oc";
-   private static readonly string KEY_OPTIONS_VIEW  = "ov";
-   private static readonly string KEY_OPTIONS_SEED  = "oe";
-   private static readonly string KEY_ALIGN_MODE    = "align";
-   private static readonly string KEY_CAMERA_X      = "cameraX";
-   private static readonly string KEY_CAMERA_Y      = "cameraY";
+    private static readonly string VALUE_CHECK       = "Maze";
+
+    private static readonly string KEY_CHECK         = "game";
+    private static readonly string KEY_DIM           = "dim";
+    private static readonly string KEY_TAB           = "tab";
+    private static readonly string KEY_OPTIONS_MAP   = "om";
+    private static readonly string KEY_OPTIONS_COLOR = "oc";
+    private static readonly string KEY_OPTIONS_VIEW  = "ov";
+    private static readonly string KEY_OPTIONS_SEED  = "oe";
+    private static readonly string KEY_ALIGN_MODE    = "align";
+    private static readonly string KEY_CAMERA_X      = "cameraX";
+    private static readonly string KEY_CAMERA_Y      = "cameraY";
 
     public void loadMazeCommand(IStore store) { this.store = store; menuCommand = loadMaze; }
     private void loadMaze()
@@ -1607,7 +1615,7 @@ public class Core : MonoBehaviour
         store.getObject(KEY_OPTIONS,optDefault);
 
         store.getObject(KEY_OPTIONS,opt);
-        dim = 3;
+        dim = 4;
         opt.of.recalculate();
         menuPanel.tab = store.getInteger(KEY_TAB);
         cameraRot.x = store.getSingle(KEY_CAMERA_X);

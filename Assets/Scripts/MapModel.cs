@@ -40,7 +40,8 @@ public class MapModel : IModel
     public MapModel(int dimSpace, OptionsMap om, OptionsColor oc, OptionsSeed oe, OptionsView ov, IStore store)
     {
         om.dimMap = Math.Min(dimSpace, om.dimMap);
-        try { map = new Map(dimSpace, om, store); } catch (Exception) { map = new Map(dimSpace, om, oe.mapSeed); }
+        try { map = new Map(dimSpace, om, store); }
+        catch (Exception) { UnityEngine.Debug.LogError("failed to load raw map data."); map = new Map(dimSpace, om, oe.mapSeed); }
         limits = DynamicArray.makeLimits(om.size, dimSpace);
         cubeNum = new DynamicArray.OfInt(dimSpace, limits);
         colorizer = new Colorizer(dimSpace, om.dimMap, om.size, oc, oe.colorSeed);

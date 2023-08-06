@@ -156,3 +156,4 @@ map[0][2][2][2]=false
 start[3]=3
 om.allowReservedPaths=false
 ov.arrow=false
+ov.mark=false

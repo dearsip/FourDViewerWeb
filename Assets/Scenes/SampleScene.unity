@@ -20844,7 +20844,7 @@ MonoBehaviour:
       m_Calls: []
   m_FontData:
     m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
-    m_FontSize: 20
+    m_FontSize: 24
     m_FontStyle: 0
     m_BestFit: 0
     m_MinSize: 2
@@ -20857,7 +20857,7 @@ MonoBehaviour:
     m_LineSpacing: 1
   m_Text: 'Restrict
 
-    Operations
+    Controls
 
     to 3D'
 --- !u!222 &824566162
@@ -22506,7 +22506,7 @@ MonoBehaviour:
       m_Calls: []
   m_FontData:
     m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
-    m_FontSize: 20
+    m_FontSize: 24
     m_FontStyle: 0
     m_BestFit: 0
     m_MinSize: 2
@@ -22521,7 +22521,7 @@ MonoBehaviour:
 
     Right
 
-    Operations'
+    Controls'
 --- !u!222 &906549090
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -23969,7 +23969,7 @@ MonoBehaviour:
       m_Calls: []
   m_FontData:
     m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
-    m_FontSize: 20
+    m_FontSize: 24
     m_FontStyle: 0
     m_BestFit: 0
     m_MinSize: 2
@@ -23984,7 +23984,7 @@ MonoBehaviour:
 
     Left
 
-    Operations'
+    Controls'
 --- !u!222 &939182023
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -54729,7 +54729,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 794169313086704582, guid: 9cb2164b37395894aa143a9e156f34dd, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 523
+      value: 0.000061035156
       objectReference: {fileID: 0}
     - target: {fileID: 794169313470772656, guid: 9cb2164b37395894aa143a9e156f34dd, type: 3}
       propertyPath: m_AnchorMax.x
@@ -56835,7 +56835,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7242501031142977255, guid: 9cb2164b37395894aa143a9e156f34dd, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -197.35306
+      value: -98.50009
       objectReference: {fileID: 0}
     - target: {fileID: 7242501031146117197, guid: 9cb2164b37395894aa143a9e156f34dd, type: 3}
       propertyPath: m_LocalPosition.z
@@ -57873,7 +57873,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7242501032061839317, guid: 9cb2164b37395894aa143a9e156f34dd, type: 3}
       propertyPath: m_Text
-      value: 'Restrict Operations to 3D:'
+      value: 'Restrict Controls to 3D:'
       objectReference: {fileID: 0}
     - target: {fileID: 7242501032061839322, guid: 9cb2164b37395894aa143a9e156f34dd, type: 3}
       propertyPath: m_SizeDelta.x

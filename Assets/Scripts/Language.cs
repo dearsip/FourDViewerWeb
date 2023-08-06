@@ -66,7 +66,7 @@ public class Language
         }
 
         file = FileItem.Combine(c.dirStack.Peek(), filename);
-        if (File.Exists(file)) return file;
+        if (FileItem.Exists(file)) return file;
         
         throw new Exception("Unable to resolve filename '" + filename + "'.");
     }

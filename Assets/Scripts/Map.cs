@@ -133,7 +133,7 @@ public class Map
                     p[1] = j+1;
                     for (int k = 0; k < om.size[2]; k++) {
                         p[2] = k+1;
-                        for (int l = 0; l < om.size[2]; l++) {
+                        for (int l = 0; l < om.size[3]; l++) {
                             p[3] = l+1;
                             setOpen(p, cells[i][j][k][l]);
                         }

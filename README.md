@@ -50,9 +50,9 @@ Only move and rotate are supported in the key config. Menu items can only be ope
 
 For basic functions and scene files, see the documentation for [4D Maze](http://www.urticator.net/maze/) and [4D Blocks](http://www.urticator.net/blocks/v6/). The following are notes on the functions unique to this application.
 
+- "**3D**" button generates a three-dimensional maze by turning on the three-dimensional operation restrictions and slicing function instead of making the dimension of space three. Conversely, the "**4D**" button generates a four-dimensional maze by releasing the operation restriction and slice. The settings are shared between three and four dimensions. If you want to switch the spatial dimensions, turn on the "**3D Maze in 3D Scene**" in the **Seed/Fisheye** tab. "**New Game**" starts a new maze while retaining the above settings.
 - Settings related to drawing are reflected immediately. Also, the settings are saved to IndexedDB when the menu window is closed. Note that some settings can only be changed via touch or mouse.
 - Sliders are placed in the numerical setting items, but you can also enter directly into the input field, and set values outside the range of the slider for some items. The in-game keyboard edits the last character of the text regardless of the cursor position. Be aware that sometimes the text is too long to see the end.
-- "**3D**" button generates a three-dimensional maze by turning on the three-dimensional operation restrictions and slicing function instead of making the dimension of space three. Conversely, the "**4D**" button generates a four-dimensional maze by releasing the operation restriction and slice. The settings are shared between three and four dimensions. If you want to switch the spatial dimensions, turn on the "**3D Maze in 3D Scene**" in the **Seed/Fisheye** tab. "**New Game**" starts a new maze while retaining the above settings.
 
 ### Map
 
@@ -82,7 +82,7 @@ This tab contains the settings for the additional functions related to the contr
 - "**Invert**" reverses the input. If you want to operate the map like a block, turn on everything except "**Left & Right**".
 - Turning on "**Slice Mode**" allows you to select slices in different directions. It currently has no effect on controls, so it is recommended to use it in conjunction with align mode. The two sliders below, "**Base Transparency**" and "**Slice Transparency**", determine the transparency of the original image and the slice, respectively.
 - "**Show Input**" displays the touch position and an arrow indicating  motion controller input.
-- "**Keep Up & Down**" prevents the retina from tilting sideways. The change will take effect the next time you load it.
+- "**Keep Up & Down**" prevents the camera from tilting sideways. The change will take effect the next time you restart or load. While this is functioning, you cannot align or switch to align mode. It does not affect block motion.
 
 ### Cmd/Motion
 

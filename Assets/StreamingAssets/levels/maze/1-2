@@ -29,6 +29,7 @@ oc.enable[10]=True
 oc.enable[11]=False
 ov.depth=5
 ov.arrow=False
+ov.mark=False
 ov.texture[0]=False
 ov.texture[1]=False
 ov.texture[2]=False

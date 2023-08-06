@@ -147,7 +147,7 @@ public class PropertyFile
 
     public static readonly string default_ = @"
 #土 7 30 18:12:22 +09:00 2022
-opt.om4.dimMap=4
+opt.om4.dimMap=3
 opt.om4.size[0]=3
 opt.om4.size[1]=3
 opt.om4.size[2]=3
@@ -214,12 +214,12 @@ opt.oo.invertForward=False
 opt.oo.invertYawAndPitch=False
 opt.oo.invertRoll=False
 opt.oo.sliceMode=False
-opt.oo.limit3D=False
+opt.oo.limit3D=True
 opt.oo.showInput=True
 opt.oo.keepUpAndDown=False
 opt.oo.baseTransparency=0.2
 opt.oo.sliceTransparency=1
-opt.oo.sliceDir=0
+opt.oo.sliceDir=1
 opt.oo.keyShift[0]=False
 opt.oo.keyShift[1]=False
 opt.oo.keyShift[2]=False
