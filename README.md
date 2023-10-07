@@ -1,6 +1,8 @@
 # [4D Viewer Web](https://dearsip.github.io/FourDViewerWeb/)
 [4D Blocks](http://www.urticator.net/blocks/) on WebXR
 
+Play [here](https://dearsip.github.io/FourDViewerWeb/)
+
 ## How to Play
 
 ### Touch
