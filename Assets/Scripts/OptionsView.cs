@@ -19,6 +19,8 @@ public class OptionsView
     public bool[] texture; // 0 is for cell boundaries, 1-9 for wall texture
     public float retina;
     public float scale;
+    public bool reticle;
+    public bool frame;
 
     // --- construction ---
 
@@ -42,6 +44,8 @@ public class OptionsView
         for (int i = 0; i < 10; i++) dest.texture[i] = texture[i];
         dest.retina = src.retina;
         dest.scale = src.scale;
+        dest.reticle = src.reticle;
+        dest.frame = src.frame;
     }
 
     public const int DEPTH_MIN = 0;

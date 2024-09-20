@@ -32,7 +32,7 @@ public class Menu : MonoBehaviour
         dimSamePerpendicularField, mazeCurrent, mazeNext, colorCurrent, colorNext, depthField, retinaField, scaleField, trainSpeedField, cameraDistanceField,
         transparencyField, lineThicknessField, retinaSizeField, baseTransparencyField, sliceTransparencyField, 
         timeMoveField, timeRotateField, timeAlignMoveField, timeAlignRotateField, width, flare, rainbowGap, iPDField, fovscaleField, distanceField, paintColorField, quantityField;
-    public Toggle allowLoopsCurrent, allowLoopsNext, allowReservedPathsCurrent, allowReservedPathsNext, arrow, mark, usePolygon, useEdgeColor, hideSel, invertNormals, separate, map, focus, glass, invertLeftAndRight, invertForward,
+    public Toggle allowLoopsCurrent, allowLoopsNext, allowReservedPathsCurrent, allowReservedPathsNext, arrow, mark, reticle, frame, usePolygon, useEdgeColor, hideSel, invertNormals, separate, map, focus, glass, invertLeftAndRight, invertForward,
         invertYawAndPitch, invertRoll, sliceMode, limit3D, showInput, keepUpAndDown, fisheye, custom, rainbow, glide, allowDiagonalMovement, buttonToggleModeLeft, buttonToggleModeRight, showController, showHint,horizontalInputFollowing, stereo, cross, invertX, invertY, alternativeControlIn3D, threeDMazeIn3DScene, paintWithAddButton;
     public Toggle[] enable, texture;
     public Dropdown colorMode, inputTypeLeftAndRight, inputTypeForward, inputTypeYawAndPitch, inputTypeRoll, paintColor, addShapes, paintMode;
@@ -95,6 +95,8 @@ public class Menu : MonoBehaviour
         put(depthField, depthSlider, oa.opt.ov4.depth);
         put(arrow, oa.opt.ov4.arrow);
         put(mark, oa.opt.ov4.mark);
+        put(reticle, oa.opt.ov4.reticle);
+        put(frame, oa.opt.ov4.frame);
         put(texture, oa.opt.ov4.texture);
         put(retinaField, retinaSlider, oa.opt.ov4.retina);
         put(scaleField, scaleSlider, oa.opt.ov4.scale);
@@ -211,6 +213,8 @@ public class Menu : MonoBehaviour
         getInt(ref oa.opt.ov4.depth, depthField, OptionsView.DEPTH_MIN, OptionsView.DEPTH_MAX);
         oa.opt.ov4.arrow = getBool(arrow);
         oa.opt.ov4.mark = getBool(mark);
+        oa.opt.ov4.reticle = getBool(reticle);
+        oa.opt.ov4.frame = getBool(frame);
         getBool(texture, oa.opt.ov4.texture);
         getFloat(ref oa.opt.ov4.retina, retinaField, false);
         getFloat(ref oa.opt.ov4.scale, scaleField, OptionsView.SCALE_MIN, OptionsView.SCALE_MAX, false);

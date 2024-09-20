@@ -36,6 +36,7 @@ public class Engine : IMove
     private RenderRelative renderRelative;
 
     private double[][] objRetina, objCross, objWin, objDead;
+    private bool showRetina, showCross;
 
     //private Display[] display;
 
@@ -121,6 +122,8 @@ public class Engine : IMove
         sraxis = new double[dimSpace][];
         for (int i = 0; i < sraxis.Length; i++) sraxis[i] = new double[dimSpace];
         nonFisheyeRetina = ov.retina;
+        showRetina = ov.frame;
+        showCross = ov.reticle;
 
         bufAbsolute = new PolygonBuffer(dimSpace);
         bufRelative = new PolygonBuffer(dimSpace - 1);
@@ -279,6 +282,8 @@ public class Engine : IMove
         model.setOptions(oc, oe.colorSeed, ov, od);
 
         setRetina(ov.retina);
+        showRetina = ov.frame;
+        showCross = ov.reticle;
 
         width = od.lineThickness;
         glide = od.glide;
@@ -713,10 +718,16 @@ public class Engine : IMove
         else
         {
             renderRelative.run(axis, model.getSaveType()==IModel.SAVE_MAZE);
-            renderObject(bufRelative, objRetina);
-            renderPolygon(bufRelative, objRetinaPoly, 4, oo.sliceDir);
-            renderObject(bufRelative, objCross);
-            renderPolygon(bufRelative, objCrossPoly, 4, oo.sliceDir);
+            if (showRetina)
+            {
+                renderObject(bufRelative, objRetina);
+                renderPolygon(bufRelative, objRetinaPoly, 4, oo.sliceDir);
+            }
+            if (showCross)
+            {
+                renderObject(bufRelative, objCross);
+                renderPolygon(bufRelative, objCrossPoly, 4, oo.sliceDir);
+            }
         }
 
         if (win)
@@ -729,8 +740,11 @@ public class Engine : IMove
         if (getSaveType() == IModel.SAVE_MAZE  && ((MapModel)model).showMap)
         {
             bufRelative.add(((MapModel)model).bufRelative);
-            renderObject(bufRelative, objCrossMap, objColor, -mapDistance + 3);
-            renderPolygon(bufRelative, objCrossMapPoly, 4, objColor, -mapDistance + 3);
+            if (showCross)
+            {
+                renderObject(bufRelative, objCrossMap, objColor, -mapDistance + 3);
+                renderPolygon(bufRelative, objCrossMapPoly, 4, objColor, -mapDistance + 3);
+            }
         }
 
         bufRelative.sort(eyeVector);
@@ -756,8 +770,11 @@ public class Engine : IMove
         int f = sraxis.Length - 1;
 
         renderRelative.run(axis, true, mt, true);
-        renderRelative.runObject(objCross, -1, ct, objColor);
-        if (dim == 4) renderRelative.runPolygon(objCrossPoly, -1, ct, 4, objColor);
+        if (showCross)
+        {
+            renderRelative.runObject(objCross, -1, ct, objColor);
+            if (dim == 4) renderRelative.runPolygon(objCrossPoly, -1, ct, 4, objColor);
+        }
 
         for (int i = 0; i < f; i++)
         {
@@ -771,10 +788,16 @@ public class Engine : IMove
 
         reg3[1] = -OptionsFisheye.rdist;
         renderRelative.run(axis, true, mt, true);
-        renderRelative.runObject(objRetina, r, mt, objColor);
-        renderRelative.runPolygon(objRetinaPoly, p, mt, 4, objColor);
-        renderRelative.runObject(objCross, -1, ct, objColor);
-        renderRelative.runPolygon(objCrossPoly, -1, ct, 4, objColor);
+        if (showRetina)
+        {
+            renderRelative.runObject(objRetina, r, mt, objColor);
+            renderRelative.runPolygon(objRetinaPoly, p, mt, 4, objColor);
+        }
+        if (showCross)
+        {
+            renderRelative.runObject(objCross, -1, ct, objColor);
+            renderRelative.runPolygon(objCrossPoly, -1, ct, 4, objColor);
+        }
         renderPair(f, 0, 0); // x pair offset in x
 
         Vec.copy(sraxis[3], axis[3]); // renderPair doesn't really put everything back
@@ -788,10 +811,16 @@ public class Engine : IMove
 
         reg3[1] = OptionsFisheye.rdist;
         renderRelative.run(sraxis, false, mt, true);
-        renderRelative.runObject(objRetina, r, mt, objColor);
-        renderRelative.runPolygon(objRetinaPoly, p, mt, 4, objColor);
-        renderRelative.runObject(objCross, -1, ct, objColor);
-        renderRelative.runPolygon(objCrossPoly, -1, ct, 4, objColor);
+        if (showRetina)
+        {
+            renderRelative.runObject(objRetina, r, mt, objColor);
+            renderRelative.runPolygon(objRetinaPoly, p, mt, 4, objColor);
+        }
+        if (showCross)
+        {
+            renderRelative.runObject(objCross, -1, ct, objColor);
+            renderRelative.runPolygon(objCrossPoly, -1, ct, 4, objColor);
+        }
         renderPair(f, 2, 0); // z pair offset in x
 
         // no need to put back, we're done

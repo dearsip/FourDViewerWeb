@@ -64,6 +64,7 @@ For basic functions and scene files, see the documentation for [4D Maze](http://
 
 - The "**By Trace**" color mode paints the rooms you have reached black. Also, if you turn on "**Use Arrow**", an arrow will be displayed to indicate the direction you have come from. Both can be used to solve the maze. "**Reset Win**" (not "**Restart**") clears these records as well.
 - To simplify the appearance of the start and finish, the interior color itself is changed instead of drawing additional textures. You can revert to the original display with "**Use Start & Finish Mark**".
+- The reticle in the center of the screen and the screen frame can be hidden by turning off "**Show Reticle**" and "**Show Frame**," respectively.
 
 ### Display
 

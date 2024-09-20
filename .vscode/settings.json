@@ -52,5 +52,6 @@
         "temp/":true,
         "Temp/":true
     },
-    "dotnet.defaultSolution": "FourDViewerWeb.sln"
+    "dotnet.defaultSolution": "FourDViewerWeb.sln",
+    "dotnet.preferCSharpExtension": true
 }

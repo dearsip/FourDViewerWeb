@@ -83,6 +83,8 @@ public class MapGenerator
             finish = borer.p; // OK to share
         }
 
+        if (finish == null) finish = map.getStart();
+
         map.setFinish(finish);
     }
 
